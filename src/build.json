@@ -1,0 +1,18 @@
+{
+  "data": { "WORLD_COAST": "src/world-coast.json", "TERRAIN_GRID": "assets/map-designs/world-terrain.json" },
+  "scripts": [
+    "src/portraits.js",
+    "src/route-geometry.js",
+    "src/world.js",
+    "src/terrain.js",
+    "src/camera.js",
+    "src/story-text.js",
+    "src/story.js",
+    "src/population.js",
+    "assets/population/puppets.js",
+    "src/map-painter.js",
+    "src/stage.js",
+    "src/app.js"
+  ],
+  "optional": ["assets/population/puppets.js"]
+}

@@ -1,6 +1,11 @@
 # Attack Titan Timeline
 
-An interactive, bilingual (Traditional Chinese / English) timeline of who crossed the three Walls in *Attack on Titan*, and how. It shows 27 events from 743 to 857 on an illustrated map of Paradis Island. You can play them back, scrub through each scene, and follow animated routes for every character, with uncertain routes marked as such. The status of each wall and gate builds up as the story goes on. Small crowds of Pure Titans and civilians live on the island throughout, showing where the Titans invaded and how the people retreated behind the Walls; they can be switched off on the map.
+An interactive, bilingual (Traditional Chinese / English) timeline of who crossed the three Walls in *Attack on Titan*, and how. It shows 27 events from 743 to 857 on an illustrated map of Paradis Island:
+
+- playback with a camera that follows the action, or zoom and pan yourself (mouse wheel, slider, drag, pinch);
+- animated routes for every character, with unconfirmed routes marked as such;
+- live Walls: gates break, are sealed, and the Walls fall in the Rumbling;
+- a simulated crowd: about 300 Pure Titans that gather where people live, civilians who retreat behind the Walls and resettle, Survey Corps riders, wall cannons and the Wall Titans.
 
 **Live site:** https://kenny-wong.github.io/attack-titan-timeline/
 
@@ -8,19 +13,23 @@ Contains full story spoilers.
 
 ## Running it
 
-Open `index.html` directly in a browser. It needs no server, dependencies or build step, and it works offline because the map and portraits are embedded in the file.
+Open `index.html` directly in a browser. It needs no server and works offline: everything is embedded in the one file.
 
-Tests use Node's built-in runner: `npm test` (or `node --test "tests/*.test.js"`).
+`index.html` is generated. To change the site, edit the sources and rebuild:
+
+```bash
+npm run build   # assembles index.html from src/ and assets/
+npm test        # Node's built-in test runner, no dependencies
+```
 
 ## Files
 
-- `index.html`: the application (the site).
-- `src/route-geometry.js` (smooth route curves) and `src/population.js` (crowds): embedded into `index.html` by `npm run embed`.
-- `scripts/`: map build (`build-island-map.mjs`, `embed-map.mjs`) and the embed script.
-- `assets/map-designs/`: the island map and the earlier design options (compared in `map-choices.html`).
-- `assets/population/`: crowd sprites, motion settings and a preview page.
-- `assets/portraits/`, `assets/icon-options/`: portrait images and their sources; `icon-choices.html` and `titan-choices.html` compare the options.
-- `original/Attack_on_Titan_Walls_V2.html`: the unmodified Version 2 baseline (also `Attack_on_Titan_Walls_V2.html`).
-- `tests/`: story geography, route timing, crowd and version checks.
+- `index.html`: the built site.
+- `src/`: the sources: world geometry, terrain, camera, story text and scenes, crowd simulation, map painter, stage and app (see `src/build.json` for the order).
+- `assets/population/puppets.js`: the animated figures (drawn with Canvas 2D into a sprite atlas); `puppets-preview.html` shows them.
+- `assets/map-designs/world-terrain.json`, `src/world-coast.json`: terrain classes and coastline of the map.
+- `assets/portraits/`, `assets/icon-options/`: portrait images and their sources; `icon-choices.html`, `titan-choices.html` and `map-choices.html` are earlier design comparisons.
+- `original/Attack_on_Titan_Walls_V2.html`: the first version of the page, kept for reference.
+- `tests/`: story geography, route timing, crowd numbers and behaviour, camera and geometry checks.
 
-The map is an original illustration and the routes are schematic, not to official scale. Character images remain copyrighted by their respective owners; this is a non-commercial fan project.
+The map is an original illustration: the island outline, district positions and landscape are redrawn after fan-made reference maps, not an official survey, and the routes are schematic. Character images remain copyrighted by their respective owners; this is a non-commercial fan project.
