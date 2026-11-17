@@ -80,14 +80,64 @@ test('Ragako: Titans appear inside Wall Rose without a breach; one stays, unable
   assert.strictEqual(pop.stateAt(lying, T('alliance', 1), 0, { reduced: true }).vis, 0);
 });
 
-test('Wall Titans appear only when the Walls fall, start on the Walls and march out to sea', () => {
+// ---- The Rumbling ----
+const wallT = pop.agents.filter((a) => a.kind === 'wallTitan');
+const lanes = pop.rumble.lanes;
+const laneDist = (p) => Math.min(...lanes.map((l) => Math.abs(Math.sin((wrap(World.degOf(p) - l.deg) * Math.PI) / 180)) * World.rOf(p)));
+const walk = (a, fn) => { for (let t = T('rumbling', 0.44); t < T('alliance', 0.95); t += 0.006) { const s = pop.stateAt(a, t, 0, {}); if (s.vis > 0) fn([s.x, s.y], t); } };
+
+test('Wall Titans stand in every Wall and in every district wall, and only appear when the hardening is undone', () => {
   assert.strictEqual(pop.counts(T('rumbling', 0.3)).wallTitan, 0);
-  assert.ok(pop.counts(T('rumbling', 0.7)).wallTitan >= 100);
-  for (const a of pop.agents.filter((x) => x.kind === 'wallTitan')) {
-    assert.ok(['sina', 'rose', 'maria'].some((w) => Math.abs(World.rOf(a.march.from) - World.R[w]) < 0.5));
-    assert.ok(!World.onLand(a.march.to), 'ends at sea');
-  }
+  assert.ok(pop.counts(T('rumbling', 0.6)).wallTitan >= 300);
   assert.strictEqual(pop.counts(T('ambassadors', 0.5)).wallTitan, 0);
+  for (const w of ['maria', 'rose', 'sina']) {
+    const mine = wallT.filter((a) => a.rumble.wall === w);
+    assert.ok(mine.filter((a) => !a.rumble.district).length >= 50, w + ': the ring is manned');
+    for (const d of World.DISTRICTS.filter((x) => x.wall === w)) assert.ok(mine.filter((a) => a.rumble.district === d).length >= 4, d.id + ': the half-round wall is manned');
+  }
+  for (const a of wallT) {
+    const g = a.rumble, p = a.home0;
+    if (g.district) assert.ok(Math.abs(Math.hypot(p[0] - g.district.base[0], p[1] - g.district.base[1]) - g.district.r) < 0.01, 'on the district wall');
+    else assert.ok(Math.abs(World.rOf(p) - World.R[g.wall]) < 0.01, 'on the ring');
+  }
+  // shoulder to shoulder: evenly spaced along each ring
+  const ring = wallT.filter((a) => a.rumble.wall === 'maria' && !a.rumble.district).map((a) => a.rumble.th).sort((x, y) => x - y);
+  for (let i = 1; i < ring.length; i++) assert.ok(Math.abs(ring[i] - ring[i - 1] - 360 / ring.length) < 0.01);
+});
+
+test('the Rumbling spares the towns: no Wall Titan walks through a district or a village', () => {
+  const keep = ['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => c.P[k]);
+  for (const a of wallT) walk(a, (p) => {
+    for (const d of World.DISTRICTS) assert.ok(!(World.rOf(p) > World.R[d.wall] + 1.5 && Math.hypot(p[0] - d.base[0], p[1] - d.base[1]) < d.r - 1.5), 'a Wall Titan is inside ' + d.id);
+    for (const k of keep) assert.ok(Math.hypot(p[0] - k[0], p[1] - k[1]) >= 12, 'a Wall Titan tramples a village');
+  });
+  for (const l of lanes) for (const comp of [-90, 0, 90, 180]) assert.ok(Math.abs(wrap(l.deg - comp)) >= 12.5, 'a lane runs into a district');
+});
+
+test('they line up: along the line of their own Wall to a lane, then out in columns, the outer Wall first', () => {
+  assert.ok(lanes.length >= 12 && lanes.length <= 20, 'lanes: ' + lanes.length);
+  for (const a of wallT) {
+    const Rw = World.R[a.rumble.wall];
+    let last = null;
+    walk(a, (p) => {
+      const r = World.rOf(p), onRing = Math.abs(r - Rw) < 2.2, onDistrictWall = a.rumble.district && Math.abs(Math.hypot(p[0] - a.rumble.district.base[0], p[1] - a.rumble.district.base[1]) - a.rumble.district.r) < 0.6;
+      assert.ok(onRing || onDistrictWall || laneDist(p) < 8, 'off the Wall lines and off the lanes at r ' + r.toFixed(0));
+      if (last) assert.ok(Math.hypot(p[0] - last[0], p[1] - last[1]) < 4, 'no jumps');
+      last = p;
+    });
+  }
+  // every Wall Titan walks at the same speed, so a lane fills in order: Maria's column is ahead of Rose's, Rose's ahead of Sina's
+  const t = T('rumbling', 0.75), lane = lanes[0], head = {};
+  for (const w of ['maria', 'rose', 'sina']) head[w] = Math.max(...wallT.filter((a) => a.rumble.wall === w && a.rumble.lane === lane).map((a) => { const s = pop.stateAt(a, t, 0, {}); return World.rOf([s.x, s.y]); }));
+  assert.ok(head.maria > head.rose && head.rose > head.sina, JSON.stringify(head));
+});
+
+test('every Wall Titan ends out at sea', () => {
+  for (const a of wallT) {
+    const g = a.rumble, end = [World.C[0] + Math.cos((g.lane.deg * Math.PI) / 180) * g.lane.endR, World.C[1] + Math.sin((g.lane.deg * Math.PI) / 180) * g.lane.endR];
+    assert.ok(!World.onLand(end), 'a lane ends on land');
+    assert.strictEqual(pop.stateAt(a, T('alliance', 0.95), 0, {}).vis, 0);
+  }
 });
 
 test('Survey Corps riders ride only during events with a Scouts route', () => {
@@ -108,7 +158,7 @@ test('wandering keeps figures inside their area', () => {
 });
 
 test('a phone gets fewer civilians and riders but the same 300 Titans', () => {
-  const low = load({ population: true, counts: { civilians: 96, riders: 6, wallTitans: 90 } }).pop;
+  const low = load({ population: true, counts: { civilians: 96, riders: 6, wallTitans: 190 } }).pop;
   assert.strictEqual(low.counts(low.T('grisha', 0.5)).titan.total, 300);
   assert.ok(low.agents.filter((a) => a.kind === 'civ').length < civs.length);
 });

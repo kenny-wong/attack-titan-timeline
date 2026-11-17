@@ -16,7 +16,7 @@
 
   function create(events, World, opts = {}) {
     const { C, R, DISTRICTS, at, dist, rOf, degOf, district, onLand, coastDist, coastAt } = World;
-    const N = { titans: 300, civilians: 150, riders: 10, wallTitans: 150, ...(opts.counts || {}) };
+    const N = { titans: 300, civilians: 150, riders: 10, wallTitans: 360, ...(opts.counts || {}) };
     const idx = (id) => { const i = events.findIndex((e) => e.id === id); if (i < 0) throw new Error('Unknown event ' + id); return i; };
     const T = (id, p) => idx(id) + p;
 
@@ -229,21 +229,66 @@
     move(civD.shig, ['ambassadors', 0.1], ['ambassadors', 0.6], 'shig', { spread: 0.3, straight: true });
     move(back.filter((a) => a.area0 === 'maria').slice(0, Math.round(nc * 0.06)), ['ambassadors', 0.3], ['ambassadors', 1], 'outside', { spread: 0.5, straight: true, near: SHIG.beyond, radius: 80 }); // the Walls are gone
 
-    // The Wall Titans of the Rumbling: they step out of all three Walls and march to the sea.
+    // ---- The Rumbling ----
+    // Every Wall, and the half-round wall of every district, is a row of Wall Titans standing shoulder to shoulder.
+    // To spare the towns they do not walk straight out. Each one files along the line of its own Wall to the nearest
+    // corridor (a "lane") and leaves through it in a column: Maria's first, then Rose's and Sina's through the gaps the
+    // outer Walls leave behind. Lanes keep clear of the districts at the compass points and of the villages.
     const wallsFall = T('rumbling', 0.43);
     const wallTitans = [];
+    const rumble = { T0: wallsFall + 0.06, v: 1, lanes: [], off: { maria: 2.6, rose: 4.5, sina: 6.4 } };
     {
-      const r = rng(4242), share = { maria: 0.46, rose: 0.32, sina: 0.22 };
-      for (const [wall, end] of [['maria', 1.0], ['rose', 1.3], ['sina', 1.6]]) {
-        const n = Math.round(N.wallTitans * share[wall]);
-        for (let i = 0; i < n; i++) {
-          const deg = (360 * (i + r() * 0.6)) / n - 180, start = at(R[wall], deg), goal = coastAt(deg, 46);
-          const t0 = wallsFall + 0.02 + r() * 0.05, t1 = T('rumbling', 0) + end + r() * 0.08;
-          const a = { id: agents.length, kind: 'wallTitan', r, variant: 1, area0: 'outside', home0: start, vis0: 0, ops: [], phase: r() * 10, speed: 1, march: { from: start, to: goal, T0: t0, T1: t1 } };
-          agents.push(a); wallTitans.push(a);
+      const rad = Math.PI / 180, WALLS = ['maria', 'rose', 'sina'], PTS = opts.points || {};
+      const wrapPos = (d) => ((d % 360) + 360) % 360;
+      const keep = [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])];
+      const endOf = (deg) => rOf(coastAt(deg, 46)), coastOf = (deg) => rOf(coastAt(deg, 0));
+      const clear = (deg) => {
+        if ([-90, 0, 90, 180].some((c) => Math.abs(wrapDeg(deg - c)) < 12.5)) return false; // the districts
+        const ux = Math.cos(deg * rad), uy = Math.sin(deg * rad), r1 = endOf(deg);
+        return keep.every((p) => { const px = p[0] - C[0], py = p[1] - C[1], along = Math.max(R.sina, Math.min(r1, px * ux + py * uy)); return Math.hypot(px - ux * along, py - uy * along) >= 20; });
+      };
+      for (const c of [-90, 0, 90, 180]) for (const o of [14, 34.7, 55.3, 76]) {
+        const deg = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9].map((n) => wrapDeg(c + o + n)).find(clear); // the nearest free bearing
+        if (deg !== undefined) rumble.lanes.push({ deg, endR: endOf(deg), coastR: coastOf(deg) });
+      }
+      rumble.lanes.sort((x, y) => x.deg - y.deg);
+      const L = rumble.lanes, nl = L.length;
+      // half the gap (degrees) to the lane before and after: the stretch of Wall that drains into this lane from each side
+      L.forEach((ln, i) => { ln.prev = wrapPos(ln.deg - L[(i + nl - 1) % nl].deg) / 2; ln.next = wrapPos(L[(i + 1) % nl].deg - ln.deg) / 2; });
+      for (const ln of L) ln.len = Object.fromEntries(WALLS.map((w) => [w, Math.max(ln.prev, ln.next) * rad * R[w]])); // length of each Wall's column in the lane
+      const laneOf = (th) => { let best = L[0], bd = 999; for (const ln of L) { const d = Math.abs(wrapDeg(th - ln.deg)); if (d < bd) { bd = d; best = ln; } } return best; };
+      const lenOf = (w) => 2 * Math.PI * R[w] + DISTRICTS.filter((d) => d.wall === w).reduce((sum, d) => sum + Math.PI * d.r, 0);
+      const total = WALLS.reduce((sum, w) => sum + lenOf(w), 0), r = rng(4242);
+      const mk = (start, g) => { const a = { id: agents.length, kind: 'wallTitan', r, variant: 1, area0: 'outside', home0: start, vis0: 0, ops: [], phase: (agents.length * 0.37) % 10, speed: 1, rumble: g }; agents.push(a); wallTitans.push(a); };
+      for (const wall of WALLS) {
+        const ds = DISTRICTS.filter((d) => d.wall === wall), n = Math.max(12, Math.round((N.wallTitans * lenOf(wall)) / total));
+        const nRing = Math.round((n * 2 * Math.PI * R[wall]) / lenOf(wall)), nB = Math.max(2, Math.round((n - nRing) / ds.length));
+        // the ring itself, the stretch across each district included
+        for (let i = 0; i < nRing; i++) {
+          const th = wrapDeg(-180 + (360 * (i + 0.5)) / nRing), lane = laneOf(th), dd = wrapDeg(th - lane.deg);
+          mk(at(R[wall], th), { wall, lane, th, side: dd >= 0 ? 1 : -1, s1: 0, s2: Math.abs(dd) * rad * R[wall] });
+        }
+        // the half-round wall of each district: they walk along it to where it meets the ring, never into the town
+        for (const d of ds) for (let j = 0; j < nB; j++) {
+          const ph = d.deg - 90 + (180 * (j + 0.5)) / nB, dir = ph < d.deg ? -1 : 1;
+          const th = wrapDeg(d.deg + (dir * Math.atan(d.r / R[wall])) / rad);
+          const lane = [...L].sort((x, y) => wrapPos(dir * (x.deg - th)) - wrapPos(dir * (y.deg - th)))[0], dd = wrapDeg(th - lane.deg); // the first lane on its own side, so it never walks back past the town
+          mk([d.base[0] + d.r * Math.cos(ph * rad), d.base[1] + d.r * Math.sin(ph * rad)], { wall, lane, district: d, ph, dir, th, rJ: Math.hypot(R[wall], d.r), side: dd >= 0 ? 1 : -1, s1: Math.abs(d.deg + dir * 90 - ph) * rad * d.r, s2: Math.abs(dd) * rad * R[wall] });
         }
       }
+      // one walking speed for all, so that the last of them is out at sea before the story's end
+      rumble.v = Math.max(...wallTitans.map((a) => a.rumble.s1 + a.rumble.s2 + a.rumble.lane.endR - R[a.rumble.wall])) / (T('alliance', 0.92) - rumble.T0);
+      rumble.tau = (Tl) => rumble.v * Math.max(0, Tl - rumble.T0); // distance every Wall Titan has walked by then
     }
+    // Where a Wall Titan is after walking tau: along its district wall, along the ring, then out through its lane. Returns [x, y, r in the lane or 0].
+    const rumblePos = (a, tau) => {
+      const g = a.rumble, Rw = R[g.wall], rad = Math.PI / 180;
+      if (tau < g.s1) { const ph = (g.ph + (g.dir * (tau / g.district.r)) / rad) * rad; return [g.district.base[0] + g.district.r * Math.cos(ph), g.district.base[1] + g.district.r * Math.sin(ph), 0]; }
+      const u = tau - g.s1;
+      if (u < g.s2) { const p = at(g.rJ ? Rw + (g.rJ - Rw) * Math.max(0, 1 - u / 10) : Rw, g.th - (g.side * (u / Rw)) / rad); return [p[0], p[1], 0]; }
+      const q = u - g.s2, lr = g.lane.deg * rad, off = g.side * rumble.off[g.wall] * Math.min(1, q / 12), rr = Rw + q;
+      return [C[0] + Math.cos(lr) * rr - Math.sin(lr) * off, C[1] + Math.sin(lr) * rr + Math.cos(lr) * off, rr];
+    };
     // Survey Corps riders follow every "scouts" route of the story.
     const riders = [];
     events.forEach((ev, ei) => ev.routes.forEach((rt) => {
@@ -280,7 +325,7 @@
       }
       delete a.cur;
       // when this figure can be on screen at all (lets the renderer skip it cheaply)
-      if (a.march) { a.t0 = wallsFall; a.t1 = a.march.T1; }
+      if (a.rumble) { a.t0 = wallsFall; a.t1 = rumble.T0 + (a.rumble.s1 + a.rumble.s2 + a.rumble.lane.endR - R[a.rumble.wall]) / rumble.v; }
       else if (a.ferry) { a.t0 = a.ferry.T0; a.t1 = a.ferry.T1; }
       else if (a.ride) { a.t0 = a.ride.ei; a.t1 = a.ride.ei + 1; }
       else {
@@ -318,11 +363,11 @@
 
     // State of one figure at timeline T and real time t (seconds).
     function stateAt(a, Tl, t, o = {}) {
-      if (a.march) { // a Wall Titan walking from its Wall to the sea
-        const m = a.march, f = (Tl - m.T0) / (m.T1 - m.T0);
-        if (Tl < wallsFall || f > 1) return { x: m.from[0], y: m.from[1], vis: 0, area: 'outside' };
-        const p = lerp(m.from, m.to, clamp01(f));
-        return { x: p[0], y: p[1], vis: Math.min(clamp01((Tl - wallsFall) / 0.04), clamp01((1 - f) / 0.06)), area: 'outside', marching: f > 0 };
+      if (a.rumble) { // a Wall Titan: in its Wall until the hardening is undone, then along the Wall and out through its lane
+        if (Tl < wallsFall) return { x: a.home0[0], y: a.home0[1], vis: 0, area: 'outside' };
+        const tau = rumble.tau(Tl), p = rumblePos(a, tau);
+        const vis = Math.min(clamp01((Tl - wallsFall) / 0.04), p[2] ? clamp01((a.rumble.lane.endR - p[2]) / 30) : 1);
+        return { x: p[0], y: p[1], vis, area: 'outside', marching: tau > 0 && vis > 0 };
       }
       if (a.ferry) { // an evacuation boat on the river
         const f = (Tl - a.ferry.T0) / (a.ferry.T1 - a.ferry.T0);
@@ -373,7 +418,7 @@
       }
       return out;
     }
-    return { agents, cannons, stateAt, counts, inArea, regionOfArea, route, wallsFall, N, T };
+    return { agents, cannons, stateAt, counts, inArea, regionOfArea, route, wallsFall, rumble, N, T };
   }
   global.Population = { create };
 })(typeof window !== 'undefined' ? window : globalThis);

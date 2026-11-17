@@ -1172,6 +1172,7 @@ select:focus-visible {
   }
 }
 #mapSvg .actor-bubble[data-actor='pure'],
+#mapSvg .actor-bubble[data-actor='walltitans'],
 #mapSvg .actor-bubble[data-actor='civ'] {
   display: none;
 } /* the animated crowd already shows the Pure Titans, and the crowd and the boats show the refugees */

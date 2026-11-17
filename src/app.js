@@ -80,7 +80,8 @@ const TXT = {
     dayMoon: '月夜 · 巨人異常活動',
     flareInfo: '信號彈：紅＝發現巨人 · 綠＝行進方向 · 黑＝奇行種',
     popWall: '城牆巨人',
-    popWallNow: '由三道城牆走出，向海岸行進',
+    popWallNow: '肩並肩企滿三道城牆同各城區圍牆；沿牆排隊，經通道成縱隊向海岸行進',
+    rumbleInfo: '地鳴（模擬）：城牆巨人沿住自己嘅牆線排隊，由固定通道成縱隊離開，避開城區同村落',
     popCrawlTag: '爬行嘅巨人',
     popCrawlInfo: '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞。',
     camOn: '自動鏡頭：開',
@@ -160,7 +161,8 @@ const TXT = {
     dayMoon: 'Moonlit night · Titans active (an anomaly)',
     flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
-    popWallNow: 'stepping out of the three Walls and marching to the sea',
+    popWallNow: 'shoulder to shoulder in all three Walls and every district wall; they file along the Walls and march to the sea in columns',
+    rumbleInfo: 'The Rumbling (simulated): the Wall Titans file along their own wall lines and leave in columns through set corridors, sparing the towns and villages',
     popCrawlTag: 'Crawling Titan',
     popCrawlInfo: 'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”.',
     camOn: 'Auto camera: on',
@@ -240,7 +242,8 @@ const TXT = {
     dayMoon: '月夜 · 巨人が活動（異常）',
     flareInfo: '信煙弾：赤＝巨人発見 · 緑＝進路変更 · 黒＝奇行種',
     popWall: '壁の巨人',
-    popWallNow: '三つの壁から現れ、海へ進む',
+    popWallNow: '三つの壁と各区の壁に肩を並べて立ち、壁沿いに列を作って縦隊で海へ進む',
+    rumbleInfo: '地鳴らし（シミュレーション）：壁の巨人は自分の壁の線に沿って並び、決まった通り道を縦隊で進んで、町や村を避ける',
     popCrawlTag: '這う巨人',
     popCrawlInfo: '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づく。',
     camOn: '自動カメラ：オン',
@@ -361,7 +364,7 @@ const PHONE = innerWidth < 760;
 const QUALITY = PHONE || (navigator.deviceMemory && navigator.deviceMemory <= 2) ? 'low' : 'high'; // phones get a lighter map and sprites
 const TERRAIN = Terrain.build(TERRAIN_GRID, World);
 TERRAIN.places.find((p) => p.id === 'harbor').sinceT = events.findIndex((e) => e.id === 'overseas'); // the harbour is built after 851
-const POP = Population.create(events, World, { points: P, counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 90 } : {} });
+const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
 const STAGE = Stage.create($('#stage'), World, TERRAIN, POP, QUALITY);
 const MAX_SCALE = QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
@@ -524,7 +527,7 @@ function paintEvent() {
     const cards = $('#eventCards');
     cards.scrollTo({ left: tile.offsetLeft - (cards.clientWidth - tile.offsetWidth) / 2, behavior: 'auto' });
   }
-  $('#mapInfo').textContent = ev.id === 'female-forest' ? t.flareInfo : t.schematic;
+  $('#mapInfo').textContent = ev.id === 'female-forest' ? t.flareInfo : ev.id === 'rumbling' ? t.rumbleInfo : t.schematic;
   renderSteps();
   renderWallStatus();
   renderCast();
@@ -881,6 +884,11 @@ function advanceEvent(delta) {
 // The box the camera should show: the whole event when paused, the action of the moment while playing.
 function sceneBox(tracking) {
   const ev = events[S.idx], pts = [];
+  if (ev.frame === 'island') {
+    // the Rumbling: the whole island when paused; while playing, the Walls first and then outward with the columns
+    const reach = tracking ? World.R.maria + 70 + POP.rumble.tau(S.idx + S.p) : 1e4, c0 = World.C;
+    return { x0: Math.max(0, c0[0] - reach), y0: Math.max(0, c0[1] - reach), x1: Math.min(World.W, c0[0] + reach), y1: Math.min(World.H, c0[1] + reach) };
+  }
   for (const m of ev.marks) if (!tracking || Math.abs((m.at ?? 0.07) - S.p) < 0.25) pts.push(coord(m.point));
   for (const en of sceneRoutes) {
     const R = en.R;
@@ -1039,7 +1047,7 @@ function renderDayChip(light) {
   el.className = 'day-chip ' + key;
 }
 // Short scenes play faster than the rest (multiplies the chosen speed).
-const EVENT_PACE = { founding: 2.5, grisha: 2 };
+const EVENT_PACE = { founding: 2.5, grisha: 2, rumbling: 0.6 }; // the Rumbling plays slower: there is a lot to watch
 $('#playBtn').addEventListener('click', () => {
   if (!S.playing && S.p >= 1) {
     const at = visible.indexOf(S.idx);

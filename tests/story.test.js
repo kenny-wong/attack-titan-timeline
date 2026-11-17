@@ -47,13 +47,11 @@ test('Shiganshina 850: Zeke is on the Maria side of the inner gate; the outer ga
   assert.ok(marks.find((m) => m.point === 'shigO').at < marks.find((m) => m.point === 'shigI').at);
 });
 
-test('the Rumbling starts on Wall Maria and ends at sea, in every direction', () => {
-  const routes = ev('rumbling').routes;
-  assert.ok(routes.length >= 8);
-  for (const r of routes) {
-    assert.ok(Math.abs(World.rOf(pt(r.path[0])) - World.R.maria) <= World.DR.maria + 1, 'starts on the Wall');
-    assert.strictEqual(region(r.path.at(-1)), 'sea');
-  }
+test('the Rumbling has no schematic routes: the Wall Titans are simulated, and the camera shows the whole island', () => {
+  const e = ev('rumbling');
+  assert.strictEqual(e.routes.length, 0);
+  assert.strictEqual(e.frame, 'island');
+  assert.ok(e.characters.some((x) => x[0] === 'walltitans'));
 });
 
 test('the 857 delegation includes Jean and Connie', () => {

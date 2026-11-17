@@ -296,8 +296,9 @@ const SCENES = (() => {
       marks: [{ point: 'shig', kind: 'attack' }],
     },
     rumbling: {
-      // The Wall Titans step out of the Walls and march outward to the sea in every direction.
-      routes: [-90, -45, 0, 45, 90, 135, 180, -135].map((deg, i) => r('walltitans', 'attack', [deg === 90 ? 'shigO' : at(240, deg), coastAt(deg, 34)], i % 2 ? 0.47 : 0.45, 1)),
+      // The Wall Titans are simulated one by one (population.js), so there are no schematic routes or icons here.
+      routes: [],
+      frame: 'island', // the camera shows the whole island
       marks: [
         { point: 'mitras', kind: 'reveal' },
         { point: 'shigI', kind: 'collapse', at: 0.43 },
@@ -323,7 +324,7 @@ const NIGHT_ACTIVE = new Set(['utgard']);
 const events = EVENT_TEXT.map((t) => {
   const scene = SCENES[t.id];
   if (!scene) throw new Error('No scene for event ' + t.id);
-  return { ...t, routes: scene.routes, marks: scene.marks, light: LIGHT[t.id] || [[0, 1]], nightActive: NIGHT_ACTIVE.has(t.id) };
+  return { ...t, routes: scene.routes, marks: scene.marks, frame: scene.frame, light: LIGHT[t.id] || [[0, 1]], nightActive: NIGHT_ACTIVE.has(t.id) };
 });
 // Daylight (0..1) at a point of the timeline.
 function lightAt(idx, p) {
