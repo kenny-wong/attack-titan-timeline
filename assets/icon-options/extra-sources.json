@@ -1,0 +1,56 @@
+[
+  {
+    "key": "pure",
+    "id": "D",
+    "label": "微笑巨人 · 黛娜（個體代表）",
+    "src": "assets/icon-options/pure-more-0.webp",
+    "source": "https://aotdle.net/images/tapone/smiling-titan.webp"
+  },
+  {
+    "key": "pure",
+    "id": "E",
+    "label": "索尼（個體代表）",
+    "src": "assets/icon-options/pure-more-1.webp",
+    "source": "https://aotdle.net/images/tapone/sawney.webp"
+  },
+  {
+    "key": "pure",
+    "id": "F",
+    "label": "賓（個體代表）",
+    "src": "assets/icon-options/pure-more-2.webp",
+    "source": "https://aotdle.net/images/tapone/beane.webp"
+  },
+  {
+    "key": "pure",
+    "id": "G",
+    "label": "純潔巨人群奔跑",
+    "src": "assets/icon-options/pure-more-3.webp",
+    "source": "https://fwmedia.fandomwire.com/wp-content/uploads/2025/05/13141447/IMG_1864.png?fit=contain&format=webp&height=1080&quality=85&sharpen=true&width=1920"
+  },
+  {
+    "key": "walltitans",
+    "id": "D",
+    "label": "地鳴隊列 · 動畫場景",
+    "src": "assets/icon-options/walltitans-more-0.webp",
+    "source": "https://staticg.sportskeeda.com/editor/2025/08/f058b-17558609364725-1920.jpg"
+  },
+  {
+    "key": "walltitans",
+    "id": "E",
+    "label": "地鳴全景 · 漫畫",
+    "src": "assets/icon-options/walltitans-more-1.webp",
+    "source": "https://www.cultture.com/pics/2021/06/ataque-a-los-titanes-10-formas-mejores-en-las-que-eren-podria-haber-usado-el-poder-del-titan-fundador-4.jpg"
+  },
+  {
+    "key": "walltitans",
+    "error": "TypeError: fetch failed",
+    "source": "https://cdn.besideus.id/content/uploads/2025/08/besideus_Rumbling_20250803_094432.jpg"
+  },
+  {
+    "key": "walltitans",
+    "id": "G",
+    "label": "地鳴大軍 · 全景",
+    "src": "assets/icon-options/walltitans-more-3.webp",
+    "source": "https://cdn.alfabetajuega.com/alfabetajuega/2022/01/shingeki-no-kyojin-retumbar-titan-2.jpg"
+  }
+]

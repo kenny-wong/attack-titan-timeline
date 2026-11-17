@@ -1,0 +1,358 @@
+{
+  "viewBox": "0 0 1000 920",
+  "transform": {
+    "scale": 1.25,
+    "offsetX": 175,
+    "offsetY": 179
+  },
+  "rings": {
+    "maria": {
+      "cx": 500,
+      "cy": 450.25,
+      "rx": 305,
+      "ry": 268.75
+    },
+    "rose": {
+      "cx": 500,
+      "cy": 440.25,
+      "rx": 216.25,
+      "ry": 182.5
+    },
+    "sina": {
+      "cx": 500,
+      "cy": 437.75,
+      "rx": 118.75,
+      "ry": 93.75
+    }
+  },
+  "districts": [
+    {
+      "id": "maria-north",
+      "wall": "maria",
+      "direction": "north",
+      "name": null,
+      "attachment": [
+        500,
+        184
+      ],
+      "radius": 36.25,
+      "rotation": 180,
+      "arc": "M 536.25 184 A 36.25 36.25 0 0 0 463.75 184"
+    },
+    {
+      "id": "maria-east",
+      "wall": "maria",
+      "direction": "east",
+      "name": null,
+      "attachment": [
+        801.25,
+        450.25
+      ],
+      "radius": 38.75,
+      "rotation": 270,
+      "arc": "M 801.25 489 A 38.75 38.75 0 0 0 801.25 411.5"
+    },
+    {
+      "id": "maria-south",
+      "wall": "maria",
+      "direction": "south",
+      "name": "Shiganshina",
+      "attachment": [
+        498.75,
+        719
+      ],
+      "radius": 42.5,
+      "rotation": 0,
+      "arc": "M 456.25 719 A 42.5 42.5 0 0 0 541.25 719"
+    },
+    {
+      "id": "maria-west",
+      "wall": "maria",
+      "direction": "west",
+      "name": null,
+      "attachment": [
+        198.75,
+        450.25
+      ],
+      "radius": 38.75,
+      "rotation": 90,
+      "arc": "M 198.75 411.5 A 38.75 38.75 0 0 0 198.75 489"
+    },
+    {
+      "id": "rose-north",
+      "wall": "rose",
+      "direction": "north",
+      "name": null,
+      "attachment": [
+        500,
+        260.25
+      ],
+      "radius": 30,
+      "rotation": 180,
+      "arc": "M 530 260.25 A 30 30 0 0 0 470 260.25"
+    },
+    {
+      "id": "rose-east",
+      "wall": "rose",
+      "direction": "east",
+      "name": "Karanes",
+      "attachment": [
+        712.5,
+        437.75
+      ],
+      "radius": 27.5,
+      "rotation": 270,
+      "arc": "M 712.5 465.25 A 27.5 27.5 0 0 0 712.5 410.25"
+    },
+    {
+      "id": "rose-south",
+      "wall": "rose",
+      "direction": "south",
+      "name": "Trost",
+      "attachment": [
+        498.75,
+        621.5
+      ],
+      "radius": 30,
+      "rotation": 0,
+      "arc": "M 468.75 621.5 A 30 30 0 0 0 528.75 621.5"
+    },
+    {
+      "id": "rose-west",
+      "wall": "rose",
+      "direction": "west",
+      "name": null,
+      "attachment": [
+        286.25,
+        440.25
+      ],
+      "radius": 28.75,
+      "rotation": 90,
+      "arc": "M 286.25 411.5 A 28.75 28.75 0 0 0 286.25 469"
+    },
+    {
+      "id": "sina-north",
+      "wall": "sina",
+      "direction": "north",
+      "name": "Orvud",
+      "attachment": [
+        498.75,
+        346.5
+      ],
+      "radius": 27.5,
+      "rotation": 180,
+      "arc": "M 526.25 346.5 A 27.5 27.5 0 0 0 471.25 346.5"
+    },
+    {
+      "id": "sina-east",
+      "wall": "sina",
+      "direction": "east",
+      "name": "Stohess",
+      "attachment": [
+        615,
+        440.25
+      ],
+      "radius": 22.5,
+      "rotation": 270,
+      "arc": "M 615 462.75 A 22.5 22.5 0 0 0 615 417.75"
+    },
+    {
+      "id": "sina-south",
+      "wall": "sina",
+      "direction": "south",
+      "name": "Ehrmich",
+      "attachment": [
+        498.75,
+        529
+      ],
+      "radius": 22.5,
+      "rotation": 0,
+      "arc": "M 476.25 529 A 22.5 22.5 0 0 0 521.25 529"
+    },
+    {
+      "id": "sina-west",
+      "wall": "sina",
+      "direction": "west",
+      "name": null,
+      "attachment": [
+        383.75,
+        437.75
+      ],
+      "radius": 22.5,
+      "rotation": 90,
+      "arc": "M 383.75 415.25 A 22.5 22.5 0 0 0 383.75 460.25"
+    }
+  ],
+  "outsidePoints": {
+    "shore": [
+      540,
+      857
+    ],
+    "sea": [
+      165,
+      848
+    ],
+    "ship": [
+      120,
+      798
+    ],
+    "easternSea": [
+      902,
+      803
+    ],
+    "marina": [
+      830,
+      741
+    ],
+    "west": [
+      131,
+      450
+    ],
+    "outerWest": [
+      188,
+      620
+    ],
+    "northOuter": [
+      500,
+      114
+    ],
+    "eastOuter": [
+      872,
+      440
+    ],
+    "outsideEast": [
+      906,
+      492
+    ],
+    "outerEast": [
+      857,
+      586
+    ],
+    "alliance": [
+      778,
+      722
+    ]
+  },
+  "outsidePointRoles": {
+    "shore": "Southern river mouth on the coast",
+    "sea": "Southwestern sea approach",
+    "ship": "Offshore southwest of the island",
+    "easternSea": "Open water southeast of the island",
+    "marina": "Small harbour at the southeast coast",
+    "west": "Western outer land, beyond Maria and its district",
+    "outerWest": "Southwestern outer land",
+    "northOuter": "Northern outer land, beyond the northern district",
+    "eastOuter": "Eastern outer land, beyond the eastern district",
+    "outsideEast": "Land on the eastern coastal approach",
+    "outerEast": "Southeastern outer land",
+    "alliance": "Southeastern outer land near the harbour"
+  },
+  "coastline": {
+    "schematic": true,
+    "path": "M 488 60 C 516 46 538 77 569 68 L 610 82 Q 637 71 660 93 L 688 91 Q 708 122 737 126 L 782 118 Q 812 132 818 159 L 851 178 Q 844 210 867 234 L 884 266 Q 908 273 905 303 L 921 324 L 910 354 Q 935 383 918 412 L 930 445 Q 921 470 937 492 L 916 523 L 926 552 Q 909 587 887 599 L 892 633 Q 879 659 858 664 L 842 700 Q 828 716 830 741 L 806 757 Q 789 781 757 774 L 725 795 Q 708 819 679 813 L 647 831 L 614 824 Q 585 852 558 847 L 540 857 Q 518 868 492 855 L 466 860 Q 440 847 420 832 L 386 826 Q 373 807 345 804 L 316 782 Q 287 788 268 767 L 241 751 Q 233 730 212 724 L 193 699 Q 167 698 158 671 L 136 647 Q 113 636 119 609 L 99 584 L 108 553 Q 82 530 89 504 L 76 481 Q 62 458 79 431 L 70 404 Q 88 386 82 362 L 96 332 Q 88 305 111 290 L 113 260 Q 130 247 137 223 L 162 208 Q 162 181 192 177 L 214 153 Q 241 160 261 137 L 292 130 Q 306 105 338 115 L 362 98 Q 389 106 410 89 L 446 87 Q 466 69 488 60 Z",
+    "samplePoints": [
+      [
+        488,
+        60
+      ],
+      [
+        782,
+        118
+      ],
+      [
+        930,
+        445
+      ],
+      [
+        937,
+        492
+      ],
+      [
+        830,
+        741
+      ],
+      [
+        540,
+        857
+      ],
+      [
+        316,
+        782
+      ],
+      [
+        119,
+        609
+      ],
+      [
+        76,
+        481
+      ],
+      [
+        113,
+        260
+      ],
+      [
+        292,
+        130
+      ]
+    ],
+    "note": "Shared schematic island outline for all three alternatives; not a geographic reconstruction."
+  },
+  "geometryNotes": [
+    "All ring geometry is an exact uniform transformation of the supplied app ellipses.",
+    "Districts are new semicircular vector outlines at the cardinal attachments; the app has no district outline geometry to copy. Radii and attachment centres are explicitly listed in new units.",
+    "Shiganshina outer gate is the southern apex at [498.75,761.5]; Trost outer gate is the southern apex at [498.75,651.5]. Inner gate anchors remain at their exact transformed app positions.",
+    "All other interior event points retain the stated transform. Proposed exterior points are replacements, not transformations.",
+    "The base maps contain no place or wall labels. The comparison page adds a separate sample overlay."
+  ],
+  "anchors": {
+    "shigO": [
+      498.75,
+      761.5
+    ],
+    "shig": [
+      498.75,
+      735.25
+    ],
+    "shigI": [
+      498.75,
+      709
+    ],
+    "trostO": [
+      498.75,
+      651.5
+    ],
+    "trost": [
+      498.75,
+      629
+    ],
+    "trostI": [
+      498.75,
+      609
+    ],
+    "ehrmich": [
+      498.75,
+      534
+    ],
+    "stohess": [
+      623.75,
+      440.25
+    ],
+    "karanes": [
+      725,
+      437.75
+    ],
+    "orvud": [
+      498.75,
+      332.75
+    ],
+    "mitras": [
+      498.75,
+      432.75
+    ],
+    "forest": [
+      742.5,
+      542.75
+    ]
+  }
+}
