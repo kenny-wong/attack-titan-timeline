@@ -23,5 +23,8 @@
   "sprites": [
     "assets/theme/emblems.svg",
     "assets/theme/ornaments.svg"
-  ]
+  ],
+  "images": {
+    "titanPortraits": "assets/portraits/titans"
+  }
 }

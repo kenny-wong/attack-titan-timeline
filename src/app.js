@@ -326,7 +326,7 @@ function renderArt(ev) {
     p.className = 'art-panel' + (teamActors.has(w) ? ' team' : '');
     const img = document.createElement('img');
     img.alt = '';
-    img.src = actorPortrait(w);
+    img.src = actorPortrait(w, true);
     const name = document.createElement('span');
     name.textContent = tr(cast[w]);
     p.append(img, name);
@@ -747,6 +747,7 @@ function rebuildMap() {
     elem('circle', { r: 13, cx: 0, cy: 0 }, clip);
     const txt = elem('image', { href: actorPortrait(R.who), x: -13, y: -13, width: 26, height: 26, preserveAspectRatio: teamActors.has(R.who) ? 'xMidYMid meet' : 'xMidYMid slice', 'clip-path': 'url(#' + clipId + ')' }, ag);
     elem('circle', { r: 15.6, class: 'actor-ring2' }, ag);
+    elem('circle', { r: 15.6, class: 'shift-flash' }, ag);
     const title = elem('title', {}, ag);
     title.textContent = tr(cast[R.who] || C(R.who, R.who));
     sceneRoutes.push({ R, geo, trail, endG, ends, ag, gr, txt, title, lastV: -1, arrived: false });
@@ -787,7 +788,7 @@ function renderDynamic() {
   }
   const ev = events[S.idx];
   const flags = S.actor;
-  const portraitPhase = ev.id === 'marcel' ? (S.p < 2 / 3 ? 0 : 1) : -1;
+  const portraitPhase = (ev.id === 'marcel' ? (S.p < 2 / 3 ? 0 : 1) : -1) + '|' + ev.characters.map(([who]) => titanFormAt(ev.id, who, S.p) || '').join('|'); // human or Titan, per character
   if (portraitPhase !== castPortraitPhase) {
     castPortraitPhase = portraitPhase;
     renderCast();
@@ -802,9 +803,21 @@ function renderDynamic() {
     const [sx, sy] = toScreen([pos.x, pos.y]);
     const x = Math.max(16, Math.min(CAM.vw - 16, sx + (R.offset?.[0] || 0))),
       y = Math.max(16, Math.min(CAM.vh - 16, sy + (R.offset?.[1] || 0)));
-    if (ev.id === 'marcel' && R.who === 'ymir') entry.txt.setAttribute('href', actorPortrait(R.who));
+    const face = actorPortrait(R.who);
+    if (face !== entry.face) {
+      // the portrait follows the character's form; a flash marks the transformation
+      const titan = !!titanFormAt(ev.id, R.who, S.p);
+      entry.txt.setAttribute('href', face);
+      if (entry.face !== undefined && titan !== entry.titan && vis && !REDUCED) {
+        ag.classList.remove('shift');
+        void ag.getBoundingClientRect();
+        ag.classList.add('shift');
+      }
+      entry.face = face;
+      entry.titan = titan;
+    }
     const moving = f > 0 && f < 1;
-    ag.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${moving ? 1.08 : 1})`);
+    ag.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(moving ? 1.08 : 1) * (entry.titan ? 1.24 : 1)})`);
     ag.style.opacity = vis ? '1' : '0';
     ag.classList.toggle('moving', moving && vis);
     if (Math.abs(v - entry.lastV) > 0.0004) {

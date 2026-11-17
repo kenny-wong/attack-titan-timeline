@@ -1171,9 +1171,10 @@ select:focus-visible {
     opacity: 0;
   }
 }
-#mapSvg .actor-bubble[data-actor='pure'] {
+#mapSvg .actor-bubble[data-actor='pure'],
+#mapSvg .actor-bubble[data-actor='civ'] {
   display: none;
-} /* the animated crowd already shows the Pure Titans */
+} /* the animated crowd already shows the Pure Titans, and the crowd and the boats show the refugees */
 .actor-bubble .actor-ring2 {
   fill: none;
   stroke: var(--rc);
@@ -2464,5 +2465,31 @@ body {
     background: var(--hero) right top / auto 196% no-repeat;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
+  }
+}
+
+/* a shifter transforms: lightning-yellow flash around the marker */
+.actor-bubble .shift-flash {
+  fill: none;
+  stroke: #ffe66b;
+  stroke-width: 3;
+  opacity: 0;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.actor-bubble.shift .shift-flash {
+  animation: shiftFlash 0.9s ease-out;
+}
+@keyframes shiftFlash {
+  0% {
+    opacity: 1;
+    stroke-width: 7;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    stroke-width: 0.6;
+    transform: scale(2.9);
   }
 }

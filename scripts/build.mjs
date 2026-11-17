@@ -15,8 +15,14 @@ const version = JSON.parse(read('package.json')).version;
 
 const inline = (js) => js.replace(/<\/script/gi, '<\/script'); // keep inline scripts from closing early
 const dataJs = Object.entries(cfg.data).map(([name, file]) => `const ${name}=${JSON.stringify(JSON.parse(read(file)))};`).join('\n');
+// picture folders: { NAME: folder } becomes const NAME = { fileName: dataURI, ... }
+const MIME = { '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
+const imageJs = Object.entries(cfg.images || {}).map(([name, dir]) => {
+  const files = fs.readdirSync(path.join(root, dir)).filter((f) => MIME[path.extname(f)]).sort();
+  return `const ${name}=${JSON.stringify(Object.fromEntries(files.map((f) => [path.basename(f, path.extname(f)), `data:${MIME[path.extname(f)]};base64,${fs.readFileSync(path.join(root, dir, f)).toString('base64')}`])))};`;
+}).join('\n');
 const used = [], skipped = [];
-let scripts = `<script id="data">\n${dataJs}\n</script>`;
+let scripts = `<script id="data">\n${dataJs}\n${imageJs}\n</script>`;
 for (const f of cfg.scripts) {
   if (!exists(f)) { if ((cfg.optional || []).includes(f)) { skipped.push(f); continue; } throw new Error('missing ' + f); }
   scripts += `\n<script data-src="${f}">\n${inline(read(f))}\n</script>`;

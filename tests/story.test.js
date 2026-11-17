@@ -88,7 +88,7 @@ test('places are where the story puts them', () => {
   assert.ok(P.ragako[1] > World.C[1] && P.ragako[0] < World.C[0], 'Ragako is in the south-west of Wall Rose');
   assert.strictEqual(region('forest'), 'maria'); // the Forest of Giant Trees lies in Maria territory
   assert.strictEqual(region('cadetCamp'), 'rose');
-  for (const k of ['krugerWall', 'landing', 'shore', 'harbor', 'northShore']) { assert.strictEqual(region(k), 'outside', k + ' is on land'); assert.ok(World.coastDist(P[k]) < 12, k + ' is on the coast'); }
+  for (const k of ['krugerWall', 'landing', 'shore', 'harbor']) { assert.strictEqual(region(k), 'outside', k + ' is on land'); assert.ok(World.coastDist(P[k]) < 12, k + ' is on the coast'); }
   for (const k of ['ship', 'harborSea', 'sea']) assert.strictEqual(region(k), 'sea', k + ' is at sea');
   assert.ok(P.krugerWall[1] > World.C[1] + World.R.maria, "Marley's sea wall is on the south coast");
 });
@@ -116,4 +116,63 @@ test('events are in daylight unless the story sets them at night', () => {
   }
   // Titans move at night only at Utgard
   assert.strictEqual(E.filter((e) => e.nightActive).map((e) => e.id).join(), 'utgard');
+});
+
+test('shifters turn into their Titans only in events they take part in, and every Titan has a picture', () => {
+  const fs = require('node:fs'), path = require('node:path');
+  const { root } = require('./helpers.js');
+  for (const [id, who] of Object.entries(c.TITAN_FORM)) {
+    const e = ev(id);
+    assert.ok(e, 'unknown event ' + id);
+    for (const [name, windows] of Object.entries(who)) {
+      assert.ok(e.characters.some((x) => x[0] === name), id + ': ' + name + ' is not in the cast');
+      let last = -1;
+      for (const [from, to = 1, key] of windows) {
+        assert.ok(from >= 0 && from < to && to <= 1 && from >= last, id + '.' + name + ': bad window');
+        last = to;
+        assert.ok(fs.existsSync(path.join(root, 'assets/portraits/titans', (key || name) + '.webp')), 'no Titan picture for ' + (key || name));
+      }
+    }
+  }
+});
+
+test('845: Bertholdt is the Colossal Titan when the outer gate breaks, Reiner the Armored Titan at the inner gate, and both are human again after', () => {
+  const e = ev('maria-fall'), outer = e.marks.find((m) => m.point === 'shigO').at, inner = e.marks.find((m) => m.point === 'shigI').at;
+  assert.strictEqual(c.titanFormAt('maria-fall', 'bert', 0.1), null);
+  assert.strictEqual(c.titanFormAt('maria-fall', 'bert', outer), 'bert');
+  assert.strictEqual(c.titanFormAt('maria-fall', 'bert', 0.6), null);
+  assert.strictEqual(c.titanFormAt('maria-fall', 'reiner', outer), null);
+  assert.strictEqual(c.titanFormAt('maria-fall', 'reiner', inner), 'reiner');
+  assert.strictEqual(c.titanFormAt('maria-fall', 'reiner', 0.9), null);
+  assert.strictEqual(c.titanFormAt('rumbling', 'eren', 0.5), 'erenFounder');
+  assert.strictEqual(c.titanFormAt('refugees', 'reiner', 0.5), null); // they enter Rose as humans
+});
+
+test('845: Annie follows the others into Shiganshina only after the outer gate is broken', () => {
+  const e = ev('maria-fall'), outer = e.marks.find((m) => m.point === 'shigO').at;
+  const routes = e.routes.filter((r) => r.who === 'annie');
+  assert.strictEqual(routes.length, 2);
+  const [lure, follow] = routes;
+  assert.ok(lure.hideAt <= follow.start, 'one Annie marker at a time');
+  assert.strictEqual(String(pt(follow.path[0])), String(pt(lure.path.at(-1))), 'she starts where the lure left her');
+  assert.ok(follow.start >= outer, 'she goes in after the gate breaks');
+  assert.ok(follow.path.includes('shigO'), 'through the outer gate');
+  assert.strictEqual(follow.path.at(-1), 'shig'); // where the refugee scene finds the three Warriors
+  assert.strictEqual(c.titanFormAt('maria-fall', 'annie', follow.start), null); // on foot, as a human
+});
+
+test('Pure Titan routes stay on land', () => {
+  for (const e of E) for (const r of e.routes.filter((x) => x.who === 'pure')) for (const p of r.path) assert.ok(World.onLand(pt(p)), e.id + ': a Pure Titan route point is in the sea: ' + p);
+});
+
+test('850: Zeke comes from the south coast through lost Maria territory, and the route is marked unconfirmed', () => {
+  for (const who of ['zeke', 'pieck']) {
+    const r = ev('ragako').routes.find((x) => x.who === who);
+    assert.ok(r.uncertain, who + ': the story does not show the route');
+    const start = pt(r.path[0]);
+    assert.ok(start[1] > P.shigO[1] && World.coastDist(start) < 12, who + ' lands on the south coast');
+    for (const p of r.path) assert.ok(pt(p)[1] > World.C[1], who + ' stays in the south');
+    assert.ok(r.path.includes('shigO') && r.path.includes('shigI'), 'through the gates broken in 845');
+    assert.strictEqual(region(r.path.at(-1)), 'rose');
+  }
 });

@@ -35,14 +35,43 @@ const P = (() => {
     ship: coastAt(78, 46), // just off that beach
     harbor: coastAt(104, -5), harborSea: coastAt(104, 46), // the harbour built with the Volunteers
     sea: coastAt(100, 185), // open sea towards the continent
-    northShore: coastAt(-82, -6), // possible landing of Zeke's party in 850 (unconfirmed)
   };
 })();
-function actorPortrait(who) {
-  if (events[S.idx].id === 'marcel' && who === 'marcel') return marcelMissionPortrait;
-  return events[S.idx].id === 'marcel' && who === 'ymir' && S.p < 2 / 3 ? ymirPurePortrait : portraits[who];
+// When a Titan shifter is in Titan form within an event: [from, to, picture] windows of scene progress
+// (to = 1 and picture = the character's own Titan when left out). The portrait on the map and in the cast list changes with it.
+const TITAN_FORM = {
+  'maria-fall': { annie: [[0, 0.3]], bert: [[0.26, 0.4]], reiner: [[0.5, 0.72]] }, // Annie lures Titans, Bertholdt kicks the outer gate, Reiner rams the inner
+  'founder-transfer': { grisha: [[0.66, 0.76]], fried: [[0.66, 0.76]] },
+  'trost-attack': { bert: [[0.32, 0.46]], eren: [[0.7]] },
+  'trost-seal': { eren: [[0.1, 0.8]] },
+  'female-forest': { annie: [[0.22, 0.745]] },
+  stohess: { annie: [[0.25, 0.8]], eren: [[0.34, 0.8]] },
+  ragako: { zeke: [[0.36]], pieck: [[0]] },
+  utgard: { ymir: [[0.5]], zeke: [[0]] },
+  'reveal-escape': { reiner: [[0.12]], bert: [[0.12]] },
+  rod: { rod: [[0.06]] },
+  'maria-retaken': { eren: [[0.3]], reiner: [[0.36]], zeke: [[0.4]], bert: [[0.6, 0.88]], pieck: [[0]] },
+  liberio: { eren: [[0, 0.3]], armin: [[0.1, 0.3]], zeke: [[0, 0.3]] },
+  pieck: { porco: [[0.8]] },
+  'marley-854': { reiner: [[0.25]], pieck: [[0.2]], eren: [[0.2]] },
+  'zeke-scream': { zeke: [[0.3]], falco: [[0.8]] },
+  rumbling: { eren: [[0.08, 1, 'erenFounder']] },
+};
+// The picture key of the Titan a character is at this moment, or null while human.
+function titanFormAt(eventId, who, p) {
+  const windows = TITAN_FORM[eventId] && TITAN_FORM[eventId][who];
+  if (!windows) return null;
+  for (const [from, to = 1, key] of windows) if (p >= from && (p < to || to >= 1)) return key || who;
+  return null;
 }
-let castPortraitPhase = -1;
+function actorPortrait(who, human = false) {
+  const id = events[S.idx].id;
+  if (id === 'marcel' && who === 'marcel') return marcelMissionPortrait;
+  if (id === 'marcel' && who === 'ymir' && S.p < 2 / 3) return ymirPurePortrait;
+  const form = human ? null : titanFormAt(id, who, S.p);
+  return (form && typeof titanPortraits !== 'undefined' && titanPortraits[form]) || portraits[who];
+}
+let castPortraitPhase = '';
 const teamActors = new Set(['pure', 'civ', 'garrison', 'scouts', 'marley', 'walltitans', 'alliance', 'volunteers']);
 const cast = {
   karl: C('卡爾·弗利茲', 'Karl Fritz', 'カール・フリッツ'),
@@ -104,8 +133,8 @@ const SCENES = (() => {
     },
     'maria-fall': {
       routes: [
-        { ...r('annie', 'attack', ['outer', [466, 1070]], 0, 0.22), offset: [-6, 4] },
-        r('pure', 'attack', [[418, 1152], [462, 1096], 'outer'], 0.06, 0.44),
+        { ...r('annie', 'attack', ['outer', [466, 1070]], 0, 0.22), hideAt: 0.4, offset: [-6, 4] },
+        { ...r('annie', 'covert', [[466, 1070], 'outer', 'shigO', 'shig'], 0.4, 0.76), offset: [-20, 8] }, // she follows the others in once the outer gate is open
         { ...r('bert', 'attack', ['outer', 'shigO'], 0.08, 0.34), offset: [17, 7] },
         r('reiner', 'attack', ['outer', 'shigO', 'shigI'], 0.26, 0.66),
         r('pure', 'attack', ['shigO', 'shigI', 'between'], 0.48, 1),
@@ -167,8 +196,8 @@ const SCENES = (() => {
     },
     ragako: {
       routes: [
-        r('zeke', 'covert', ['northShore', at(268, -128), at(262, 178), at(228, 150), 'roseSW', 'ragako'], 0, 0.48, true),
-        { ...r('pieck', 'covert', ['northShore', at(268, -128), at(262, 178), at(228, 150), 'roseSW', 'ragako'], 0.03, 0.5, true), offset: [20, 14] },
+        r('zeke', 'covert', ['landing', 'outer', 'shigO', 'shig', 'shigI', at(224, 104), at(196, 112), 'ragako'], 0, 0.48, true),
+        { ...r('pieck', 'covert', ['landing', 'outer', 'shigO', 'shig', 'shigI', at(224, 104), at(196, 112), 'ragako'], 0.03, 0.5, true), offset: [20, 14] },
         r('pure', 'attack', ['ragako', at(160, 104)], 0.5, 1),
       ],
       marks: [{ point: 'ragako', kind: 'attack', at: 0.52 }],
