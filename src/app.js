@@ -80,8 +80,8 @@ const TXT = {
     dayMoon: '月夜 · 巨人異常活動',
     flareInfo: '信號彈：紅＝發現巨人 · 綠＝行進方向 · 黑＝奇行種',
     popWall: '城牆巨人',
-    popWallNow: '肩並肩企滿三道城牆同各城區圍牆；沿牆排隊，經通道成縱隊向海岸行進',
-    rumbleInfo: '地鳴（模擬）：城牆巨人沿住自己嘅牆線排隊，由固定通道成縱隊離開，避開城區同村落',
+    popWallNow: '肩並肩企滿三道城牆同各城區圍牆；直線向外走，合成一個大圓圈推向海外',
+    rumbleInfo: '地鳴（模擬）：城牆巨人以最短路線直接向外走，只會繞開城區同村落；出牆後肩並肩合成一個大圓圈，向海外推進',
     popCrawlTag: '爬行嘅巨人',
     popCrawlInfo: '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞。',
     camOn: '自動鏡頭：開',
@@ -161,8 +161,8 @@ const TXT = {
     dayMoon: 'Moonlit night · Titans active (an anomaly)',
     flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
-    popWallNow: 'shoulder to shoulder in all three Walls and every district wall; they file along the Walls and march to the sea in columns',
-    rumbleInfo: 'The Rumbling (simulated): the Wall Titans file along their own wall lines and leave in columns through set corridors, sparing the towns and villages',
+    popWallNow: 'shoulder to shoulder in all three Walls and every district wall; they walk straight out and form one great circle that sweeps out over the sea',
+    rumbleInfo: 'The Rumbling (simulated): the Wall Titans take the shortest way straight out, stepping aside only for towns and villages; outside the Walls they close up into one great circle, shoulder to shoulder, and sweep outward',
     popCrawlTag: 'Crawling Titan',
     popCrawlInfo: 'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”.',
     camOn: 'Auto camera: on',
@@ -242,8 +242,8 @@ const TXT = {
     dayMoon: '月夜 · 巨人が活動（異常）',
     flareInfo: '信煙弾：赤＝巨人発見 · 緑＝進路変更 · 黒＝奇行種',
     popWall: '壁の巨人',
-    popWallNow: '三つの壁と各区の壁に肩を並べて立ち、壁沿いに列を作って縦隊で海へ進む',
-    rumbleInfo: '地鳴らし（シミュレーション）：壁の巨人は自分の壁の線に沿って並び、決まった通り道を縦隊で進んで、町や村を避ける',
+    popWallNow: '三つの壁と各区の壁に肩を並べて立ち、まっすぐ外へ歩いて一つの大きな円になり、海の向こうへ進む',
+    rumbleInfo: '地鳴らし（シミュレーション）：壁の巨人は最短の道をまっすぐ外へ進み、町や村だけを避ける。壁の外では肩を並べて一つの大きな円になり、外へ押し進む',
     popCrawlTag: '這う巨人',
     popCrawlInfo: '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づく。',
     camOn: '自動カメラ：オン',
@@ -648,6 +648,7 @@ function renderCast() {
     const a = document.createElement('span');
     a.className = 'avatar ' + (ev.routes.find((v) => v.who === who)?.type || '');
     a.classList.toggle('team-avatar', teamActors.has(who));
+    a.classList.toggle('flag-avatar', FLAGS.has(who));
     const portrait = document.createElement('img');
     portrait.src = actorPortrait(who);
     portrait.alt = '';
@@ -763,7 +764,7 @@ function rebuildMap() {
     const clipId = 'portrait-clip-' + i;
     const clip = elem('clipPath', { id: clipId }, ag);
     elem('circle', { r: 13, cx: 0, cy: 0 }, clip);
-    const txt = elem('image', { href: actorPortrait(R.who), x: -13, y: -13, width: 26, height: 26, preserveAspectRatio: teamActors.has(R.who) ? 'xMidYMid meet' : 'xMidYMid slice', 'clip-path': 'url(#' + clipId + ')' }, ag);
+    const txt = elem('image', { href: actorPortrait(R.who), x: -13, y: -13, width: 26, height: 26, preserveAspectRatio: teamActors.has(R.who) && !FLAGS.has(R.who) ? 'xMidYMid meet' : 'xMidYMid slice', 'clip-path': 'url(#' + clipId + ')' }, ag);
     elem('circle', { r: 15.6, class: 'actor-ring2' }, ag);
     elem('circle', { r: 15.6, class: 'shift-flash' }, ag);
     const title = elem('title', {}, ag);
@@ -886,7 +887,7 @@ function sceneBox(tracking) {
   const ev = events[S.idx], pts = [];
   if (ev.frame === 'island') {
     // the Rumbling: the whole island when paused; while playing, the Walls first and then outward with the columns
-    const reach = tracking ? World.R.maria + 70 + POP.rumble.tau(S.idx + S.p) : 1e4, c0 = World.C;
+    const reach = tracking ? Math.max(World.R.maria + 70, POP.rumble.front(S.idx + S.p) + 110) : 1e4, c0 = World.C;
     return { x0: Math.max(0, c0[0] - reach), y0: Math.max(0, c0[1] - reach), x1: Math.min(World.W, c0[0] + reach), y1: Math.min(World.H, c0[1] + reach) };
   }
   for (const m of ev.marks) if (!tracking || Math.abs((m.at ?? 0.07) - S.p) < 0.25) pts.push(coord(m.point));

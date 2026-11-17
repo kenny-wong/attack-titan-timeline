@@ -231,63 +231,97 @@
 
     // ---- The Rumbling ----
     // Every Wall, and the half-round wall of every district, is a row of Wall Titans standing shoulder to shoulder.
-    // To spare the towns they do not walk straight out. Each one files along the line of its own Wall to the nearest
-    // corridor (a "lane") and leaves through it in a column: Maria's first, then Rose's and Sina's through the gaps the
-    // outer Walls leave behind. Lanes keep clear of the districts at the compass points and of the villages.
+    // They take the shortest way out: straight outward. Only a Titan whose straight way would run through a town or a
+    // village first steps along the line of its own Wall to the nearest clear bearing. A front starts at Wall Sina and
+    // moves outward at walking speed; each Wall's Titans step off as it reaches them, so the three rows merge into one
+    // great circle. Past the towns the circle closes up evenly, shoulder to shoulder, and sweeps on over the sea, so
+    // that as little as possible outside the island is left standing.
     const wallsFall = T('rumbling', 0.43);
     const wallTitans = [];
-    const rumble = { T0: wallsFall + 0.06, v: 1, lanes: [], off: { maria: 2.6, rose: 4.5, sina: 6.4 } };
+    const rumble = { T0: wallsFall + 0.06, v: 1, rho0: R.sina, fan: 110, zones: [] };
     {
       const rad = Math.PI / 180, WALLS = ['maria', 'rose', 'sina'], PTS = opts.points || {};
-      const wrapPos = (d) => ((d % 360) + 360) % 360;
-      const keep = [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])];
-      const endOf = (deg) => rOf(coastAt(deg, 46)), coastOf = (deg) => rOf(coastAt(deg, 0));
-      const clear = (deg) => {
-        if ([-90, 0, 90, 180].some((c) => Math.abs(wrapDeg(deg - c)) < 12.5)) return false; // the districts
-        const ux = Math.cos(deg * rad), uy = Math.sin(deg * rad), r1 = endOf(deg);
-        return keep.every((p) => { const px = p[0] - C[0], py = p[1] - C[1], along = Math.max(R.sina, Math.min(r1, px * ux + py * uy)); return Math.hypot(px - ux * along, py - uy * along) >= 20; });
+      // What must not be trampled: the district towns, and the villages, camps and harbour.
+      const spots = [];
+      for (const p of [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])]) if (rOf(p) > R.sina - 6 && !spots.some((q) => dist(q, p) < 8)) spots.push(p);
+      rumble.zones = [...DISTRICTS.map((d) => ({ c: d.base, r: d.r, town: d.id })), ...spots.map((c) => ({ c, r: 13 }))];
+      const SPOT = 13;
+      // a town is the half-round inside its district wall; standing on a wall line is not trampling
+      const blockedAt = (p, own) => {
+        const rp = rOf(p);
+        for (const d of DISTRICTS) if (rp > R[d.wall] + 0.8 && dist(p, d.base) < d.r + (d === own ? -1 : 3)) return true;
+        for (const c of spots) if (dist(p, c) < SPOT) return true;
+        return false;
       };
-      for (const c of [-90, 0, 90, 180]) for (const o of [14, 34.7, 55.3, 76]) {
-        const deg = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9].map((n) => wrapDeg(c + o + n)).find(clear); // the nearest free bearing
-        if (deg !== undefined) rumble.lanes.push({ deg, endR: endOf(deg), coastR: coastOf(deg) });
-      }
-      rumble.lanes.sort((x, y) => x.deg - y.deg);
-      const L = rumble.lanes, nl = L.length;
-      // half the gap (degrees) to the lane before and after: the stretch of Wall that drains into this lane from each side
-      L.forEach((ln, i) => { ln.prev = wrapPos(ln.deg - L[(i + nl - 1) % nl].deg) / 2; ln.next = wrapPos(L[(i + 1) % nl].deg - ln.deg) / 2; });
-      for (const ln of L) ln.len = Object.fromEntries(WALLS.map((w) => [w, Math.max(ln.prev, ln.next) * rad * R[w]])); // length of each Wall's column in the lane
-      const laneOf = (th) => { let best = L[0], bd = 999; for (const ln of L) { const d = Math.abs(wrapDeg(th - ln.deg)); if (d < bd) { bd = d; best = ln; } } return best; };
+      // is the straight way out from radius r0 on this bearing clear? (nearest point of the ray to each town and village)
+      const rayFree = (r0, deg, own) => {
+        const ux = Math.cos(deg * rad), uy = Math.sin(deg * rad);
+        for (const d of DISTRICTS) { const cx = d.base[0] - C[0], cy = d.base[1] - C[1], al = Math.max(r0 + 2, R[d.wall] + 0.8, cx * ux + cy * uy); if (Math.hypot(cx - ux * al, cy - uy * al) < d.r + (d === own ? -1 : 3)) return false; }
+        for (const c of spots) { const cx = c[0] - C[0], cy = c[1] - C[1], al = Math.max(r0 + 2, cx * ux + cy * uy); if (Math.hypot(cx - ux * al, cy - uy * al) < SPOT) return false; }
+        return true;
+      };
+      const taken = []; // bearings side-steppers already walk out on: the next one keeps 0.8 degrees clear, so they stand side by side
+      const clearBearing = (r0, b) => rayFree(r0, b) && taken.every((x) => Math.abs(wrapDeg(x - b)) >= 0.8);
       const lenOf = (w) => 2 * Math.PI * R[w] + DISTRICTS.filter((d) => d.wall === w).reduce((sum, d) => sum + Math.PI * d.r, 0);
       const total = WALLS.reduce((sum, w) => sum + lenOf(w), 0), r = rng(4242);
       const mk = (start, g) => { const a = { id: agents.length, kind: 'wallTitan', r, variant: 1, area0: 'outside', home0: start, vis0: 0, ops: [], phase: (agents.length * 0.37) % 10, speed: 1, rumble: g }; agents.push(a); wallTitans.push(a); };
       for (const wall of WALLS) {
-        const ds = DISTRICTS.filter((d) => d.wall === wall), n = Math.max(12, Math.round((N.wallTitans * lenOf(wall)) / total));
-        const nRing = Math.round((n * 2 * Math.PI * R[wall]) / lenOf(wall)), nB = Math.max(2, Math.round((n - nRing) / ds.length));
+        const Rw = R[wall], ds = DISTRICTS.filter((d) => d.wall === wall), n = Math.max(12, Math.round((N.wallTitans * lenOf(wall)) / total));
+        const nRing = Math.round((n * 2 * Math.PI * Rw) / lenOf(wall)), nB = Math.max(2, Math.round((n - nRing) / ds.length));
         // the ring itself, the stretch across each district included
         for (let i = 0; i < nRing; i++) {
-          const th = wrapDeg(-180 + (360 * (i + 0.5)) / nRing), lane = laneOf(th), dd = wrapDeg(th - lane.deg);
-          mk(at(R[wall], th), { wall, lane, th, side: dd >= 0 ? 1 : -1, s1: 0, s2: Math.abs(dd) * rad * R[wall] });
+          const th0 = wrapDeg(-180 + (360 * (i + 0.5)) / nRing), start = at(Rw, th0);
+          let th1 = th0;
+          if (!rayFree(Rw, th0)) for (let k = 1; k < 260; k++) { const c = [th0 + k * 0.25, th0 - k * 0.25].find((b) => clearBearing(Rw, b)); if (c !== undefined) { th1 = wrapDeg(c); taken.push(th1); break; } } // the nearest clear bearing along its own Wall
+          mk(start, { wall, th0, th1, r0: Rw, s1: 0, pre: Math.abs(wrapDeg(th1 - th0)) * rad * Rw });
         }
-        // the half-round wall of each district: they walk along it to where it meets the ring, never into the town
+        // the half-round wall of each district
         for (const d of ds) for (let j = 0; j < nB; j++) {
-          const ph = d.deg - 90 + (180 * (j + 0.5)) / nB, dir = ph < d.deg ? -1 : 1;
-          const th = wrapDeg(d.deg + (dir * Math.atan(d.r / R[wall])) / rad);
-          const lane = [...L].sort((x, y) => wrapPos(dir * (x.deg - th)) - wrapPos(dir * (y.deg - th)))[0], dd = wrapDeg(th - lane.deg); // the first lane on its own side, so it never walks back past the town
-          mk([d.base[0] + d.r * Math.cos(ph * rad), d.base[1] + d.r * Math.sin(ph * rad)], { wall, lane, district: d, ph, dir, th, rJ: Math.hypot(R[wall], d.r), side: dd >= 0 ? 1 : -1, s1: Math.abs(d.deg + dir * 90 - ph) * rad * d.r, s2: Math.abs(dd) * rad * R[wall] });
+          const ph = d.deg - 90 + (180 * (j + 0.5)) / nB, start = [d.base[0] + d.r * Math.cos(ph * rad), d.base[1] + d.r * Math.sin(ph * rad)], th0 = degOf(start), rs = rOf(start);
+          if (rayFree(rs, th0, d)) { mk(start, { wall, district: d, th0, th1: th0, r0: rs, s1: 0, pre: 0 }); continue; } // nothing in the way: straight out from where it stands
+          // an outer district lies in the way: along its own wall to the nearer end, then along the ring to the first clear bearing
+          const dir = ph < d.deg ? -1 : 1, thJ = wrapDeg(d.deg + (dir * Math.atan(d.r / Rw)) / rad);
+          let th1 = thJ;
+          for (let k = 0; k < 260; k++) { const c = thJ + dir * k * 0.25; if (clearBearing(Rw, c)) { th1 = wrapDeg(c); taken.push(th1); break; } }
+          const s1 = Math.abs(d.deg + dir * 90 - ph) * rad * d.r;
+          mk(start, { wall, district: d, ph, dir, thJ, rJ: Math.hypot(Rw, d.r), th0, th1, r0: Rw, s1, pre: s1 + Math.abs(wrapDeg(th1 - thJ)) * rad * Rw });
         }
       }
-      // one walking speed for all, so that the last of them is out at sea before the story's end
-      rumble.v = Math.max(...wallTitans.map((a) => a.rumble.s1 + a.rumble.s2 + a.rumble.lane.endR - R[a.rumble.wall])) / (T('alliance', 0.92) - rumble.T0);
-      rumble.tau = (Tl) => rumble.v * Math.max(0, Tl - rumble.T0); // distance every Wall Titan has walked by then
+      // places in the great circle: evenly spaced, in the order they stand around the island, so nobody has far to shift
+      const order = [...wallTitans].sort((x, y) => x.rumble.th0 - y.rumble.th0 || x.rumble.r0 - y.rumble.r0);
+      order.forEach((a, k) => { a.rumble.beta = -180 + (360 * (k + 0.5)) / order.length; });
+      // each closes up to its place once the way there is clear of towns and villages
+      const smoothStep = (x) => { const t = Math.max(0, Math.min(1, x)); return t * t * (3 - 2 * t); };
+      rumble.bearing = (g, rho) => g.th1 + wrapDeg(g.beta - g.th1) * smoothStep((rho - g.rc) / rumble.fan);
+      for (const a of wallTitans) {
+        const g = a.rumble;
+        g.rc = 420;
+        for (let rc = g.r0; rc <= 420; rc += 8) {
+          g.rc = rc;
+          let ok = true;
+          for (let rho = g.r0 + 2; rho < 520 && ok; rho += 3) if (blockedAt(at(rho, rumble.bearing(g, rho)), g.district)) ok = false;
+          if (ok) break;
+        }
+      }
+      // the front: it starts early enough for the first side-steppers, and reaches the corner of the map before the story ends
+      rumble.rho0 = Math.min(R.sina, ...wallTitans.map((a) => a.rumble.r0 - a.rumble.pre));
+      rumble.edge = Math.max(...[[0, 0], [World.W, 0], [0, World.H], [World.W, World.H]].map((p) => dist(C, p)));
+      rumble.v = (rumble.edge - rumble.rho0) / (T('alliance', 0.9) - rumble.T0);
+      rumble.front = (Tl) => rumble.rho0 + rumble.v * Math.max(0, Tl - rumble.T0); // radius of the great circle at that moment
     }
-    // Where a Wall Titan is after walking tau: along its district wall, along the ring, then out through its lane. Returns [x, y, r in the lane or 0].
-    const rumblePos = (a, tau) => {
+    // Where a Wall Titan is when the front is at radius rho. Returns [x, y, radius in the circle or 0 while still at its Wall].
+    const rumblePos = (a, rho) => {
       const g = a.rumble, Rw = R[g.wall], rad = Math.PI / 180;
-      if (tau < g.s1) { const ph = (g.ph + (g.dir * (tau / g.district.r)) / rad) * rad; return [g.district.base[0] + g.district.r * Math.cos(ph), g.district.base[1] + g.district.r * Math.sin(ph), 0]; }
-      const u = tau - g.s1;
-      if (u < g.s2) { const p = at(g.rJ ? Rw + (g.rJ - Rw) * Math.max(0, 1 - u / 10) : Rw, g.th - (g.side * (u / Rw)) / rad); return [p[0], p[1], 0]; }
-      const q = u - g.s2, lr = g.lane.deg * rad, off = g.side * rumble.off[g.wall] * Math.min(1, q / 12), rr = Rw + q;
-      return [C[0] + Math.cos(lr) * rr - Math.sin(lr) * off, C[1] + Math.sin(lr) * rr + Math.cos(lr) * off, rr];
+      if (rho < g.r0) {
+        const u = g.pre - (g.r0 - rho); // how far it has stepped along its Wall so far
+        if (u <= 0) return [a.home0[0], a.home0[1], 0];
+        if (u < g.s1) { const ph = (g.ph + (g.dir * (u / g.district.r)) / rad) * rad; return [g.district.base[0] + g.district.r * Math.cos(ph), g.district.base[1] + g.district.r * Math.sin(ph), 0]; }
+        const u2 = u - g.s1, from = g.district ? g.thJ : g.th0, sign = wrapDeg(g.th1 - from) >= 0 ? 1 : -1;
+        const p = at(g.rJ ? Rw + (g.rJ - Rw) * Math.max(0, 1 - u2 / 10) : Rw, from + (sign * (u2 / Rw)) / rad);
+        return [p[0], p[1], 0];
+      }
+      const p = at(rho, rumble.bearing(g, rho));
+      return [p[0], p[1], rho];
     };
     // Survey Corps riders follow every "scouts" route of the story.
     const riders = [];
@@ -325,7 +359,7 @@
       }
       delete a.cur;
       // when this figure can be on screen at all (lets the renderer skip it cheaply)
-      if (a.rumble) { a.t0 = wallsFall; a.t1 = rumble.T0 + (a.rumble.s1 + a.rumble.s2 + a.rumble.lane.endR - R[a.rumble.wall]) / rumble.v; }
+      if (a.rumble) { a.t0 = wallsFall; a.t1 = T('alliance', 0.92); }
       else if (a.ferry) { a.t0 = a.ferry.T0; a.t1 = a.ferry.T1; }
       else if (a.ride) { a.t0 = a.ride.ei; a.t1 = a.ride.ei + 1; }
       else {
@@ -363,11 +397,11 @@
 
     // State of one figure at timeline T and real time t (seconds).
     function stateAt(a, Tl, t, o = {}) {
-      if (a.rumble) { // a Wall Titan: in its Wall until the hardening is undone, then along the Wall and out through its lane
+      if (a.rumble) { // a Wall Titan: in its Wall until the hardening is undone, then out with the great circle
         if (Tl < wallsFall) return { x: a.home0[0], y: a.home0[1], vis: 0, area: 'outside' };
-        const tau = rumble.tau(Tl), p = rumblePos(a, tau);
-        const vis = Math.min(clamp01((Tl - wallsFall) / 0.04), p[2] ? clamp01((a.rumble.lane.endR - p[2]) / 30) : 1);
-        return { x: p[0], y: p[1], vis, area: 'outside', marching: tau > 0 && vis > 0 };
+        const p = rumblePos(a, rumble.front(Tl)), edge = Math.min(p[0], World.W - p[0], p[1], World.H - p[1]); // it walks on over the sea until it leaves the map
+        const vis = Math.min(clamp01((Tl - wallsFall) / 0.04), clamp01(edge / 30));
+        return { x: p[0], y: p[1], vis, area: 'outside', marching: Tl > rumble.T0 && vis > 0 };
       }
       if (a.ferry) { // an evacuation boat on the river
         const f = (Tl - a.ferry.T0) / (a.ferry.T1 - a.ferry.T0);

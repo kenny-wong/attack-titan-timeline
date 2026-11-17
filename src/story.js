@@ -114,6 +114,7 @@ function actorPortrait(who, human = false) {
 }
 let castPortraitPhase = '';
 const teamActors = new Set(['pure', 'civ', 'garrison', 'scouts', 'marley', 'walltitans', 'alliance', 'volunteers']);
+const FLAGS = new Set(['garrison', 'scouts']); // regiment flags: they fill their frame
 const cast = {
   karl: C('卡爾·弗利茲', 'Karl Fritz', 'カール・フリッツ'),
   grisha: C('古利夏', 'Grisha', 'グリシャ'),

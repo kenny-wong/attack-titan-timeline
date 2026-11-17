@@ -264,73 +264,59 @@
       }
       ctx.globalAlpha = 1;
     }
-    // ---- The Rumbling: rows of Wall Titans in the Walls, columns in the lanes, and the ground they trample ----
+    // ---- The Rumbling: rows of Wall Titans in the Walls, the great circle they form, and the ground it tramples ----
     const RB = pop.rumble, RAD = Math.PI / 180, RWALLS = ['maria', 'rose', 'sina'];
-    // Heads standing shoulder to shoulder: a dotted stroke along the current path, moving by "shift" px.
-    function headRow(hw, shift, alpha) {
+    const GAP_R = R.maria + 36, GAP_HALF = 11.5; // until the circle is past the outermost districts it has a gap at each compass point: nobody walks through the towns
+    let landPath = null;
+    // Heads standing shoulder to shoulder: a dotted stroke along the current path.
+    function headRow(hw, alpha) {
       const gap = hw * 1.22;
-      ctx.lineCap = 'round'; ctx.setLineDash([0.001, gap]); ctx.lineDashOffset = -(shift % gap);
+      ctx.lineCap = 'round'; ctx.setLineDash([0.001, gap]);
       ctx.globalAlpha = alpha; ctx.strokeStyle = '#3d1210'; ctx.lineWidth = hw + 1.5; ctx.stroke();
       ctx.strokeStyle = '#d0584a'; ctx.lineWidth = hw; ctx.stroke();
-      ctx.setLineDash([]); ctx.lineDashOffset = 0; ctx.lineCap = 'butt'; ctx.globalAlpha = 1;
+      ctx.setLineDash([]); ctx.lineCap = 'butt'; ctx.globalAlpha = 1;
     }
-    // The strips of ground the columns have walked over. They stay as scars after the Titans are gone.
+    // The ground the great circle has walked over: everything between Wall Sina and the front, except the towns and villages.
     function drawTrample(view, T) {
       if (!RB || T <= RB.T0) return;
-      const s = view.s, tau = RB.tau(T), w = (RB.off.sina * 2 + 5) * s;
-      if (w < 0.8) return;
-      ctx.lineCap = 'butt'; ctx.strokeStyle = 'rgba(78,58,34,.34)'; ctx.lineWidth = w;
-      ctx.beginPath();
-      for (const ln of RB.lanes) {
-        const ux = Math.cos(ln.deg * RAD), uy = Math.sin(ln.deg * RAD);
-        for (const [r0, r1] of [[R.sina, Math.min(R.rose, R.sina + tau)], [R.rose, Math.min(R.maria, R.rose + tau)], [R.maria, Math.min(ln.coastR, R.maria + tau)]]) {
-          if (r1 <= r0) continue;
-          ctx.moveTo((C[0] + ux * r0 - view.x) * s + vw / 2, (C[1] + uy * r0 - view.y) * s + vh / 2);
-          ctx.lineTo((C[0] + ux * r1 - view.x) * s + vw / 2, (C[1] + uy * r1 - view.y) * s + vh / 2);
-        }
-      }
-      ctx.stroke();
+      const rho = Math.min(RB.front(T), RB.edge);
+      if (rho <= R.sina + 1) return;
+      const s = view.s, cx = (C[0] - view.x) * s + vw / 2, cy = (C[1] - view.y) * s + vh / 2;
+      if (!landPath) { landPath = new Path2D(); World.coast.forEach((p, i) => (i ? landPath.lineTo(p[0], p[1]) : landPath.moveTo(p[0], p[1]))); landPath.closePath(); }
+      ctx.save();
+      ctx.translate(vw / 2 - view.x * s, vh / 2 - view.y * s); ctx.scale(s, s);
+      ctx.clip(landPath); // on land only
+      ctx.beginPath(); ctx.arc(C[0], C[1], rho, 0, 6.2832); ctx.arc(C[0], C[1], R.sina, 0, 6.2832); ctx.clip('evenodd'); // between Wall Sina and the front
+      ctx.beginPath(); ctx.rect(0, 0, World.W, World.H);
+      for (const z of RB.zones) { ctx.moveTo(z.c[0] + z.r + 2, z.c[1]); ctx.arc(z.c[0], z.c[1], z.r + 2, 0, 6.2832); } // the towns and villages stay untouched
+      ctx.fillStyle = 'rgba(86,62,36,.24)'; ctx.fill('evenodd');
+      ctx.restore();
     }
-    // The Walls turn out to be rows of Titans. Each row drains along its own line into the nearest lanes, and the columns walk out.
+    // The Walls turn out to be rows of Titans; as the front reaches each Wall its row steps off and joins the great circle.
     function drawRumbleRows(view, T) {
       if (!RB || T < pop.wallsFall) return;
       const s = view.s, cx = (C[0] - view.x) * s + vw / 2, cy = (C[1] - view.y) * s + vh / 2;
-      const tau = RB.tau(T), appear = Math.min(1, (T - pop.wallsFall) / 0.05), hw = Math.max(1.7, Math.min(8, 2.5 * s)), shift = tau * s;
+      const rho = RB.front(T), appear = Math.min(1, (T - pop.wallsFall) / 0.05), hw = Math.max(1.7, Math.min(8, 2.5 * s));
       for (const wall of RWALLS) {
-        const Rw = R[wall], rr = Rw * s;
-        // the ring: what is still standing on each side of every lane
-        for (const ln of RB.lanes) {
-          for (const [half, sign] of [[ln.prev, -1], [ln.next, 1]]) {
-            const rem = half - tau / Rw / RAD; // degrees of row left on this side
-            if (rem <= 0) continue;
-            ctx.beginPath(); ctx.arc(cx, cy, rr, (ln.deg + sign * rem) * RAD, ln.deg * RAD, sign > 0); // drawn towards the lane, so the heads move that way
-            headRow(hw, shift, appear);
-          }
-        }
-        // the half-round district walls: they drain towards both ends
+        const Rw = R[wall];
+        const left = Math.max(0, Math.min(1, (Rw - rho) / 6)); // the row on the ring is there until the front arrives
+        if (left > 0) { ctx.beginPath(); ctx.arc(cx, cy, Rw * s, 0, 6.2832); headRow(hw, appear * left); }
         for (const d of DISTRICTS) {
           if (d.wall !== wall) continue;
-          const rem = 90 - tau / d.r / RAD;
-          if (rem <= 0) continue;
-          const bx = (d.base[0] - view.x) * s + vw / 2, by = (d.base[1] - view.y) * s + vh / 2;
-          for (const sign of [-1, 1]) { ctx.beginPath(); ctx.arc(bx, by, d.r * s, (d.deg + sign * (90 - rem)) * RAD, (d.deg + sign * 90) * RAD, sign < 0); headRow(hw, shift, appear); }
-        }
-        // the columns in the lanes: two files per Wall, as long as the stretch of Wall that fed them
-        if (tau <= 0) continue;
-        for (const ln of RB.lanes) {
-          const lo = Math.max(Rw, Rw + tau - ln.len[wall]), hi = Math.min(ln.endR, Rw + tau);
-          if (hi <= lo) continue;
-          const ux = Math.cos(ln.deg * RAD), uy = Math.sin(ln.deg * RAD), off = RB.off[wall];
-          // steam rising from the column
-          ctx.globalAlpha = 0.13; ctx.strokeStyle = '#fff'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(3, (off * 2 + 7) * s);
-          ctx.beginPath(); ctx.moveTo(cx + ux * lo * s, cy + uy * lo * s); ctx.lineTo(cx + ux * hi * s, cy + uy * hi * s); ctx.stroke(); ctx.globalAlpha = 1;
-          for (const side of [-1, 1]) {
-            const ox = -uy * off * side * s, oy = ux * off * side * s;
-            ctx.beginPath(); ctx.moveTo(cx + ux * lo * s + ox, cy + uy * lo * s + oy); ctx.lineTo(cx + ux * hi * s + ox, cy + uy * hi * s + oy);
-            headRow(hw * 0.9, shift - lo * s, 1);
-          }
+          const leftB = Math.max(0, Math.min(1, (Rw + d.r * 0.55 - rho) / 8));
+          if (leftB <= 0) continue;
+          ctx.beginPath(); ctx.arc((d.base[0] - view.x) * s + vw / 2, (d.base[1] - view.y) * s + vh / 2, d.r * s, (d.deg - 90) * RAD, (d.deg + 90) * RAD);
+          headRow(hw, appear * leftB);
         }
       }
+      // the great circle itself
+      if (rho <= R.sina || rho > RB.edge + 20) return;
+      ctx.globalAlpha = 0.12; ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(4, 9 * s); // steam over the row
+      ctx.beginPath(); ctx.arc(cx, cy, rho * s, 0, 6.2832); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.beginPath();
+      if (rho < GAP_R) for (const comp of [-90, 0, 90, 180]) ctx.arc(cx, cy, rho * s, (comp + GAP_HALF) * RAD, (comp + 90 - GAP_HALF) * RAD), ctx.moveTo(cx + Math.cos((comp + 90 + GAP_HALF) * RAD) * rho * s, cy + Math.sin((comp + 90 + GAP_HALF) * RAD) * rho * s);
+      else ctx.arc(cx, cy, rho * s, 0, 6.2832);
+      headRow(hw, 1);
     }
     // The furrow the crawling Titan has dragged into the ground, from where it started to where it is now.
     const crawler = pop.agents.find((a) => a.crawl);

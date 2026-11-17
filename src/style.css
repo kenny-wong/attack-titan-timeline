@@ -2848,3 +2848,12 @@ body {
   background: #0b141799;
   vertical-align: 1px;
 }
+
+/* team pictures fill their frame: flags edge to edge, group pictures cropped to fit */
+.avatar.team-avatar img {
+  object-fit: cover;
+  background: none;
+}
+.avatar.flag-avatar {
+  width: 72px;
+}
