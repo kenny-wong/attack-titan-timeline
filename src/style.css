@@ -2831,3 +2831,19 @@ body {
     font-size: 11px;
   }
 }
+
+/* the version beside the header line */
+.head-version {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border: 1px solid #c9a45c80;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #ecd9ab;
+  background: #0b141799;
+  vertical-align: 1px;
+}

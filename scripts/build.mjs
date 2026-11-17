@@ -36,6 +36,6 @@ put('/*__STYLE__*/', css);
 const sheets = (cfg.sprites || []).filter(exists).map((f) => (read(f).match(/<defs[^>]*>([\s\S]*)<\/defs>/) || [, ''])[1]).join('');
 put('<!--__SPRITES__-->', `<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>${sheets}</defs></svg>`);
 put('<!--__SCRIPTS__-->', scripts);
-html = html.replace(/id="appVersion">v[\d.]+</, `id="appVersion">v${version}<`);
+html = html.replace(/(id="(?:appVersion|headVersion)">)v[\d.]+</g, `$1v${version}<`); // footer and header
 fs.writeFileSync(path.join(root, 'index.html'), html);
 console.log(`Built index.html ${(html.length / 1024).toFixed(0)} KB, v${version}; ${used.length} scripts${skipped.length ? '; skipped (not there yet): ' + skipped.join(', ') : ''}`);
