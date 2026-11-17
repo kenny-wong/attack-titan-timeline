@@ -12,7 +12,7 @@ const TXT = {
   zh: {
     spoiler: '全劇劇透',
     kicker: '三道城牆 · 114 年入侵及防衛史',
-    hero: '越牆者',
+    hero: '進擊之巨人',
     epigraph: '那一天，人類想起了被巨人支配的恐懼。',
     subtitle: '拖動年份與事件進度，睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重大事件。',
     year: '故事年份',
@@ -87,7 +87,7 @@ const TXT = {
   en: {
     spoiler: 'FULL STORY SPOILERS',
     kicker: 'THREE WALLS · 114 YEARS OF CONFLICT',
-    hero: 'Those Who Crossed the Walls',
+    hero: 'Attack on Titan',
     epigraph: 'On that day, humanity remembered the terror of being ruled by them.',
     subtitle:
       'Scrub time to follow attacks, infiltration, defense and wall recovery. Explore the story in chronological order, from the formation of the Walls to the aftermath.',
@@ -979,8 +979,11 @@ mapViewport.addEventListener('pointerdown', (ev) => {
   suppressMapClick = false;
   startGesture();
 });
+// Dragging the map must never select its labels or start a drag-and-drop: either one cancels the pan.
+for (const type of ['selectstart', 'dragstart']) mapViewport.addEventListener(type, (ev) => ev.preventDefault());
 mapViewport.addEventListener('pointermove', (ev) => {
   if (!pointers.has(ev.pointerId) || !gesture) return;
+  if (ev.pointerType === 'mouse' && !(ev.buttons & 1)) return endPointer(ev); // the button was released outside the map
   pointers.set(ev.pointerId, viewportPoint(ev));
   const pts = [...pointers.values()];
   if (gesture.kind === 'pan' && pts.length === 1) {

@@ -2403,3 +2403,19 @@ body {
     right: 320px; /* the English buttons are wider */
   }
 }
+/* the map is dragged, never selected */
+.map-panel .map-viewport,
+.map-panel .map-head,
+.map-panel .map-caption {
+  -webkit-user-select: none;
+  user-select: none;
+}
+#mapSvg image {
+  -webkit-user-drag: none;
+}
+.map-viewport {
+  cursor: grab;
+}
+.map-viewport.panning {
+  cursor: grabbing;
+}
