@@ -42,6 +42,7 @@
 #mapSvg .r-end-pulse{fill:none;stroke:var(--rc);stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}#mapSvg .r-end.arrived .r-end-pulse{animation:rpulse 1.1s ease-out 1}
 @keyframes rpulse{from{opacity:.95;transform:scale(1)}to{opacity:0;transform:scale(4.6)}}
 #mapSvg .routes-enter .route{animation:routeIn .6s ease-out both;animation-delay:var(--d,0ms)}@keyframes routeIn{from{opacity:0}}
+#mapSvg .actor-bubble[data-actor="pure"]{display:none}/* the animated crowd already shows the Pure Titans */
 .actor-bubble .actor-ring2{fill:none;stroke:var(--rc);stroke-width:2.2;filter:none}.actor-bubble .actor-halo{stroke:none;filter:none;opacity:0;transition:opacity .35s}.actor-bubble.moving .actor-halo{opacity:1}
 @media(prefers-reduced-motion:reduce){#mapSvg .r-flow{animation:none;stroke-dasharray:.1 6}#mapSvg .r-end.arrived .r-end-pulse{animation:none}#mapSvg .routes-enter .route{animation:none}}
 .map-viewport.zoomed{cursor:grab}.map-viewport.panning{cursor:grabbing}.map-viewport.panning .map-visual{transition:none}
@@ -128,7 +129,7 @@
       </section>
       <section class="panel status-panel"><div class="status-top"><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.2.2</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.2.3</span></div></div>
     </aside>
   </div>
 </div>
