@@ -76,6 +76,9 @@
  .hero .eyebrow,.hero p{display:none}.hero h1{font-size:clamp(19px,1.5vw,26px);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.year-plate small{font-size:9px}.year-plate strong{font-size:24px;line-height:1.1}}
 @media(min-width:1121px){.transport-bar{display:flex;align-items:center;gap:18px}.transport-bar .tb-row{flex:1 1 58%;min-width:0}.transport-bar .scene-row{flex:1 1 42%;margin:0;padding:0;border:0;min-width:0}.transport-bar .beat-indicator{display:none}}
 @media(min-width:1121px) and (max-width:1500px){.transport-bar{flex-wrap:wrap;gap:6px 18px}.transport-bar .tb-row,.transport-bar .scene-row{flex-basis:100%}.transport-bar .scene-row{padding-top:6px;border-top:1px solid #ffffff15}}
+.right>.timeline-panel{margin-top:0}.right>*{min-width:0}
+@media(min-width:1121px){.right>.timeline-panel{flex-basis:100%;padding:14px 17px}.right>.timeline-panel .timeline-top{margin-bottom:2px}.right>.timeline-panel .filters{margin-top:10px}.right>.timeline-panel .event-nav{margin-top:10px}}
+@media(max-width:1120px){.right>.timeline-panel{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -112,6 +115,10 @@
         <div class="map-caption"><div class="map-legend"><span class="key"><i class="line" style="border-color:var(--red)"></i><span data-i18n="attack">進攻</span></span><span class="key"><i class="line" style="border-color:var(--blue)"></i><span data-i18n="defense">防守</span></span><span class="key"><i class="line dashed" style="border-color:var(--gold)"></i><span data-i18n="covert">潛入／未確定路線</span></span><span class="key"><i class="line" style="border-color:var(--green)"></i><span data-i18n="repair">修復</span></span><span class="key"><svg class="pop-key" viewBox="-16 -32 32 34" aria-hidden="true"><use href="#pop-titan-1a" x="-16" y="-32" width="32" height="34"/></svg><span data-i18n="popTitans">純潔巨人</span></span><span class="key"><svg class="pop-key" viewBox="-12 -16 24 18" aria-hidden="true"><use href="#pop-civ-1a" x="-12" y="-16" width="24" height="18"/></svg><span data-i18n="popCivilians">平民</span></span></div></div>
         <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="26" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 27</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
       </section>
+      
+    </div>
+    <aside class="right">
+      <section class="panel story-card"><div class="story-head"><div class="chapter"><span id="chapterTag">CHAPTER 01 / 27</span><span class="count" id="categoryBadge">REVEAL</span></div><h2 id="storyTitle"></h2><div class="meta" id="storyMeta"></div></div><div class="story-body"><div class="section-h" data-i18n="what">發生甚麼事</div><p id="storyDesc" class="story-text"></p><div id="storyOutcome" class="outcome"></div><div class="subsection" style="margin-top:19px"><span data-i18n="sequence">逐步事件 / 動畫</span><span style="color:#a2b3ab;font-size:10px" id="beatCount"></span></div><ol class="steps" id="stepList"></ol></div></section>
       <section class="panel timeline-panel">
         <div class="timeline-top"><h2 data-i18n="timeline">CHRONOLOGY · 事件年表</h2></div>
         
@@ -119,12 +126,9 @@
         <div class="filters" id="categoryFilters"></div><div class="filters" id="wallFilters" style="margin-top:8px"></div>
         <div class="event-nav" id="eventCards"></div>
       </section>
-    </div>
-    <aside class="right">
-      <section class="panel story-card"><div class="story-head"><div class="chapter"><span id="chapterTag">CHAPTER 01 / 27</span><span class="count" id="categoryBadge">REVEAL</span></div><h2 id="storyTitle"></h2><div class="meta" id="storyMeta"></div></div><div class="story-body"><div class="section-h" data-i18n="what">發生甚麼事</div><p id="storyDesc" class="story-text"></p><div id="storyOutcome" class="outcome"></div><div class="subsection" style="margin-top:19px"><span data-i18n="sequence">逐步事件 / 動畫</span><span style="color:#a2b3ab;font-size:10px" id="beatCount"></span></div><ol class="steps" id="stepList"></ol></div></section>
       <section class="panel status-panel"><div class="status-top"><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.1.0</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.2.0</span></div></div>
     </aside>
   </div>
 </div>
