@@ -8,8 +8,8 @@
 (function (global) {
   'use strict';
   const QUALITY = {
-    high: { mapPpu: 2.4, firstPpu: 0.7, dpr: 2, atlasUnit: 3, atlasQuality: 'high', logicEvery: 1, snow: 150, clouds: 8 },
-    low: { mapPpu: 1.3, firstPpu: 0.5, dpr: 1.5, atlasUnit: 1.6, atlasQuality: 'low', logicEvery: 2, snow: 50, clouds: 5 }, // crowd logic at half rate on phones
+    high: { mapPpu: 2.4, scarPpu: 1.6, firstPpu: 0.7, dpr: 2, atlasUnit: 3, atlasQuality: 'high', logicEvery: 1, snow: 150, clouds: 8 },
+    low: { mapPpu: 1.3, scarPpu: 0.9, firstPpu: 0.5, dpr: 1.5, atlasUnit: 1.6, atlasQuality: 'low', logicEvery: 2, snow: 50, clouds: 5 }, // crowd logic at half rate on phones
   };
   // World size of the figures: world units per sprite design unit (a Titan is about 30 design units tall).
   const SIZE = { titan: 0.5, wallTitan: 0.62, civ: 0.6, rider: 0.6, cannon: 0.42, steam: 0.5, boat: 0.7 };
@@ -212,6 +212,7 @@
           ctx.drawImage(base, sx0 * basePpu, sy0 * basePpu, (sx1 - sx0) * basePpu, (sy1 - sy0) * basePpu, (sx0 - x0) * s, (sy0 - y0) * s, (sx1 - sx0) * s, (sy1 - sy0) * s);
         }
       }
+      drawScar(view, sc.T);
       // places that appear during the story (the harbour)
       for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { const k = pl.sinceT % 1 ? Math.min(1, (sc.T - pl.sinceT) / 0.03) : 1, grow = s * (0.35 + 0.65 * k * (2 - k)); ctx.save(); ctx.globalAlpha = k; ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(grow, grow); global.MapPainter.icon(ctx, pl.kind, pl); ctx.restore(); } // new buildings grow into place
       drawRails(view, sc);
@@ -264,6 +265,55 @@
         ctx.globalAlpha = 0.85 * Math.min(1, (540 - f.y) / 60); ctx.fillRect(sx, sy, size, size);
       }
       ctx.globalAlpha = 1;
+    }
+    // ---- What the great circle leaves behind outside Wall Maria: flattened forest and ruined buildings ----
+    // A layer painted once (churned earth and broken trunks where each tree stood, rubble where buildings stood), then shown inside the circle only.
+    let scar = null, scarPending = false;
+    function buildScar() {
+      const ppu = Q.scarPpu, cv = document.createElement('canvas');
+      cv.width = Math.ceil(World.W * ppu); cv.height = Math.ceil(World.H * ppu);
+      const g = cv.getContext('2d'), zones = pop.rumble.zones;
+      g.scale(ppu, ppu);
+      let seed = 77123;
+      const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+      const beyond = (x, y, pad) => Math.hypot(x - C[0], y - C[1]) > R.maria + pad && !zones.some((z) => Math.hypot(x - z.c[0], y - z.c[1]) < z.r + 5);
+      // one soft patch of churned earth, stamped wherever something stood
+      const patch = document.createElement('canvas'); patch.width = patch.height = 48;
+      const pg = patch.getContext('2d'), gr = pg.createRadialGradient(24, 24, 3, 24, 24, 24);
+      gr.addColorStop(0, 'rgba(126,106,70,.97)'); gr.addColorStop(0.62, 'rgba(120,104,66,.9)'); gr.addColorStop(1, 'rgba(118,104,66,0)');
+      pg.fillStyle = gr; pg.fillRect(0, 0, 48, 48);
+      const trees = terrain.trees.filter((t) => beyond(t.x, t.y, 3));
+      for (const t of trees) { const big = t.g ? 1.5 : 1; g.drawImage(patch, t.x - 6.4 * t.s * big, t.y - 10.4 * t.s * big, 12.8 * t.s * big, 13.6 * t.s * big); }
+      // broken trunks and stumps
+      g.lineCap = 'round';
+      for (const t of trees) {
+        g.strokeStyle = rnd() < 0.5 ? 'rgba(70,52,32,.9)' : 'rgba(88,68,42,.85)'; g.lineWidth = 0.55 + rnd() * 0.5;
+        for (let k = 0; k < 2; k++) { const a = rnd() * Math.PI, len = (1.6 + rnd() * 2.6) * t.s, x = t.x + (rnd() - 0.5) * 5 * t.s, y = t.y - rnd() * 5 * t.s; g.beginPath(); g.moveTo(x - Math.cos(a) * len, y - Math.sin(a) * len * 0.6); g.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len * 0.6); g.stroke(); }
+        g.fillStyle = 'rgba(58,44,28,.9)'; g.beginPath(); g.ellipse(t.x, t.y - 0.4, 0.9 * t.s, 0.55 * t.s, 0, 0, 6.3); g.fill();
+      }
+      // buildings outside the Walls: rubble
+      for (const pl of terrain.places) {
+        if (pl.sinceT !== undefined || !beyond(pl.p[0], pl.p[1], 34)) continue;
+        const wide = pl.kind === 'seawall' ? 24 : 9;
+        g.drawImage(patch, pl.p[0] - wide - 4, pl.p[1] - 15, wide * 2 + 8, 21);
+        for (let k = 0; k < wide * 2.4; k++) { const x = pl.p[0] + (rnd() * 2 - 1) * wide, y = pl.p[1] - rnd() * 5, w = 0.8 + rnd() * 1.8; g.fillStyle = rnd() < 0.5 ? '#a9a290' : '#7f7a6c'; g.fillRect(x, y, w, w * 0.7); }
+      }
+      scar = cv;
+    }
+    function drawScar(view, T) {
+      const RBm = pop.rumble;
+      if (!RBm) return;
+      if (!scar) { if (!scarPending && T > pop.wallsFall - 0.4) { scarPending = true; setTimeout(buildScar, 40); } return; } // painted shortly before it is needed
+      const rho = RBm.front(T);
+      if (T <= RBm.T0 || rho <= R.maria) return;
+      const s = view.s, ppu = Q.scarPpu, healed = Math.max(0, Math.min(1, (T - pop.T('rebuild', 0)) / 0.8)); // the forest grows back in the years after 857
+      const x0 = view.x - vw / 2 / s, y0 = view.y - vh / 2 / s, sx0 = Math.max(0, x0), sy0 = Math.max(0, y0), sx1 = Math.min(World.W, x0 + vw / s), sy1 = Math.min(World.H, y0 + vh / s);
+      if (sx1 <= sx0 || sy1 <= sy0) return;
+      ctx.save();
+      ctx.beginPath(); ctx.arc((C[0] - view.x) * s + vw / 2, (C[1] - view.y) * s + vh / 2, rho * s, 0, 6.2832); ctx.clip(); // only where the circle has been
+      ctx.globalAlpha = 1 - 0.8 * healed;
+      ctx.drawImage(scar, sx0 * ppu, sy0 * ppu, (sx1 - sx0) * ppu, (sy1 - sy0) * ppu, (sx0 - x0) * s, (sy0 - y0) * s, (sx1 - sx0) * s, (sy1 - sy0) * s);
+      ctx.restore();
     }
     // ---- Railways: each line is laid during the story, and a train runs on it once it is finished ----
     const railDone = new Map();
@@ -361,11 +411,11 @@
     const crawler = pop.agents.find((a) => a.crawl);
     function drawCrawlTrail(view, sc) {
       if (!crawler || sc.T <= crawler.crawl.T0) return;
-      const c = crawler.crawl, f = Math.min(1, (sc.T - c.T0) / (c.T1 - c.T0)), s = view.s, n = Math.max(2, Math.ceil(f * 28));
+      const c = crawler.crawl, s = view.s, end = Math.min(sc.T, c.T2), n = 30;
       ctx.beginPath();
       for (let i = 0; i <= n; i++) {
-        const u = (f * i) / n, wob = Math.sin(u * 46) * 1.5 * Math.min(1, (f - u) * 14);
-        const sx = (c.from[0] + (c.to[0] - c.from[0]) * u + wob - view.x) * s + vw / 2, sy = (c.from[1] + (c.to[1] - c.from[1]) * u - view.y) * s + vh / 2;
+        const p = c.at(c.T0 + ((end - c.T0) * i) / n), wob = Math.sin(i * 1.6) * 1.5 * Math.min(1, (n - i) / 3); // no wobble at the Titan itself
+        const sx = (p[0] + wob - view.x) * s + vw / 2, sy = (p[1] - view.y) * s + vh / 2;
         if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy);
       }
       ctx.lineCap = 'round'; ctx.lineJoin = 'round';

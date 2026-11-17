@@ -4,7 +4,7 @@ An interactive timeline in three languages (Traditional Chinese, English and Jap
 
 - playback with a camera that follows the action, or zoom and pan yourself (mouse wheel, slider, drag, pinch); with the auto camera on, key scenes cut in at the centre of the map (a gate breaking, a transformation, the Rumbling);
 - animated routes for every character, with unconfirmed routes marked as such; a Titan shifter's portrait changes to their Titan at the moment they transform;
-- live Walls: gates break, are sealed, and the Walls fall in the Rumbling, simulated Titan by Titan: they stand shoulder to shoulder in every Wall and district wall, walk straight out (stepping aside only for towns and villages) and close up into one great circle that sweeps out over the sea;
+- live Walls: gates break, are sealed, and the Walls fall in the Rumbling, simulated Titan by Titan: they stand shoulder to shoulder in every Wall and district wall, walk straight out (stepping aside only for towns and villages) and close up into one great circle that flattens the forests and buildings outside the Walls and sweeps out over the sea;
 - a simulated crowd: about 300 Pure Titans that gather where people live, civilians who retreat behind the Walls and resettle, Survey Corps riders, wall cannons, the Wall Titans, and the crawling Titan dragging itself from the south coast;
 - day and night (Titans stand still in the dark, except under the moon at Utgard), the evacuation boats of 845, the 846 "reclamation" of Wall Maria, the signal flares of the long-range scouting formation, cloud shadows and snow in the north;
 - a mini map in the corner with a coloured dot for everything that moves; click it to look there;

@@ -3059,7 +3059,7 @@ body {
 <div class="site">
   <div class="masthead">
   <header class="topbar">
-    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v2.9.0</span></div></div></div>
+    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v2.10.0</span></div></div></div>
     <div class="top-actions"><span class="spoiler" data-i18n="spoiler">全劇劇透</span><div class="lang-switch" id="langSwitch" role="group" aria-label="Language"><button type="button" class="lang-btn" data-lang="zh" lang="zh-Hant" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false">EN</button><button type="button" class="lang-btn" data-lang="ja" lang="ja" aria-pressed="false">日本語</button></div></div>
   </header>
   <div class="hero"><div><div class="eyebrow" data-i18n="kicker">三道城牆 · 114 年入侵及防衛史</div><h1 data-i18n="hero">進擊之巨人</h1><div class="epigraph" data-i18n="epigraph">那一天，人類想起了被巨人支配的恐懼。</div><p data-i18n="subtitle">拖動年份與事件進度，親眼睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重要路線。</p></div><div class="year-plate"><small data-i18n="year">故事年份</small><strong id="heroYear">743</strong></div></div>
@@ -3085,7 +3085,7 @@ body {
       </section>
       <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.9.0</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.10.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -6079,12 +6079,14 @@ function lightAt(idx, p) {
     const SHIG = district('shig'), TROST = district('trost');
     const outside = [...titans], inMaria = [];
     // The crawling Titan: its limbs are too small to walk, so it drags itself from the south coast towards the Walls for years.
-    // The Scouts find it in 851 on their way to the sea. It is one of the 300.
+    // The Scouts find it in 851 on their way to the sea and leave it be; it goes on crawling until the Rumbling's great circle reaches it. It is one of the 300.
     const PT = opts.points || {};
     if (PT.crawlFrom && PT.crawlTo) {
       const crawler = take(outside, nearest(outside, PT.crawlFrom, 1))[0];
-      Object.assign(crawler, { still: true, lying: true, home0: PT.crawlFrom, cur: PT.crawlFrom, crawl: { from: PT.crawlFrom, to: PT.crawlTo, T0: T('grisha', 0), T1: T('sea', 0.55) } });
-      kill([crawler], ['sea', 0.72], ['sea', 0.82]);
+      const on = lerp(PT.crawlTo, district('shig').outer, 0.3); // where it has got to by the Rumbling
+      const cr = { from: PT.crawlFrom, to: PT.crawlTo, on, T0: T('grisha', 0), T1: T('sea', 0.55), T2: T('rumbling', 0.9) };
+      cr.at = (Tl) => (Tl <= cr.T1 ? lerp(cr.from, cr.to, clamp01((Tl - cr.T0) / (cr.T1 - cr.T0))) : lerp(cr.to, cr.on, clamp01((Tl - cr.T1) / (cr.T2 - cr.T1))));
+      Object.assign(crawler, { still: true, lying: true, home0: PT.crawlFrom, cur: PT.crawlFrom, crawl: cr });
     }
     // 845: the gates break. Those nearest get in first; the stream goes on for years. About 110 in all.
     const first = take(outside, nearest(outside, SHIG.outer, 30));
@@ -6195,7 +6197,9 @@ function lightAt(idx, p) {
       const rad = Math.PI / 180, WALLS = ['maria', 'rose', 'sina'], PTS = opts.points || {};
       // What must not be trampled: the district towns, and the villages, camps and harbour.
       const spots = [];
-      for (const p of [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])]) if (rOf(p) > R.sina - 6 && !spots.some((q) => dist(q, p) < 8)) spots.push(p);
+      // Outside Wall Maria nothing is spared: the great circle flattens it all. The one exception is the harbour, which the story still uses after the Rumbling begins.
+      const spared = (p) => rOf(p) < R.maria + 34 || (PTS.harbor && dist(p, PTS.harbor) < 8);
+      for (const p of [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])]) if (rOf(p) > R.sina - 6 && spared(p) && !spots.some((q) => dist(q, p) < 8)) spots.push(p);
       rumble.zones = [...DISTRICTS.map((d) => ({ c: d.base, r: d.r, town: d.id })), ...spots.map((c) => ({ c, r: 13 }))];
       const SPOT = 13;
       // a town is the half-round inside its district wall; standing on a wall line is not trampling
@@ -6260,6 +6264,15 @@ function lightAt(idx, p) {
       rumble.edge = Math.max(...[[0, 0], [World.W, 0], [0, World.H], [World.W, World.H]].map((p) => dist(C, p)));
       rumble.v = (rumble.edge - rumble.rho0) / (T('alliance', 0.9) - rumble.T0);
       rumble.front = (Tl) => rumble.rho0 + rumble.v * Math.max(0, Tl - rumble.T0); // radius of the great circle at that moment
+    }
+    // The crawling Titan is still on its way when the great circle reaches it.
+    {
+      const crawler = agents.find((a) => a.crawl);
+      if (crawler) {
+        const hit = rumble.T0 + (rOf(crawler.crawl.on) - rumble.rho0) / rumble.v;
+        crawler.crawl.T2 = hit;
+        crawler.ops.push({ type: 'fade', T0: hit, T1: hit + 0.03, v: 0, how: 'kill' });
+      }
     }
     // Where a Wall Titan is when the front is at radius rho. Returns [x, y, radius in the circle or 0 while still at its Wall].
     const rumblePos = (a, rho) => {
@@ -6377,7 +6390,7 @@ function lightAt(idx, p) {
         else mv = { op, f };
       }
       if (a.crawl) { // the crawling Titan: no wandering, just a very slow drag along its line
-        const c = a.crawl, p = lerp(c.from, c.to, clamp01((Tl - c.T0) / (c.T1 - c.T0)));
+        const p = a.crawl.at(Tl);
         return { x: p[0], y: p[1], vis, dying, how, area: 'outside', crawling: true };
       }
       const still = a.still || o.reduced;
@@ -6977,8 +6990,8 @@ function lightAt(idx, p) {
 (function (global) {
   'use strict';
   const QUALITY = {
-    high: { mapPpu: 2.4, firstPpu: 0.7, dpr: 2, atlasUnit: 3, atlasQuality: 'high', logicEvery: 1, snow: 150, clouds: 8 },
-    low: { mapPpu: 1.3, firstPpu: 0.5, dpr: 1.5, atlasUnit: 1.6, atlasQuality: 'low', logicEvery: 2, snow: 50, clouds: 5 }, // crowd logic at half rate on phones
+    high: { mapPpu: 2.4, scarPpu: 1.6, firstPpu: 0.7, dpr: 2, atlasUnit: 3, atlasQuality: 'high', logicEvery: 1, snow: 150, clouds: 8 },
+    low: { mapPpu: 1.3, scarPpu: 0.9, firstPpu: 0.5, dpr: 1.5, atlasUnit: 1.6, atlasQuality: 'low', logicEvery: 2, snow: 50, clouds: 5 }, // crowd logic at half rate on phones
   };
   // World size of the figures: world units per sprite design unit (a Titan is about 30 design units tall).
   const SIZE = { titan: 0.5, wallTitan: 0.62, civ: 0.6, rider: 0.6, cannon: 0.42, steam: 0.5, boat: 0.7 };
@@ -7181,6 +7194,7 @@ function lightAt(idx, p) {
           ctx.drawImage(base, sx0 * basePpu, sy0 * basePpu, (sx1 - sx0) * basePpu, (sy1 - sy0) * basePpu, (sx0 - x0) * s, (sy0 - y0) * s, (sx1 - sx0) * s, (sy1 - sy0) * s);
         }
       }
+      drawScar(view, sc.T);
       // places that appear during the story (the harbour)
       for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { const k = pl.sinceT % 1 ? Math.min(1, (sc.T - pl.sinceT) / 0.03) : 1, grow = s * (0.35 + 0.65 * k * (2 - k)); ctx.save(); ctx.globalAlpha = k; ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(grow, grow); global.MapPainter.icon(ctx, pl.kind, pl); ctx.restore(); } // new buildings grow into place
       drawRails(view, sc);
@@ -7233,6 +7247,55 @@ function lightAt(idx, p) {
         ctx.globalAlpha = 0.85 * Math.min(1, (540 - f.y) / 60); ctx.fillRect(sx, sy, size, size);
       }
       ctx.globalAlpha = 1;
+    }
+    // ---- What the great circle leaves behind outside Wall Maria: flattened forest and ruined buildings ----
+    // A layer painted once (churned earth and broken trunks where each tree stood, rubble where buildings stood), then shown inside the circle only.
+    let scar = null, scarPending = false;
+    function buildScar() {
+      const ppu = Q.scarPpu, cv = document.createElement('canvas');
+      cv.width = Math.ceil(World.W * ppu); cv.height = Math.ceil(World.H * ppu);
+      const g = cv.getContext('2d'), zones = pop.rumble.zones;
+      g.scale(ppu, ppu);
+      let seed = 77123;
+      const rnd = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+      const beyond = (x, y, pad) => Math.hypot(x - C[0], y - C[1]) > R.maria + pad && !zones.some((z) => Math.hypot(x - z.c[0], y - z.c[1]) < z.r + 5);
+      // one soft patch of churned earth, stamped wherever something stood
+      const patch = document.createElement('canvas'); patch.width = patch.height = 48;
+      const pg = patch.getContext('2d'), gr = pg.createRadialGradient(24, 24, 3, 24, 24, 24);
+      gr.addColorStop(0, 'rgba(126,106,70,.97)'); gr.addColorStop(0.62, 'rgba(120,104,66,.9)'); gr.addColorStop(1, 'rgba(118,104,66,0)');
+      pg.fillStyle = gr; pg.fillRect(0, 0, 48, 48);
+      const trees = terrain.trees.filter((t) => beyond(t.x, t.y, 3));
+      for (const t of trees) { const big = t.g ? 1.5 : 1; g.drawImage(patch, t.x - 6.4 * t.s * big, t.y - 10.4 * t.s * big, 12.8 * t.s * big, 13.6 * t.s * big); }
+      // broken trunks and stumps
+      g.lineCap = 'round';
+      for (const t of trees) {
+        g.strokeStyle = rnd() < 0.5 ? 'rgba(70,52,32,.9)' : 'rgba(88,68,42,.85)'; g.lineWidth = 0.55 + rnd() * 0.5;
+        for (let k = 0; k < 2; k++) { const a = rnd() * Math.PI, len = (1.6 + rnd() * 2.6) * t.s, x = t.x + (rnd() - 0.5) * 5 * t.s, y = t.y - rnd() * 5 * t.s; g.beginPath(); g.moveTo(x - Math.cos(a) * len, y - Math.sin(a) * len * 0.6); g.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len * 0.6); g.stroke(); }
+        g.fillStyle = 'rgba(58,44,28,.9)'; g.beginPath(); g.ellipse(t.x, t.y - 0.4, 0.9 * t.s, 0.55 * t.s, 0, 0, 6.3); g.fill();
+      }
+      // buildings outside the Walls: rubble
+      for (const pl of terrain.places) {
+        if (pl.sinceT !== undefined || !beyond(pl.p[0], pl.p[1], 34)) continue;
+        const wide = pl.kind === 'seawall' ? 24 : 9;
+        g.drawImage(patch, pl.p[0] - wide - 4, pl.p[1] - 15, wide * 2 + 8, 21);
+        for (let k = 0; k < wide * 2.4; k++) { const x = pl.p[0] + (rnd() * 2 - 1) * wide, y = pl.p[1] - rnd() * 5, w = 0.8 + rnd() * 1.8; g.fillStyle = rnd() < 0.5 ? '#a9a290' : '#7f7a6c'; g.fillRect(x, y, w, w * 0.7); }
+      }
+      scar = cv;
+    }
+    function drawScar(view, T) {
+      const RBm = pop.rumble;
+      if (!RBm) return;
+      if (!scar) { if (!scarPending && T > pop.wallsFall - 0.4) { scarPending = true; setTimeout(buildScar, 40); } return; } // painted shortly before it is needed
+      const rho = RBm.front(T);
+      if (T <= RBm.T0 || rho <= R.maria) return;
+      const s = view.s, ppu = Q.scarPpu, healed = Math.max(0, Math.min(1, (T - pop.T('rebuild', 0)) / 0.8)); // the forest grows back in the years after 857
+      const x0 = view.x - vw / 2 / s, y0 = view.y - vh / 2 / s, sx0 = Math.max(0, x0), sy0 = Math.max(0, y0), sx1 = Math.min(World.W, x0 + vw / s), sy1 = Math.min(World.H, y0 + vh / s);
+      if (sx1 <= sx0 || sy1 <= sy0) return;
+      ctx.save();
+      ctx.beginPath(); ctx.arc((C[0] - view.x) * s + vw / 2, (C[1] - view.y) * s + vh / 2, rho * s, 0, 6.2832); ctx.clip(); // only where the circle has been
+      ctx.globalAlpha = 1 - 0.8 * healed;
+      ctx.drawImage(scar, sx0 * ppu, sy0 * ppu, (sx1 - sx0) * ppu, (sy1 - sy0) * ppu, (sx0 - x0) * s, (sy0 - y0) * s, (sx1 - sx0) * s, (sy1 - sy0) * s);
+      ctx.restore();
     }
     // ---- Railways: each line is laid during the story, and a train runs on it once it is finished ----
     const railDone = new Map();
@@ -7330,11 +7393,11 @@ function lightAt(idx, p) {
     const crawler = pop.agents.find((a) => a.crawl);
     function drawCrawlTrail(view, sc) {
       if (!crawler || sc.T <= crawler.crawl.T0) return;
-      const c = crawler.crawl, f = Math.min(1, (sc.T - c.T0) / (c.T1 - c.T0)), s = view.s, n = Math.max(2, Math.ceil(f * 28));
+      const c = crawler.crawl, s = view.s, end = Math.min(sc.T, c.T2), n = 30;
       ctx.beginPath();
       for (let i = 0; i <= n; i++) {
-        const u = (f * i) / n, wob = Math.sin(u * 46) * 1.5 * Math.min(1, (f - u) * 14);
-        const sx = (c.from[0] + (c.to[0] - c.from[0]) * u + wob - view.x) * s + vw / 2, sy = (c.from[1] + (c.to[1] - c.from[1]) * u - view.y) * s + vh / 2;
+        const p = c.at(c.T0 + ((end - c.T0) * i) / n), wob = Math.sin(i * 1.6) * 1.5 * Math.min(1, (n - i) / 3); // no wobble at the Titan itself
+        const sx = (p[0] + wob - view.x) * s + vw / 2, sy = (p[1] - view.y) * s + vh / 2;
         if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy);
       }
       ctx.lineCap = 'round'; ctx.lineJoin = 'round';
@@ -7471,9 +7534,9 @@ const TXT = {
     flareInfo: '信號彈：紅＝發現巨人 · 綠＝行進方向 · 黑＝奇行種',
     popWall: '城牆巨人',
     popWallNow: '肩並肩企滿三道城牆同各城區圍牆；直線向外走，合成一個大圓圈推向海外',
-    rumbleInfo: '地鳴（模擬）：城牆巨人以最短路線直接向外走，只會繞開城區同村落；出牆後肩並肩合成一個大圓圈，向海外推進',
+    rumbleInfo: '地鳴（模擬）：城牆巨人以最短路線直接向外走，只會繞開牆內嘅城區同村落；出牆後肩並肩合成一個大圓圈，踏平牆外嘅樹林同建築，向海外推進',
     popCrawlTag: '爬行嘅巨人',
-    popCrawlInfo: '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞。',
+    popCrawlInfo: '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞，冇殺佢；佢繼續爬行，直到地鳴嘅巨人圓圈到達。',
     camOn: '自動鏡頭：開',
     camOff: '自動鏡頭：關',
     popLyingTag: '拉加哥村的巨人（無法行動）',
@@ -7555,9 +7618,9 @@ const TXT = {
     flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
     popWallNow: 'shoulder to shoulder in all three Walls and every district wall; they walk straight out and form one great circle that sweeps out over the sea',
-    rumbleInfo: 'The Rumbling (simulated): the Wall Titans take the shortest way straight out, stepping aside only for towns and villages; outside the Walls they close up into one great circle, shoulder to shoulder, and sweep outward',
+    rumbleInfo: 'The Rumbling (simulated): the Wall Titans take the shortest way straight out, stepping aside only for the towns and villages inside the Walls; outside they close up into one great circle, shoulder to shoulder, flatten the forests and buildings there and sweep outward',
     popCrawlTag: 'Crawling Titan',
-    popCrawlInfo: 'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”.',
+    popCrawlInfo: 'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”, and they leave it be. It crawls on until the great circle of the Rumbling reaches it.',
     camOn: 'Auto camera: on',
     camOff: 'Auto camera: off',
     popLyingTag: 'Ragako Titan (cannot move)',
@@ -7639,9 +7702,9 @@ const TXT = {
     flareInfo: '信煙弾：赤＝巨人発見 · 緑＝進路変更 · 黒＝奇行種',
     popWall: '壁の巨人',
     popWallNow: '三つの壁と各区の壁に肩を並べて立ち、まっすぐ外へ歩いて一つの大きな円になり、海の向こうへ進む',
-    rumbleInfo: '地鳴らし（シミュレーション）：壁の巨人は最短の道をまっすぐ外へ進み、町や村だけを避ける。壁の外では肩を並べて一つの大きな円になり、外へ押し進む',
+    rumbleInfo: '地鳴らし（シミュレーション）：壁の巨人は最短の道をまっすぐ外へ進み、壁の中の町や村だけを避ける。壁の外では肩を並べて一つの大きな円になり、森や建物を踏みつぶして外へ押し進む',
     popCrawlTag: '這う巨人',
-    popCrawlInfo: '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づく。',
+    popCrawlInfo: '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づき、そのままにしておく。地鳴らしの巨人の円が届くまで這い続ける。',
     camOn: '自動カメラ：オン',
     camOff: '自動カメラ：オフ',
     popLyingTag: 'ラガコ村の巨人（動けない）',

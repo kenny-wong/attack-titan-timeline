@@ -41,7 +41,7 @@ test('the number of Titans falls as they are killed', () => {
   assert.ok(n('trost-seal', 0.99) < n('trost-attack', 0.99) - 20, 'Trost is cleared after the seal');
   assert.ok(n('maria-retaken', 0.99) < n('rod', 0) - 40);
   assert.ok(n('sea', 0.5) < n('sea', 0.05) && n('sea', 0.5) > 20, 'the island is cleared gradually');
-  assert.strictEqual(n('ships', 0.5), 1); // only the immobile Ragako Titan
+  assert.strictEqual(n('ships', 0.5), 2); // only the two that cannot walk: the Ragako Titan and the crawling Titan
   assert.strictEqual(n('ambassadors', 1), 0);
 });
 
@@ -215,12 +215,12 @@ test('evacuation boats go up the river from Shiganshina to behind Wall Rose in 8
   assert.strictEqual(k.civ.total, at(T('maria-fall', 0.7), civs).length);
 });
 
-test('the crawling Titan drags itself from the south coast towards the Walls and is found by the Scouts in 851', () => {
+test('the crawling Titan drags itself from the south coast towards the Walls, is found by the Scouts in 851 and stays until the Rumbling reaches it', () => {
   const crawler = titans.find((a) => a.crawl);
   assert.ok(crawler && crawler.lying && crawler.still, 'one Titan crawls');
   assert.strictEqual(titans.filter((a) => a.crawl).length, 1);
   const pos = (id, p) => pop.stateAt(crawler, T(id, p), 0, {});
-  const start = pos('grisha', 0), mid = pos('trost-attack', 0.5), found = pos('sea', 0.6);
+  const start = pos('grisha', 0), mid = pos('trost-attack', 0.5), found = pos('sea', 0.55); // where the Scouts find it
   assert.ok(World.coastDist([start.x, start.y]) < 20, 'it starts near the south coast');
   assert.ok(start.y > mid.y && mid.y > found.y, 'it only ever moves north, towards Shiganshina');
   assert.ok(Math.hypot(found.x - c.P.crawlTo[0], found.y - c.P.crawlTo[1]) < 0.01);
@@ -229,11 +229,19 @@ test('the crawling Titan drags itself from the south coast towards the Walls and
   // real time does not move it: it cannot walk
   const a = pop.stateAt(crawler, T('cadets', 0.5), 0, {}), b = pop.stateAt(crawler, T('cadets', 0.5), 40, {});
   assert.ok(a.x === b.x && a.y === b.y);
-  // on the route the Scouts ride to the sea, and gone once the island is cleared
+  // on the route the Scouts ride to the sea; they leave it be
   const ride = E.find((e) => e.id === 'sea').routes[0].path.map((p) => (Array.isArray(p) ? p : c.P[p]));
   assert.ok(ride.some((p) => Math.hypot(p[0] - found.x, p[1] - found.y) < 40), 'the Scouts pass close by');
-  assert.strictEqual(pos('sea', 0.6).vis, 1);
-  assert.strictEqual(pos('ships', 0.5).vis, 0);
+  for (const [id, p] of [['sea', 0.6], ['sea', 0.99], ['ships', 0.5], ['liberio', 0.5], ['rumbling', 0.5]]) assert.strictEqual(pos(id, p).vis, 1, 'still there at ' + id);
+  // it keeps crawling north after 851, and never reaches the Wall
+  const later = pos('rumbling', 0.5);
+  assert.ok(later.y < found.y && later.y > c.P.shigO[1] + 40);
+  // the great circle of the Rumbling ends it
+  const hit = crawler.crawl.T2, here = crawler.crawl.at(hit);
+  assert.ok(Math.abs(pop.rumble.front(hit) - World.rOf(here)) < 0.01, 'it dies when the circle arrives');
+  assert.strictEqual(pop.stateAt(crawler, hit - 0.01, 0, {}).vis, 1);
+  assert.strictEqual(pop.stateAt(crawler, hit + 0.04, 0, {}).vis, 0);
+  assert.strictEqual(pos('ambassadors', 0.5).vis, 0);
   // it is one of the 300 outside, not an extra and not counted with the Ragako Titan
   const k = pop.counts(T('grisha', 0.5));
   assert.strictEqual(k.titan.total, 300);
@@ -250,4 +258,19 @@ test('after 857 more people are born and they settle the whole island, the land 
   const q = [0, 0, 0, 0];
   for (const a of settlers.filter((x) => x.area0 === 'outside')) q[(a.home0[0] > World.C[0] ? 1 : 0) + (a.home0[1] > World.C[1] ? 2 : 0)]++;
   for (const n of q) assert.ok(n >= 5, 'quarters: ' + q.join(' '));
+});
+
+test('outside the Walls the Rumbling spares nothing but the harbour; inside, the towns and villages stay protected', () => {
+  const ruin = [556, 1072], seaWall = World.coastAt(84, -3); // the castle ruin and Marley's sea wall, both beyond Wall Maria
+  const p2 = c.Population.create(E, World, { points: c.P, protect: [ruin, seaWall, c.P.harbor, c.P.ragako] });
+  const zones = p2.rumble.zones.filter((z) => !z.town);
+  const has = (p) => zones.some((z) => Math.hypot(z.c[0] - p[0], z.c[1] - p[1]) < 1);
+  assert.ok(!has(ruin), 'the castle ruin is flattened');
+  assert.ok(!has(seaWall), 'the sea wall is flattened');
+  assert.ok(has(c.P.harbor), 'the harbour is still used by the story');
+  assert.ok(has(c.P.ragako), 'villages inside the Walls stay protected');
+  assert.strictEqual(p2.rumble.zones.filter((z) => z.town).length, 12);
+  // so a Wall Titan does walk over the ruin
+  const over = p2.agents.filter((a) => a.kind === 'wallTitan').some((a) => { for (let t = p2.T('rumbling', 0.7); t < p2.T('alliance', 0.3); t += 0.004) { const s = p2.stateAt(a, t, 0, {}); if (Math.hypot(s.x - ruin[0], s.y - ruin[1]) < 6) return true; } return false; });
+  assert.ok(over, 'nobody walks over the ruin');
 });

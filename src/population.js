@@ -138,12 +138,14 @@
     const SHIG = district('shig'), TROST = district('trost');
     const outside = [...titans], inMaria = [];
     // The crawling Titan: its limbs are too small to walk, so it drags itself from the south coast towards the Walls for years.
-    // The Scouts find it in 851 on their way to the sea. It is one of the 300.
+    // The Scouts find it in 851 on their way to the sea and leave it be; it goes on crawling until the Rumbling's great circle reaches it. It is one of the 300.
     const PT = opts.points || {};
     if (PT.crawlFrom && PT.crawlTo) {
       const crawler = take(outside, nearest(outside, PT.crawlFrom, 1))[0];
-      Object.assign(crawler, { still: true, lying: true, home0: PT.crawlFrom, cur: PT.crawlFrom, crawl: { from: PT.crawlFrom, to: PT.crawlTo, T0: T('grisha', 0), T1: T('sea', 0.55) } });
-      kill([crawler], ['sea', 0.72], ['sea', 0.82]);
+      const on = lerp(PT.crawlTo, district('shig').outer, 0.3); // where it has got to by the Rumbling
+      const cr = { from: PT.crawlFrom, to: PT.crawlTo, on, T0: T('grisha', 0), T1: T('sea', 0.55), T2: T('rumbling', 0.9) };
+      cr.at = (Tl) => (Tl <= cr.T1 ? lerp(cr.from, cr.to, clamp01((Tl - cr.T0) / (cr.T1 - cr.T0))) : lerp(cr.to, cr.on, clamp01((Tl - cr.T1) / (cr.T2 - cr.T1))));
+      Object.assign(crawler, { still: true, lying: true, home0: PT.crawlFrom, cur: PT.crawlFrom, crawl: cr });
     }
     // 845: the gates break. Those nearest get in first; the stream goes on for years. About 110 in all.
     const first = take(outside, nearest(outside, SHIG.outer, 30));
@@ -254,7 +256,9 @@
       const rad = Math.PI / 180, WALLS = ['maria', 'rose', 'sina'], PTS = opts.points || {};
       // What must not be trampled: the district towns, and the villages, camps and harbour.
       const spots = [];
-      for (const p of [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])]) if (rOf(p) > R.sina - 6 && !spots.some((q) => dist(q, p) < 8)) spots.push(p);
+      // Outside Wall Maria nothing is spared: the great circle flattens it all. The one exception is the harbour, which the story still uses after the Rumbling begins.
+      const spared = (p) => rOf(p) < R.maria + 34 || (PTS.harbor && dist(p, PTS.harbor) < 8);
+      for (const p of [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])]) if (rOf(p) > R.sina - 6 && spared(p) && !spots.some((q) => dist(q, p) < 8)) spots.push(p);
       rumble.zones = [...DISTRICTS.map((d) => ({ c: d.base, r: d.r, town: d.id })), ...spots.map((c) => ({ c, r: 13 }))];
       const SPOT = 13;
       // a town is the half-round inside its district wall; standing on a wall line is not trampling
@@ -319,6 +323,15 @@
       rumble.edge = Math.max(...[[0, 0], [World.W, 0], [0, World.H], [World.W, World.H]].map((p) => dist(C, p)));
       rumble.v = (rumble.edge - rumble.rho0) / (T('alliance', 0.9) - rumble.T0);
       rumble.front = (Tl) => rumble.rho0 + rumble.v * Math.max(0, Tl - rumble.T0); // radius of the great circle at that moment
+    }
+    // The crawling Titan is still on its way when the great circle reaches it.
+    {
+      const crawler = agents.find((a) => a.crawl);
+      if (crawler) {
+        const hit = rumble.T0 + (rOf(crawler.crawl.on) - rumble.rho0) / rumble.v;
+        crawler.crawl.T2 = hit;
+        crawler.ops.push({ type: 'fade', T0: hit, T1: hit + 0.03, v: 0, how: 'kill' });
+      }
     }
     // Where a Wall Titan is when the front is at radius rho. Returns [x, y, radius in the circle or 0 while still at its Wall].
     const rumblePos = (a, rho) => {
@@ -436,7 +449,7 @@
         else mv = { op, f };
       }
       if (a.crawl) { // the crawling Titan: no wandering, just a very slow drag along its line
-        const c = a.crawl, p = lerp(c.from, c.to, clamp01((Tl - c.T0) / (c.T1 - c.T0)));
+        const p = a.crawl.at(Tl);
         return { x: p[0], y: p[1], vis, dying, how, area: 'outside', crawling: true };
       }
       const still = a.still || o.reduced;
