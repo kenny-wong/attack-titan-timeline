@@ -71,6 +71,11 @@
 @media(min-width:1121px) and (max-height:860px){.hero{display:none}.topbar{margin-bottom:14px}}
 #mapSvg .place-hit:focus-visible{outline:none;stroke:#f2d596;stroke-width:2.2;fill:#e6cf8640}
 .app-version{color:var(--muted);font-variant-numeric:tabular-nums}
+@media(min-width:1121px){.map-panel>.map-caption{position:absolute;left:10px;bottom:calc(var(--tbh,58px) + 10px);z-index:6;padding:5px 11px;border:1px solid #ffffff1f;border-radius:9px;background:#0d1a20d9;box-shadow:0 4px 14px #0006;pointer-events:none;font-size:10.5px}.map-panel>.map-caption .map-legend{gap:12px}#mapInfo{max-width:min(40%,380px)}}
+@media(min-width:1121px){.site{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;column-gap:24px;align-items:center}.topbar,.hero{display:contents}.identity{grid-column:1;grid-row:1}.hero>div:first-child{grid-column:2;grid-row:1;min-width:0}.year-plate{grid-column:3;grid-row:1;padding-left:14px}.top-actions{grid-column:4;grid-row:1}.layout{grid-column:1/-1;grid-row:2;margin-top:14px}
+ .hero .eyebrow,.hero p{display:none}.hero h1{font-size:clamp(19px,1.5vw,26px);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.year-plate small{font-size:9px}.year-plate strong{font-size:24px;line-height:1.1}}
+@media(min-width:1121px){.transport-bar{display:flex;align-items:center;gap:18px}.transport-bar .tb-row{flex:1 1 58%;min-width:0}.transport-bar .scene-row{flex:1 1 42%;margin:0;padding:0;border:0;min-width:0}.transport-bar .beat-indicator{display:none}}
+@media(min-width:1121px) and (max-width:1500px){.transport-bar{flex-wrap:wrap;gap:6px 18px}.transport-bar .tb-row,.transport-bar .scene-row{flex-basis:100%}.transport-bar .scene-row{padding-top:6px;border-top:1px solid #ffffff15}}
 </style>
 </head>
 <body>
@@ -119,7 +124,7 @@
       <section class="panel story-card"><div class="story-head"><div class="chapter"><span id="chapterTag">CHAPTER 01 / 27</span><span class="count" id="categoryBadge">REVEAL</span></div><h2 id="storyTitle"></h2><div class="meta" id="storyMeta"></div></div><div class="story-body"><div class="section-h" data-i18n="what">發生甚麼事</div><p id="storyDesc" class="story-text"></p><div id="storyOutcome" class="outcome"></div><div class="subsection" style="margin-top:19px"><span data-i18n="sequence">逐步事件 / 動畫</span><span style="color:#a2b3ab;font-size:10px" id="beatCount"></span></div><ol class="steps" id="stepList"></ol></div></section>
       <section class="panel status-panel"><div class="status-top"><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.0.0</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.1.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -862,7 +867,7 @@ uiK=computeUiK();filterEvents();fitView();renderPopToggle();
 $('#popToggle').onclick=()=>{S.pop=!S.pop;try{localStorage.setItem('aot-walls:population:v1',S.pop?'on':'off')}catch(e){}renderPopToggle();popFrame(performance.now()/1000)};
 requestAnimationFrame(animate);
 new ResizeObserver(()=>{if(VIEW.manual)applyView();else fitView()}).observe($('#mapVisual'));
-function fitLayout(){const L=$('.layout');if(innerWidth<1121){L.style.removeProperty('--reserve');return}for(let i=0;i<2;i++){const panel=$('.map-panel').getBoundingClientRect(),vis=$('#mapVisual').getBoundingClientRect();const reserve=Math.round(panel.top+scrollY+(panel.bottom-vis.bottom)+14);if(Math.abs(reserve-(parseFloat(L.style.getPropertyValue('--reserve'))||0))<2)break;L.style.setProperty('--reserve',reserve+'px')}}
+function fitLayout(){const L=$('.layout');$('.map-panel').style.setProperty('--tbh',$('.transport-bar').offsetHeight+'px');if(innerWidth<1121){L.style.removeProperty('--reserve');return}for(let i=0;i<2;i++){const panel=$('.map-panel').getBoundingClientRect(),vis=$('#mapVisual').getBoundingClientRect();const reserve=Math.round(panel.top+scrollY+(panel.bottom-vis.bottom)+14);if(Math.abs(reserve-(parseFloat(L.style.getPropertyValue('--reserve'))||0))<2)break;L.style.setProperty('--reserve',reserve+'px')}}
 fitLayout();addEventListener('resize',fitLayout);if(document.fonts)document.fonts.ready.then(fitLayout);
 </script>
 </body></html>
