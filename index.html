@@ -2502,6 +2502,44 @@ body {
   }
 }
 
+/* the auto-camera switch: a labelled on/off pill like the crowd switch */
+.map-toolbar .pop-toggle.auto-cam {
+  margin: 0 0 0 6px;
+}
+.pop-toggle.auto-cam[aria-pressed='true'] {
+  border-color: #d7bb80;
+  color: #f4d79b;
+}
+@media (max-width: 700px) {
+  .map-head {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .map-toolbar {
+    margin-left: auto;
+  }
+  .map-toolbar .pop-toggle {
+    padding: 0 8px;
+    margin: 0 4px 0 0;
+  }
+  .map-toolbar .pop-toggle.auto-cam {
+    margin: 0 0 0 4px;
+  }
+}
+
+/* the map hint stays on one line beside the wider toolbar */
+@media (min-width: 701px) {
+  .map-head > div:first-child {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+  .map-head .map-sub {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2631,7 +2669,7 @@ body {
   <div class="layout">
     <div class="left">
       <section class="panel map-panel">
-        <div class="map-head"><div><strong data-i18n="mapTitle">帕拉迪島 · 三道城牆</strong><div class="map-sub" data-i18n="mapHint">按地圖地標以選擇地區 · 進攻位置按劇情示意</div></div><div class="map-toolbar"><button type="button" class="pop-toggle" id="popToggle" aria-pressed="true">人群動態：開</button><button class="icon-btn" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><input type="range" class="zoom-slider" id="zoomSlider" min="0" max="100" value="0" aria-label="Zoom"/><button class="icon-btn" id="zoomIn" aria-label="Zoom in" title="Zoom in">＋</button><button class="icon-btn auto-cam" id="zoomReset" aria-label="Auto camera" title="Auto camera" aria-pressed="true">↺</button></div></div>
+        <div class="map-head"><div><strong data-i18n="mapTitle">帕拉迪島 · 三道城牆</strong><div class="map-sub" data-i18n="mapHint">按地圖地標以選擇地區 · 進攻位置按劇情示意</div></div><div class="map-toolbar"><button type="button" class="pop-toggle" id="popToggle" aria-pressed="true">人群動態：開</button><button class="icon-btn" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><input type="range" class="zoom-slider" id="zoomSlider" min="0" max="100" value="0" aria-label="Zoom"/><button class="icon-btn" id="zoomIn" aria-label="Zoom in" title="Zoom in">＋</button><button type="button" class="pop-toggle auto-cam" id="zoomReset" aria-pressed="true">自動鏡頭：開</button></div></div>
         <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="dayChip" class="day-chip"></span><span id="mapInfo" data-i18n="schematic" aria-live="polite">非精確測繪地圖，虛線為示意</span></div>
         <div class="map-caption"><div class="map-legend"><span class="key"><i class="line" style="border-color:var(--red)"></i><span data-i18n="attack">進攻</span></span><span class="key"><i class="line" style="border-color:var(--blue)"></i><span data-i18n="defense">防守</span></span><span class="key"><i class="line dashed" style="border-color:var(--gold)"></i><span data-i18n="covert">潛入／未確定路線</span></span><span class="key"><i class="line" style="border-color:var(--green)"></i><span data-i18n="repair">修復</span></span><span class="key"><canvas class="pop-key" data-sprite="titan1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popTitans">純潔巨人</span></span><span class="key"><canvas class="pop-key" data-sprite="civ1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popCivilians">平民</span></span></div></div>
         <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="6">6×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="27" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 28</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
@@ -2649,7 +2687,7 @@ body {
       </section>
       <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.3.0</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.4.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -5107,6 +5145,7 @@ const P = (() => {
     south: [512, 1118], // titan country between Shiganshina and the south coast
     krugerWall: coastAt(84, -5), // Marley's sea wall on the south coast, where exiles were turned into Titans
     landing: coastAt(81, -5), // where the Warriors came ashore in 845
+    crawlFrom: coastAt(85, -12), crawlTo: [510, 1150], // the crawling Titan: from near the sea wall to where the Scouts find it in 851
     shore: coastAt(78, -3), // the beach the Scouts reached in 851
     ship: coastAt(78, 46), // just off that beach
     harbor: coastAt(104, -5), harborSea: coastAt(104, 46), // the harbour built with the Volunteers
@@ -5509,6 +5548,14 @@ function lightAt(idx, p) {
     fade(titans, ['founding', 0.4], ['founding', 1], 1, { spread: 0.7 });
     const SHIG = district('shig'), TROST = district('trost');
     const outside = [...titans], inMaria = [];
+    // The crawling Titan: its limbs are too small to walk, so it drags itself from the south coast towards the Walls for years.
+    // The Scouts find it in 851 on their way to the sea. It is one of the 300.
+    const PT = opts.points || {};
+    if (PT.crawlFrom && PT.crawlTo) {
+      const crawler = take(outside, nearest(outside, PT.crawlFrom, 1))[0];
+      Object.assign(crawler, { still: true, lying: true, home0: PT.crawlFrom, cur: PT.crawlFrom, crawl: { from: PT.crawlFrom, to: PT.crawlTo, T0: T('grisha', 0), T1: T('sea', 0.55) } });
+      kill([crawler], ['sea', 0.72], ['sea', 0.82]);
+    }
     // 845: the gates break. Those nearest get in first; the stream goes on for years. About 110 in all.
     const first = take(outside, nearest(outside, SHIG.outer, 30));
     move(first, ['maria-fall', 0.36], ['maria-fall', 0.64], 'shig', { via: ['shig'], spread: 0.45 });
@@ -5709,6 +5756,10 @@ function lightAt(idx, p) {
         else if (f >= 1) { area = op.area; home = op.home; }
         else mv = { op, f };
       }
+      if (a.crawl) { // the crawling Titan: no wandering, just a very slow drag along its line
+        const c = a.crawl, p = lerp(c.from, c.to, clamp01((Tl - c.T0) / (c.T1 - c.T0)));
+        return { x: p[0], y: p[1], vis, dying, how, area: 'outside', crawling: true };
+      }
       const still = a.still || o.reduced;
       if (mv) {
         const { op, f } = mv, base = along(op.path, smooth(f));
@@ -5728,7 +5779,7 @@ function lightAt(idx, p) {
         const s = stateAt(a, Tl, 0, { reduced: true });
         if (s.vis <= 0.5) continue;
         if (a.kind === 'wallTitan') { out.wallTitan++; continue; }
-        const o = out[a.kind], reg = a.lying ? 'ragakoFixed' : regionOfArea(s.area);
+        const o = out[a.kind], reg = a.crawl ? 'outside' : a.lying ? 'ragakoFixed' : regionOfArea(s.area);
         o.total++; o[reg] = (o[reg] || 0) + 1;
       }
       return out;
@@ -6494,6 +6545,7 @@ function lightAt(idx, p) {
       }
       // places that appear during the story (the harbour)
       for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { ctx.save(); ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(s, s); global.MapPainter.icon(ctx, pl.kind); ctx.restore(); }
+      if (sc.crowd) drawCrawlTrail(view, sc);
       drawWalls(view, sc.walls, sc.T, sc.t);
       if (sc.crowd) {
         // the crowd's logic may run every 2nd or 3rd frame on slower devices; drawing stays every frame
@@ -6541,6 +6593,21 @@ function lightAt(idx, p) {
       }
       ctx.globalAlpha = 1;
     }
+    // The furrow the crawling Titan has dragged into the ground, from where it started to where it is now.
+    const crawler = pop.agents.find((a) => a.crawl);
+    function drawCrawlTrail(view, sc) {
+      if (!crawler || sc.T <= crawler.crawl.T0) return;
+      const c = crawler.crawl, f = Math.min(1, (sc.T - c.T0) / (c.T1 - c.T0)), s = view.s, n = Math.max(2, Math.ceil(f * 28));
+      ctx.beginPath();
+      for (let i = 0; i <= n; i++) {
+        const u = (f * i) / n, wob = Math.sin(u * 46) * 1.5 * Math.min(1, (f - u) * 14);
+        const sx = (c.from[0] + (c.to[0] - c.from[0]) * u + wob - view.x) * s + vw / 2, sy = (c.from[1] + (c.to[1] - c.from[1]) * u - view.y) * s + vh / 2;
+        if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy);
+      }
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgba(104,84,48,.36)'; ctx.lineWidth = Math.max(2.4, 3 * s); ctx.stroke();
+      ctx.strokeStyle = 'rgba(60,44,22,.55)'; ctx.lineWidth = Math.max(0.9, 0.8 * s); ctx.setLineDash([Math.max(3, 2.4 * s), Math.max(3, 2.4 * s)]); ctx.stroke(); ctx.setLineDash([]);
+    }
     // A signal flare: a coloured smoke trail rising from the riders (f = 0..1 through its life).
     function drawFlare(view, fl) {
       const s = view.s, sx = (fl.x - view.x) * s + vw / 2, sy = (fl.y - view.y) * s + vh / 2;
@@ -6568,7 +6635,7 @@ function lightAt(idx, p) {
       }
       ctx.globalCompositeOperation = 'source-over';
     }
-    // The figure under a screen point, if it is the lying Ragako Titan (for its explanation).
+    // The figure under a screen point, if it is the lying Ragako Titan or the crawling Titan (for its explanation).
     function lyingAt(view, px, py) {
       for (let i = 0; i < pop.agents.length; i++) {
         const a = pop.agents[i], d = dyn[i];
@@ -6668,6 +6735,10 @@ const TXT = {
     flareInfo: '信號彈：紅＝發現巨人 · 綠＝行進方向 · 黑＝奇行種',
     popWall: '城牆巨人',
     popWallNow: '由三道城牆走出，向海岸行進',
+    popCrawlTag: '爬行嘅巨人',
+    popCrawlInfo: '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞。',
+    camOn: '自動鏡頭：開',
+    camOff: '自動鏡頭：關',
     popLyingTag: '拉加哥村的巨人（無法行動）',
     popLyingInfo: '拉加哥村的巨人（無法行動）：調查兵團發現佢倒臥村中，四肢太瘦，無法走動；佢一直留喺度，直到巨人之力消失先變返人。',
   },
@@ -6744,6 +6815,10 @@ const TXT = {
     flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
     popWallNow: 'stepping out of the three Walls and marching to the sea',
+    popCrawlTag: 'Crawling Titan',
+    popCrawlInfo: 'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”.',
+    camOn: 'Auto camera: on',
+    camOff: 'Auto camera: off',
     popLyingTag: 'Ragako Titan (cannot move)',
     popLyingInfo:
       'The Ragako Titan (cannot move): the Scouts found it lying in the village, its limbs too thin to walk. It stays there until the Titans’ power ends and it becomes human again.',
@@ -6820,6 +6895,10 @@ const TXT = {
     flareInfo: '信煙弾：赤＝巨人発見 · 緑＝進路変更 · 黒＝奇行種',
     popWall: '壁の巨人',
     popWallNow: '三つの壁から現れ、海へ進む',
+    popCrawlTag: '這う巨人',
+    popCrawlInfo: '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づく。',
+    camOn: '自動カメラ：オン',
+    camOff: '自動カメラ：オフ',
     popLyingTag: 'ラガコ村の巨人（動けない）',
     popLyingInfo: 'ラガコ村の巨人（動けない）：調査兵団が村で横たわっているのを発見した。手足が細すぎて歩けず、巨人の力が消えて人間に戻るまでそこに留まる。',
   },
@@ -6862,6 +6941,7 @@ const MAP_LABELS = (() => {
   out.push({ key: 'forest', text: labels.forest, p: P.forest, dx: 0, dy: 26, align: 'c', min: 0.75, minor: true });
   out.push({ key: 'harbor', text: labels.harbor, p: P.harbor, dx: -12, dy: 2, align: 'r', min: 0.42, minor: true, since: 'overseas' });
   out.push({ key: 'krugerWall', text: labels.krugerWall, p: P.krugerWall, dx: 0, dy: 15, align: 'c', min: 0.42, minor: true });
+  out.push({ key: 'crawl', text: C('爬行巨人嘅痕跡', 'Crawling Titan’s path', '這う巨人の跡'), p: [P.crawlFrom[0] * 0.8 + P.crawlTo[0] * 0.2, P.crawlFrom[1] * 0.8 + P.crawlTo[1] * 0.2], dx: 16, dy: 4, align: 'l', min: 1.5, minor: true, since: 'grisha' });
   out.push({ key: 'south', text: C('巨人聚集地', 'Titan country', '巨人の集まる地'), p: P.south, dx: 46, dy: 0, align: 'l', min: 0.42, max: 1.6, minor: true });
   return out;
 })();
@@ -7168,9 +7248,10 @@ function renderPopStatus(force) {
 let lyingTag = null, lyingTagTimer = 0;
 function showLyingTag(hit) {
   const t = TXT[S.lang];
-  $('#mapInfo').textContent = t.popLyingInfo;
+  const crawl = !!hit.agent.crawl; // the crawling Titan has its own note
+  $('#mapInfo').textContent = crawl ? t.popCrawlInfo : t.popLyingInfo;
   if (lyingTag) lyingTag.el.remove();
-  const g = labelBox($('#pins') || $('#mapSvg'), t.popLyingTag, 'l', 'point-label');
+  const g = labelBox($('#pins') || $('#mapSvg'), crawl ? t.popCrawlTag : t.popLyingTag, 'l', 'point-label');
   lyingTag = { el: g, p: [hit.x, hit.y], dx: 22, dy: -6 };
   placePin(lyingTag);
   clearTimeout(lyingTagTimer);
@@ -7433,6 +7514,7 @@ function updateLang() {
   document.documentElement.lang = LANG_TAG[S.lang];
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = TXT[S.lang][el.dataset.i18n];
   for (const b of document.querySelectorAll('#langSwitch [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang));
+  renderAutoBtn();
   paintEvent();
   buildFilters();
   renderPopToggle();
@@ -7470,9 +7552,15 @@ function sceneView(tracking) {
 function setAuto(on) {
   CAM.auto = on;
   CAM.retarget = on;
-  $('#zoomReset').setAttribute('aria-pressed', String(on));
+  renderAutoBtn();
 }
-// You moved the map: the camera stops following until you press ↺ or Play.
+// The auto-camera switch says in words whether the camera follows the story.
+function renderAutoBtn() {
+  const b = $('#zoomReset');
+  b.setAttribute('aria-pressed', String(CAM.auto));
+  b.textContent = CAM.auto ? TXT[S.lang].camOn : TXT[S.lang].camOff;
+}
+// You moved the map: the camera stops following until you switch auto camera back on or press Play.
 function userView(v) {
   setAuto(false);
   CAM.target = null;
@@ -7636,7 +7724,10 @@ mapViewport.addEventListener(
 );
 $('#zoomIn').onclick = () => zoomBy(1.35);
 $('#zoomOut').onclick = () => zoomBy(1 / 1.35);
-$('#zoomReset').onclick = () => setAuto(true);
+$('#zoomReset').onclick = () => {
+  if (CAM.auto) CAM.target = null; // switching off leaves the view where it is
+  setAuto(!CAM.auto);
+};
 $('#zoomSlider').oninput = (ev) => {
   const lim = Camera.limits(World, CAM.vw, CAM.vh, MAX_SCALE);
   zoomBy(Camera.sliderToScale(ev.target.value / 100, lim) / CAM.view.s);

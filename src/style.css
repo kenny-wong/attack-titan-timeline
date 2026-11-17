@@ -2493,3 +2493,41 @@ body {
     transform: scale(2.9);
   }
 }
+
+/* the auto-camera switch: a labelled on/off pill like the crowd switch */
+.map-toolbar .pop-toggle.auto-cam {
+  margin: 0 0 0 6px;
+}
+.pop-toggle.auto-cam[aria-pressed='true'] {
+  border-color: #d7bb80;
+  color: #f4d79b;
+}
+@media (max-width: 700px) {
+  .map-head {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .map-toolbar {
+    margin-left: auto;
+  }
+  .map-toolbar .pop-toggle {
+    padding: 0 8px;
+    margin: 0 4px 0 0;
+  }
+  .map-toolbar .pop-toggle.auto-cam {
+    margin: 0 0 0 4px;
+  }
+}
+
+/* the map hint stays on one line beside the wider toolbar */
+@media (min-width: 701px) {
+  .map-head > div:first-child {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+  .map-head .map-sub {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

@@ -31,6 +31,7 @@ const P = (() => {
     south: [512, 1118], // titan country between Shiganshina and the south coast
     krugerWall: coastAt(84, -5), // Marley's sea wall on the south coast, where exiles were turned into Titans
     landing: coastAt(81, -5), // where the Warriors came ashore in 845
+    crawlFrom: coastAt(85, -12), crawlTo: [510, 1150], // the crawling Titan: from near the sea wall to where the Scouts find it in 851
     shore: coastAt(78, -3), // the beach the Scouts reached in 851
     ship: coastAt(78, 46), // just off that beach
     harbor: coastAt(104, -5), harborSea: coastAt(104, 46), // the harbour built with the Volunteers

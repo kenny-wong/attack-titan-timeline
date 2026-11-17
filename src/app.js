@@ -81,6 +81,10 @@ const TXT = {
     flareInfo: '信號彈：紅＝發現巨人 · 綠＝行進方向 · 黑＝奇行種',
     popWall: '城牆巨人',
     popWallNow: '由三道城牆走出，向海岸行進',
+    popCrawlTag: '爬行嘅巨人',
+    popCrawlInfo: '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞。',
+    camOn: '自動鏡頭：開',
+    camOff: '自動鏡頭：關',
     popLyingTag: '拉加哥村的巨人（無法行動）',
     popLyingInfo: '拉加哥村的巨人（無法行動）：調查兵團發現佢倒臥村中，四肢太瘦，無法走動；佢一直留喺度，直到巨人之力消失先變返人。',
   },
@@ -157,6 +161,10 @@ const TXT = {
     flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
     popWallNow: 'stepping out of the three Walls and marching to the sea',
+    popCrawlTag: 'Crawling Titan',
+    popCrawlInfo: 'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”.',
+    camOn: 'Auto camera: on',
+    camOff: 'Auto camera: off',
     popLyingTag: 'Ragako Titan (cannot move)',
     popLyingInfo:
       'The Ragako Titan (cannot move): the Scouts found it lying in the village, its limbs too thin to walk. It stays there until the Titans’ power ends and it becomes human again.',
@@ -233,6 +241,10 @@ const TXT = {
     flareInfo: '信煙弾：赤＝巨人発見 · 緑＝進路変更 · 黒＝奇行種',
     popWall: '壁の巨人',
     popWallNow: '三つの壁から現れ、海へ進む',
+    popCrawlTag: '這う巨人',
+    popCrawlInfo: '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づく。',
+    camOn: '自動カメラ：オン',
+    camOff: '自動カメラ：オフ',
     popLyingTag: 'ラガコ村の巨人（動けない）',
     popLyingInfo: 'ラガコ村の巨人（動けない）：調査兵団が村で横たわっているのを発見した。手足が細すぎて歩けず、巨人の力が消えて人間に戻るまでそこに留まる。',
   },
@@ -275,6 +287,7 @@ const MAP_LABELS = (() => {
   out.push({ key: 'forest', text: labels.forest, p: P.forest, dx: 0, dy: 26, align: 'c', min: 0.75, minor: true });
   out.push({ key: 'harbor', text: labels.harbor, p: P.harbor, dx: -12, dy: 2, align: 'r', min: 0.42, minor: true, since: 'overseas' });
   out.push({ key: 'krugerWall', text: labels.krugerWall, p: P.krugerWall, dx: 0, dy: 15, align: 'c', min: 0.42, minor: true });
+  out.push({ key: 'crawl', text: C('爬行巨人嘅痕跡', 'Crawling Titan’s path', '這う巨人の跡'), p: [P.crawlFrom[0] * 0.8 + P.crawlTo[0] * 0.2, P.crawlFrom[1] * 0.8 + P.crawlTo[1] * 0.2], dx: 16, dy: 4, align: 'l', min: 1.5, minor: true, since: 'grisha' });
   out.push({ key: 'south', text: C('巨人聚集地', 'Titan country', '巨人の集まる地'), p: P.south, dx: 46, dy: 0, align: 'l', min: 0.42, max: 1.6, minor: true });
   return out;
 })();
@@ -581,9 +594,10 @@ function renderPopStatus(force) {
 let lyingTag = null, lyingTagTimer = 0;
 function showLyingTag(hit) {
   const t = TXT[S.lang];
-  $('#mapInfo').textContent = t.popLyingInfo;
+  const crawl = !!hit.agent.crawl; // the crawling Titan has its own note
+  $('#mapInfo').textContent = crawl ? t.popCrawlInfo : t.popLyingInfo;
   if (lyingTag) lyingTag.el.remove();
-  const g = labelBox($('#pins') || $('#mapSvg'), t.popLyingTag, 'l', 'point-label');
+  const g = labelBox($('#pins') || $('#mapSvg'), crawl ? t.popCrawlTag : t.popLyingTag, 'l', 'point-label');
   lyingTag = { el: g, p: [hit.x, hit.y], dx: 22, dy: -6 };
   placePin(lyingTag);
   clearTimeout(lyingTagTimer);
@@ -846,6 +860,7 @@ function updateLang() {
   document.documentElement.lang = LANG_TAG[S.lang];
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = TXT[S.lang][el.dataset.i18n];
   for (const b of document.querySelectorAll('#langSwitch [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang));
+  renderAutoBtn();
   paintEvent();
   buildFilters();
   renderPopToggle();
@@ -883,9 +898,15 @@ function sceneView(tracking) {
 function setAuto(on) {
   CAM.auto = on;
   CAM.retarget = on;
-  $('#zoomReset').setAttribute('aria-pressed', String(on));
+  renderAutoBtn();
 }
-// You moved the map: the camera stops following until you press ↺ or Play.
+// The auto-camera switch says in words whether the camera follows the story.
+function renderAutoBtn() {
+  const b = $('#zoomReset');
+  b.setAttribute('aria-pressed', String(CAM.auto));
+  b.textContent = CAM.auto ? TXT[S.lang].camOn : TXT[S.lang].camOff;
+}
+// You moved the map: the camera stops following until you switch auto camera back on or press Play.
 function userView(v) {
   setAuto(false);
   CAM.target = null;
@@ -1049,7 +1070,10 @@ mapViewport.addEventListener(
 );
 $('#zoomIn').onclick = () => zoomBy(1.35);
 $('#zoomOut').onclick = () => zoomBy(1 / 1.35);
-$('#zoomReset').onclick = () => setAuto(true);
+$('#zoomReset').onclick = () => {
+  if (CAM.auto) CAM.target = null; // switching off leaves the view where it is
+  setAuto(!CAM.auto);
+};
 $('#zoomSlider').oninput = (ev) => {
   const lim = Camera.limits(World, CAM.vw, CAM.vh, MAX_SCALE);
   zoomBy(Camera.sliderToScale(ev.target.value / 100, lim) / CAM.view.s);

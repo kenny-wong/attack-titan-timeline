@@ -137,6 +137,14 @@
     fade(titans, ['founding', 0.4], ['founding', 1], 1, { spread: 0.7 });
     const SHIG = district('shig'), TROST = district('trost');
     const outside = [...titans], inMaria = [];
+    // The crawling Titan: its limbs are too small to walk, so it drags itself from the south coast towards the Walls for years.
+    // The Scouts find it in 851 on their way to the sea. It is one of the 300.
+    const PT = opts.points || {};
+    if (PT.crawlFrom && PT.crawlTo) {
+      const crawler = take(outside, nearest(outside, PT.crawlFrom, 1))[0];
+      Object.assign(crawler, { still: true, lying: true, home0: PT.crawlFrom, cur: PT.crawlFrom, crawl: { from: PT.crawlFrom, to: PT.crawlTo, T0: T('grisha', 0), T1: T('sea', 0.55) } });
+      kill([crawler], ['sea', 0.72], ['sea', 0.82]);
+    }
     // 845: the gates break. Those nearest get in first; the stream goes on for years. About 110 in all.
     const first = take(outside, nearest(outside, SHIG.outer, 30));
     move(first, ['maria-fall', 0.36], ['maria-fall', 0.64], 'shig', { via: ['shig'], spread: 0.45 });
@@ -337,6 +345,10 @@
         else if (f >= 1) { area = op.area; home = op.home; }
         else mv = { op, f };
       }
+      if (a.crawl) { // the crawling Titan: no wandering, just a very slow drag along its line
+        const c = a.crawl, p = lerp(c.from, c.to, clamp01((Tl - c.T0) / (c.T1 - c.T0)));
+        return { x: p[0], y: p[1], vis, dying, how, area: 'outside', crawling: true };
+      }
       const still = a.still || o.reduced;
       if (mv) {
         const { op, f } = mv, base = along(op.path, smooth(f));
@@ -356,7 +368,7 @@
         const s = stateAt(a, Tl, 0, { reduced: true });
         if (s.vis <= 0.5) continue;
         if (a.kind === 'wallTitan') { out.wallTitan++; continue; }
-        const o = out[a.kind], reg = a.lying ? 'ragakoFixed' : regionOfArea(s.area);
+        const o = out[a.kind], reg = a.crawl ? 'outside' : a.lying ? 'ragakoFixed' : regionOfArea(s.area);
         o.total++; o[reg] = (o[reg] || 0) + 1;
       }
       return out;

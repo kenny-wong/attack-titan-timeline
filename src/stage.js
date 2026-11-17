@@ -214,6 +214,7 @@
       }
       // places that appear during the story (the harbour)
       for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { ctx.save(); ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(s, s); global.MapPainter.icon(ctx, pl.kind); ctx.restore(); }
+      if (sc.crowd) drawCrawlTrail(view, sc);
       drawWalls(view, sc.walls, sc.T, sc.t);
       if (sc.crowd) {
         // the crowd's logic may run every 2nd or 3rd frame on slower devices; drawing stays every frame
@@ -261,6 +262,21 @@
       }
       ctx.globalAlpha = 1;
     }
+    // The furrow the crawling Titan has dragged into the ground, from where it started to where it is now.
+    const crawler = pop.agents.find((a) => a.crawl);
+    function drawCrawlTrail(view, sc) {
+      if (!crawler || sc.T <= crawler.crawl.T0) return;
+      const c = crawler.crawl, f = Math.min(1, (sc.T - c.T0) / (c.T1 - c.T0)), s = view.s, n = Math.max(2, Math.ceil(f * 28));
+      ctx.beginPath();
+      for (let i = 0; i <= n; i++) {
+        const u = (f * i) / n, wob = Math.sin(u * 46) * 1.5 * Math.min(1, (f - u) * 14);
+        const sx = (c.from[0] + (c.to[0] - c.from[0]) * u + wob - view.x) * s + vw / 2, sy = (c.from[1] + (c.to[1] - c.from[1]) * u - view.y) * s + vh / 2;
+        if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy);
+      }
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgba(104,84,48,.36)'; ctx.lineWidth = Math.max(2.4, 3 * s); ctx.stroke();
+      ctx.strokeStyle = 'rgba(60,44,22,.55)'; ctx.lineWidth = Math.max(0.9, 0.8 * s); ctx.setLineDash([Math.max(3, 2.4 * s), Math.max(3, 2.4 * s)]); ctx.stroke(); ctx.setLineDash([]);
+    }
     // A signal flare: a coloured smoke trail rising from the riders (f = 0..1 through its life).
     function drawFlare(view, fl) {
       const s = view.s, sx = (fl.x - view.x) * s + vw / 2, sy = (fl.y - view.y) * s + vh / 2;
@@ -288,7 +304,7 @@
       }
       ctx.globalCompositeOperation = 'source-over';
     }
-    // The figure under a screen point, if it is the lying Ragako Titan (for its explanation).
+    // The figure under a screen point, if it is the lying Ragako Titan or the crawling Titan (for its explanation).
     function lyingAt(view, px, py) {
       for (let i = 0; i < pop.agents.length; i++) {
         const a = pop.agents[i], d = dyn[i];

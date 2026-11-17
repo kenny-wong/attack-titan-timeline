@@ -75,7 +75,7 @@ test('civilians live inside the Walls, leave Maria when it falls and resettle it
 test('Ragako: Titans appear inside Wall Rose without a breach; one stays, unable to move', () => {
   const k = pop.counts(T('ragako', 0.6));
   assert.ok(k.titan.rose >= 15);
-  const lying = titans.find((a) => a.lying);
+  const lying = titans.find((a) => a.lying && !a.crawl);
   assert.strictEqual(pop.counts(T('ships', 0.5)).titan.ragakoFixed, 1);
   assert.strictEqual(pop.stateAt(lying, T('alliance', 1), 0, { reduced: true }).vis, 0);
 });
@@ -140,4 +140,29 @@ test('evacuation boats go up the river from Shiganshina to behind Wall Rose in 8
   }
   const k = pop.counts(T('maria-fall', 0.7));
   assert.strictEqual(k.civ.total, at(T('maria-fall', 0.7), civs).length);
+});
+
+test('the crawling Titan drags itself from the south coast towards the Walls and is found by the Scouts in 851', () => {
+  const crawler = titans.find((a) => a.crawl);
+  assert.ok(crawler && crawler.lying && crawler.still, 'one Titan crawls');
+  assert.strictEqual(titans.filter((a) => a.crawl).length, 1);
+  const pos = (id, p) => pop.stateAt(crawler, T(id, p), 0, {});
+  const start = pos('grisha', 0), mid = pos('trost-attack', 0.5), found = pos('sea', 0.6);
+  assert.ok(World.coastDist([start.x, start.y]) < 20, 'it starts near the south coast');
+  assert.ok(start.y > mid.y && mid.y > found.y, 'it only ever moves north, towards Shiganshina');
+  assert.ok(Math.hypot(found.x - c.P.crawlTo[0], found.y - c.P.crawlTo[1]) < 0.01);
+  assert.ok(found.y > c.P.shigO[1] + 60, 'it never reaches the Wall');
+  for (const s of [start, mid, found]) assert.strictEqual(World.regionOf([s.x, s.y]), 'outside');
+  // real time does not move it: it cannot walk
+  const a = pop.stateAt(crawler, T('cadets', 0.5), 0, {}), b = pop.stateAt(crawler, T('cadets', 0.5), 40, {});
+  assert.ok(a.x === b.x && a.y === b.y);
+  // on the route the Scouts ride to the sea, and gone once the island is cleared
+  const ride = E.find((e) => e.id === 'sea').routes[0].path.map((p) => (Array.isArray(p) ? p : c.P[p]));
+  assert.ok(ride.some((p) => Math.hypot(p[0] - found.x, p[1] - found.y) < 40), 'the Scouts pass close by');
+  assert.strictEqual(pos('sea', 0.6).vis, 1);
+  assert.strictEqual(pos('ships', 0.5).vis, 0);
+  // it is one of the 300 outside, not an extra and not counted with the Ragako Titan
+  const k = pop.counts(T('grisha', 0.5));
+  assert.strictEqual(k.titan.total, 300);
+  assert.strictEqual(k.titan.ragakoFixed || 0, 0);
 });
