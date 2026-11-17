@@ -129,7 +129,7 @@
       </section>
       <section class="panel status-panel"><div class="status-top"><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.2.4</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.2.5</span></div></div>
     </aside>
   </div>
 </div>
@@ -833,7 +833,9 @@ function renderDynamic(){const st=wallState(S.idx);const sig=JSON.stringify(st);
 function updateLang(){document.documentElement.lang=S.lang==='zh'?'zh-Hant':'en';for(const el of document.querySelectorAll('[data-i18n]'))el.textContent=TXT[S.lang][el.dataset.i18n];$('#langBtn').textContent=S.lang==='zh'?'ENGLISH':'繁體中文';paintEvent();buildFilters();renderPopToggle();if(typeof fitLayout==='function')requestAnimationFrame(fitLayout)}
 function renderPlaybackButton(){const btn=$('#playBtn');btn.innerHTML=(S.playing?'Ⅱ ':'▶ ')+(S.playing?TXT[S.lang].pause:TXT[S.lang].play);btn.setAttribute('aria-pressed',String(S.playing))}
 function advanceEvent(delta){const pos=visible.indexOf(S.idx),next=Math.min(visible.length-1,Math.max(0,pos+delta));selectEvent(visible[next])}
-function animate(t){const elapsed=S.lastTime?Math.min(100,t-S.lastTime):0;S.lastTime=t;if(S.playing){S.p+=elapsed/(13000/S.speed);if(S.p>=1){const pos=visible.indexOf(S.idx);if(pos<visible.length-1)selectEvent(visible[pos+1],{keepPlaying:true});else{S.p=1;S.playing=false;renderPlaybackButton()}}renderDynamic()}popFrame(t/1000);requestAnimationFrame(animate)}
+function animate(t){const elapsed=S.lastTime?Math.min(100,t-S.lastTime):0;S.lastTime=t;if(S.playing){S.p+=elapsed/(13000/(S.speed*(EVENT_PACE[events[S.idx].id]||1)));if(S.p>=1){const pos=visible.indexOf(S.idx);if(pos<visible.length-1)selectEvent(visible[pos+1],{keepPlaying:true});else{S.p=1;S.playing=false;renderPlaybackButton()}}renderDynamic()}popFrame(t/1000);requestAnimationFrame(animate)}
+// Short scenes play faster than the rest (multiplies the chosen speed).
+const EVENT_PACE={founding:2.5,grisha:2};
 function popFrame(t){POP_VIEW.frame(S.idx+S.p,t,{on:S.pop,scale:Math.min(uiK,1.4),reduced:REDUCED})}
 $('#playBtn').addEventListener('click',()=>{if(!S.playing&&S.p>=1){const at=visible.indexOf(S.idx);if(at<visible.length-1)selectEvent(visible[at+1]);else S.p=0}S.playing=!S.playing;renderPlaybackButton()});
 $('#prevBtn').onclick=()=>advanceEvent(-1);$('#nextBtn').onclick=()=>advanceEvent(1);
