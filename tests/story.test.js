@@ -232,3 +232,15 @@ test('after 857: railways stay on land, ports sit on the coast, and nothing new 
   }
   assert.ok(G.places.filter((g) => g.kind === 'port').length >= 3);
 });
+
+test('the harbour railway is older than the Rumbling, runs outside the Walls where the great circle wrecks it, and is laid again after 857', () => {
+  const G = c.GROWTH, first = G.rails.find((rl) => rl.id === 'harbour'), again = G.rails.find((rl) => rl.id === 'harbour-relaid');
+  assert.ok(first && again);
+  assert.strictEqual(first.from[0], 'overseas');
+  assert.strictEqual(again.from[0], 'rebuild');
+  const geo = c.RouteGeo.build(first.path, 1);
+  for (let i = 0; i <= 40; i++) { const q = c.RouteGeo.at(geo.tab, i / 40); assert.ok(World.rOf([q.x, q.y]) >= World.R.maria + 29, 'the first harbour line stays outside Wall Maria'); }
+  // the new one joins the same two ends
+  const ends = (rl) => [rl.path[0], rl.path.at(-1)].map((p) => p.map(Math.round).join()).sort().join(' ');
+  assert.strictEqual(ends(again), ends(first));
+});

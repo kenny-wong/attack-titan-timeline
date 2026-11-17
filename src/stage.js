@@ -317,6 +317,29 @@
     }
     // ---- Railways: each line is laid during the story, and a train runs on it once it is finished ----
     const railDone = new Map();
+    // A line the Rumbling has reached: intact ahead of the great circle, torn up behind it (outside Wall Maria only).
+    function drawWreckedRail(rl, view, T, bed) {
+      const s = view.s, RG = global.RouteGeo, rho = pop.rumble.front(T), N = 44;
+      const gone = Math.max(0, Math.min(1, (T - pop.T('rebuild', 0)) / 0.25)); // the wreckage is cleared away when the line is laid again
+      const X = (q) => (q.x - view.x) * s + vw / 2, Y = (q) => (q.y - view.y) * s + vh / 2;
+      const whole = new Path2D(), torn = new Path2D();
+      let prev = RG.at(rl.geo.tab, 0);
+      for (let i = 1; i <= N; i++) {
+        const q = RG.at(rl.geo.tab, i / N), r = Math.hypot((prev.x + q.x) / 2 - C[0], (prev.y + q.y) / 2 - C[1]);
+        const path = r > rho || r < R.maria ? whole : torn;
+        if (path === torn) { const j = Math.sin(i * 12.9898) * bed * 0.9; path.moveTo(X(prev) + j, Y(prev) - j * 0.6); path.lineTo(X(q) - j * 0.5, Y(q) + j); } // each length knocked askew
+        else { path.moveTo(X(prev), Y(prev)); path.lineTo(X(q), Y(q)); }
+        prev = q;
+      }
+      ctx.lineCap = 'butt'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgba(38,32,27,.9)'; ctx.lineWidth = bed; ctx.stroke(whole);
+      ctx.strokeStyle = '#efe8d4'; ctx.lineWidth = bed * 0.46; ctx.setLineDash([bed * 1.25, bed * 1.25]); ctx.stroke(whole); ctx.setLineDash([]);
+      if (gone < 1) { // twisted rails and scattered sleepers
+        ctx.globalAlpha = 0.75 * (1 - gone);
+        ctx.strokeStyle = '#3a2c20'; ctx.lineWidth = Math.max(1, bed * 0.42); ctx.setLineDash([bed * 0.9, bed * 1.5]); ctx.stroke(torn); ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+      }
+    }
     function drawRails(view, sc) {
       const rails = terrain.rails;
       if (!rails) return;
@@ -324,6 +347,7 @@
       for (let i = 0; i < rails.length; i++) {
         const rl = rails[i];
         if (sc.T <= rl.T0) continue;
+        if (rl.wreck && sc.T > pop.rumble.T0 && pop.rumble.front(sc.T) > R.maria) { drawWreckedRail(rl, view, sc.T, bed); continue; } // the great circle is tearing it up
         const f = Math.min(1, (sc.T - rl.T0) / (rl.T1 - rl.T0));
         let path = f >= 1 ? railDone.get(rl) : null;
         if (!path) { path = new Path2D(f >= 1 ? rl.geo.d : RG.slice(rl.geo.tab, f)); if (f >= 1) railDone.set(rl, path); }

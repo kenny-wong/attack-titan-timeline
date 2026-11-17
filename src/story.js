@@ -314,7 +314,8 @@ const SCENES = (() => {
 })();
 // ---- What Paradis builds: railway lines and new places ----
 // Each has the event and scene progress at which it is begun and finished. The first line, from the harbour to Shiganshina,
-// is the one laid with the Volunteers before the war (851-854). Everything else belongs to the closing event and is schematic:
+// is the one laid with the Volunteers before the war (851-854); the Rumbling wrecks it and it is laid again afterwards.
+// Everything else belongs to the closing event and is schematic:
 // the story only hints at how the island grew afterwards.
 const GROWTH = (() => {
   const { at, coastAt, district: D } = World;
@@ -323,6 +324,7 @@ const GROWTH = (() => {
   const N2 = at(440, -90);
   const rails = [
     { id: 'harbour', from: ['overseas', 0.15], to: ['overseas', 0.9], path: [P.harbor, at(330, 100), P.outer, P.shigO] },
+    { id: 'harbour-relaid', from: ['rebuild', 0.02], to: ['rebuild', 0.2], path: [P.shigO, P.outer, at(330, 100), P.harbor] }, // the Rumbling wrecked the first one
     { id: 'south', from: ['rebuild', 0.02], to: ['rebuild', 0.26], path: [...thru('shig', false), ...thru('trost', false), ...thru('ehrmich', false), World.C] },
     { id: 'north', from: ['rebuild', 0.1], to: ['rebuild', 0.5], path: [World.C, ...thru('orvud', true), ...thru('utopia', true), ...thru('mariaN', true), at(330, -90), N2, port(-90)] },
     { id: 'east', from: ['rebuild', 0.14], to: ['rebuild', 0.46], path: [World.C, ...thru('stohess', true), ...thru('karanes', true), ...thru('holst', true), port(0)] },

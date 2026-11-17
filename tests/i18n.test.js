@@ -59,3 +59,10 @@ test('the page has a mini map, and the illustrative-map note is gone', () => {
   assert.ok(!/data-i18n="schematic"/.test(html));
   assert.ok(!/^\s+schematic:/m.test(app), 'the note text is still in the interface text');
 });
+
+test('the page sets up the crowd model before anything that reads it at load', () => {
+  // top-level statements run in order; reading POP earlier stops the whole page
+  const lines = app.split('\n'), made = lines.findIndex((l) => l.startsWith('const POP = '));
+  assert.ok(made > 0);
+  lines.forEach((l, i) => { if (i < made && /^\S/.test(l) && !/^(function|\/\/)/.test(l)) assert.ok(!/\bPOP\./.test(l), 'line ' + (i + 1) + ' uses POP before it exists'); });
+});

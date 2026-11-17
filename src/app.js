@@ -373,11 +373,11 @@ const PHONE = innerWidth < 760;
 const QUALITY = PHONE || (navigator.deviceMemory && navigator.deviceMemory <= 2) ? 'low' : 'high'; // phones get a lighter map and sprites
 const TERRAIN = Terrain.build(TERRAIN_GRID, World);
 TERRAIN.places.find((p) => p.id === 'harbor').sinceT = events.findIndex((e) => e.id === 'overseas'); // the harbour is built after 851
+const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), settle: GROWTH.places.map((g) => g.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
 // What is built later: railway lines grow between two moments of the story; new places appear at theirs.
 const storyT = ([id, p]) => events.findIndex((e) => e.id === id) + p;
-TERRAIN.rails = GROWTH.rails.map((rl) => ({ id: rl.id, geo: RouteGeo.build(rl.path, 1), T0: storyT(rl.from), T1: storyT(rl.to) }));
+TERRAIN.rails = GROWTH.rails.map((rl) => ({ id: rl.id, geo: RouteGeo.build(rl.path, 1), T0: storyT(rl.from), T1: storyT(rl.to), wreck: storyT(rl.from) < POP.wallsFall })); // a line older than the Rumbling is wrecked by it
 for (const g of GROWTH.places) TERRAIN.places.push({ id: g.id, kind: g.kind, p: g.p, sea: g.sea, sinceT: storyT(g.at) });
-const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), settle: GROWTH.places.map((g) => g.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
 const STAGE = Stage.create($('#stage'), World, TERRAIN, POP, QUALITY);
 const MAX_SCALE = QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
@@ -970,7 +970,7 @@ function drawMini(T) {
   // the railways laid so far
   g.strokeStyle = 'rgba(24,20,18,.85)'; g.lineWidth = 0.9 * dpr;
   for (const rl of TERRAIN.rails) {
-    if (T <= rl.T0) continue;
+    if (T <= rl.T0 || (rl.wreck && POP.rumble.front(T) > World.R.maria + 40)) continue; // wrecked by the Rumbling
     const f = Math.min(1, (T - rl.T0) / (rl.T1 - rl.T0));
     g.beginPath();
     for (let i = 0; i <= 14; i++) { const q = RouteGeo.at(rl.geo.tab, (f * i) / 14); if (i) g.lineTo(q.x * k, q.y * k); else g.moveTo(q.x * k, q.y * k); }
