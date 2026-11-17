@@ -71,3 +71,12 @@ test('a route reaching a gate arrives by the time the gate breaks or is sealed',
     }
   }
 });
+
+test('the 845 Warriors land on the south-west coast and head east without doubling back', () => {
+  const routes = ev('marcel').routes;
+  const arrive = routes.find((r) => r.who === 'reiner' && r.start === 0), onward = routes.find((r) => r.who === 'reiner' && r.start > 0.5);
+  const [a0, a1] = arrive.path.map(pt), [b0, b1] = onward.path.map(pt);
+  assert.ok(a0[0] < pt('shigO')[0] - 150, 'landing should be well west of Shiganshina');
+  const u = [a1[0] - a0[0], a1[1] - a0[1]], v = [b1[0] - b0[0], b1[1] - b0[1]];
+  assert.ok(u[0] * v[0] + u[1] * v[1] > 0, 'the onward route should not reverse the arrival direction');
+});
