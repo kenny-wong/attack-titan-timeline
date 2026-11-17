@@ -131,6 +131,15 @@ const SCENES = (() => {
       ],
       marks: [{ point: 'reiss', kind: 'reveal' }],
     },
+    reclamation: {
+      routes: [
+        r('civ', 'defense', ['roseLand', 'trostI', 'trost', 'trostO', 'between', at(232, 68)], 0.04, 0.62),
+        { ...r('garrison', 'defense', ['roseLand', 'trostI', 'trost'], 0, 0.3), offset: [24, 0] },
+        r('pure', 'attack', [at(226, 56), at(230, 66), 'between'], 0.34, 0.8),
+        r('civ', 'neutral', ['between', 'trostO', 'trost'], 0.84, 1),
+      ],
+      marks: [{ point: 'between', kind: 'attack', at: 0.56 }],
+    },
     cadets: {
       routes: [r('reiner', 'covert', ['trostI', 'cadetCamp'], 0, 0.65, true), { ...r('annie', 'covert', ['trostI', 'cadetCamp'], 0.2, 0.75, true), offset: [24, 0] }],
       marks: [{ point: 'cadetCamp', kind: 'infiltrate' }],
@@ -230,8 +239,26 @@ const SCENES = (() => {
     ambassadors: { routes: [r('alliance', 'neutral', ['sea', 'harborSea', 'harbor'], 0, 0.95, true)], marks: [{ point: 'harbor', kind: 'reveal' }] },
   };
 })();
+// Time of day within an event: [progress, light] pairs, 1 = day and 0 = night. Events not listed are in daylight.
+// Titans do not move at night - except under the moon at Utgard, the anomaly the soldiers noticed.
+const LIGHT = {
+  marcel: [[0, 0], [0.24, 0], [0.36, 1]], // the Warriors walk by night and are caught at dawn
+  refugees: [[0, 1], [0.6, 0.6], [1, 0.3]], // the evacuation runs into the evening
+  'founder-transfer': [[0, 0.3], [0.14, 0], [0.9, 0], [1, 0.25]], // the night of the fall
+  utgard: [[0, 0], [0.82, 0], [0.96, 1]], // a night siege; rescue at dawn
+  rod: [[0, 0], [0.3, 0], [0.48, 1]], // out of the cavern by night, Orvud at dawn
+  'maria-retaken': [[0, 0], [0.24, 0], [0.36, 1]], // the Scouts ride by night because Titans sleep
+};
+const NIGHT_ACTIVE = new Set(['utgard']);
 const events = EVENT_TEXT.map((t) => {
   const scene = SCENES[t.id];
   if (!scene) throw new Error('No scene for event ' + t.id);
-  return { ...t, routes: scene.routes, marks: scene.marks };
+  return { ...t, routes: scene.routes, marks: scene.marks, light: LIGHT[t.id] || [[0, 1]], nightActive: NIGHT_ACTIVE.has(t.id) };
 });
+// Daylight (0..1) at a point of the timeline.
+function lightAt(idx, p) {
+  const k = events[idx].light;
+  if (p <= k[0][0]) return k[0][1];
+  for (let i = 1; i < k.length; i++) if (p <= k[i][0]) { const f = (p - k[i - 1][0]) / (k[i][0] - k[i - 1][0]); return k[i - 1][1] + (k[i][1] - k[i - 1][1]) * (f * f * (3 - 2 * f)); }
+  return k[k.length - 1][1];
+}

@@ -1,4 +1,4 @@
-/* Story text for the 27 events: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
+/* Story text for the 28 events: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
    The movement on the map (routes and marks) is in story.js. Scene labels are original editorial summaries, not dialogue. */
 const EVENT_TEXT = [
   {
@@ -371,6 +371,67 @@ const EVENT_TEXT = [
         {
           zh: '新繼承者',
           en: 'New inheritor',
+        },
+      ],
+    ],
+    delta: {},
+  },
+  {
+    id: 'reclamation',
+    year: '846',
+    category: 'defend',
+    wall: 'rose',
+    place: 'trost',
+    title: {
+      zh: '瑪利亞奪還作戰：二十五萬難民被送出牆外',
+      en: 'The "reclamation" of Maria: 250,000 refugees sent outside',
+    },
+    description: {
+      zh: '瑪利亞失陷後一年，牆內糧食不足。王政府以「奪還瑪利亞」為名，將約二十五萬名難民（約佔人口兩成）由托洛斯特送出羅塞之牆，進入滿佈巨人嘅瑪利亞領土。',
+      en: 'A year after Maria fell, food inside the Walls ran short. In the name of "retaking Wall Maria", the royal government sent about 250,000 refugees, roughly a fifth of the population, out through Trost into Titan-filled Maria territory.',
+    },
+    outcome: {
+      zh: '生還者只有百餘人。呢次唔係敵人入牆，而係人類被送出牆外；牆內嘅糧食壓力因此減輕。',
+      en: 'Barely a couple of hundred came back. No enemy entered this time: people were sent out of the Wall, and the food shortage inside eased.',
+    },
+    beats: [
+      {
+        zh: '難民喺托洛斯特集結',
+        en: 'Refugees gather at Trost',
+      },
+      {
+        zh: '由城門進入瑪利亞領土',
+        en: 'They march out into Maria territory',
+      },
+      {
+        zh: '巨人被人群吸引圍攏',
+        en: 'Titans close in on the column',
+      },
+      {
+        zh: '只有極少數人返回',
+        en: 'Only a handful return',
+      },
+    ],
+    characters: [
+      [
+        'civ',
+        {
+          zh: '被徵召嘅難民',
+          en: 'Conscripted refugees',
+        },
+      ],
+      [
+        'pure',
+        {
+          zh: '被人群吸引',
+          en: 'Drawn to the crowd',
+        },
+      ],
+      [
+        'garrison',
+        {
+          zh: '守住城門',
+          en: 'Holds the gate',
         },
       ],
     ],

@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 420">
+  <defs>
+    <linearGradient id="sky" x2="0.12" y2="1"><stop stop-color="#102a30"/><stop offset=".46" stop-color="#38534c"/><stop offset=".78" stop-color="#ad6549"/><stop offset="1" stop-color="#dc8654"/></linearGradient>
+    <radialGradient id="glow" cx=".82" cy=".61" r=".6"><stop stop-color="#e8a16a" stop-opacity=".58"/><stop offset="1" stop-color="#803f36" stop-opacity="0"/></radialGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2=".06" y2="1"><stop stop-color="#c0baa0"/><stop offset=".16" stop-color="#939884"/><stop offset=".65" stop-color="#60736a"/><stop offset="1" stop-color="#30494a"/></linearGradient>
+    <linearGradient id="rim" x2="1" y2="0"><stop stop-color="#51655c"/><stop offset=".7" stop-color="#d4c4a0"/><stop offset="1" stop-color="#d6b48b"/></linearGradient>
+    <linearGradient id="muscle" x1=".15" y1="0" x2=".9" y2=".7"><stop stop-color="#cd7256"/><stop offset=".25" stop-color="#a0463b"/><stop offset=".65" stop-color="#733633"/><stop offset="1" stop-color="#402c2c"/></linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#e3c7a1"/><stop offset=".5" stop-color="#c1aa89"/><stop offset="1" stop-color="#897865"/></linearGradient>
+    <linearGradient id="steam" x2=".2" y2="1"><stop stop-color="#d9d3b7" stop-opacity="0"/><stop offset=".5" stop-color="#e0d6b9" stop-opacity=".31"/><stop offset="1" stop-color="#e6cba8" stop-opacity=".03"/></linearGradient>
+    <linearGradient id="left" x2="1" y2="0"><stop stop-color="#0d171b"/><stop offset=".35" stop-color="#0d171b" stop-opacity=".83"/><stop offset=".58" stop-color="#0d171b" stop-opacity=".36"/><stop offset=".78" stop-color="#0d171b" stop-opacity="0"/></linearGradient>
+    <linearGradient id="bottom" x2="0" y2="1"><stop offset=".55" stop-color="#0d171b" stop-opacity="0"/><stop offset="1" stop-color="#0d171b"/></linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1600v420H0Z"/>
+  <path fill="url(#glow)" d="M0 0h1600v420H0Z"/>
+  <!-- Wind-scoured cloud shelves -->
+  <g fill="#142f33" opacity=".66">
+    <path d="M0 14Q194 1 314 25t224 3q116-26 219-7t144 0Q804 59 644 53T358 66Q186 43 0 62Z"/>
+    <path d="M615 76q91-24 165-5t151 0q-65 36-169 27t-147-22Z"/>
+    <path d="M1011 0q109 22 193 11l122-11Z"/>
+    <path d="M1359 54q80-25 157-5l84-7v36q-117 0-241-24Z"/>
+  </g>
+  <g fill="#d39a71" opacity=".19">
+    <path d="M687 157q135-31 238-18l182-11-34 13-180 8-124 19Z"/>
+    <path d="m917 95 96-17 106 8-75 5Z"/>
+    <path d="m1372 124 119-18 109 9v7l-139-3Z"/>
+    <path d="m746 204 153-12 78 5-107 8Z"/>
+  </g>
+  <!-- Steam behind the giant -->
+  <g fill="url(#steam)">
+    <path d="M1121 269q-72-52-38-105 25-38 5-69-18-28 18-67-18 45 3 64 43 39 15 75-35 45 34 84Z"/>
+    <path d="M1392 252q68-61 18-100-39-30-9-66 16-22-8-61 55 41 30 72-17 27 13 46 69 50-15 133Z"/>
+    <path d="M1518 275q57-52 21-100-23-39 11-74-14 39 17 67 46 43-18 113Z"/>
+    <path d="M1179 125q-54-25-34-55 15-24-10-58 49 32 32 60-9 24 31 39Z"/>
+  </g>
+  <!-- Shoulder girdle and long exposed neck -->
+  <path fill="#513432" d="M1021 305q31-65 91-65l84-34h146l77 26q118-4 181 68v78h-579Z"/>
+  <path fill="url(#muscle)" d="M1047 294q47-42 94-45l68-35 21-45h93l26 46 74 32q109-5 177 70v28H1043Z"/>
+  <g fill="none" stroke="#c28b6d" stroke-width="3" opacity=".66">
+    <path d="m1225 182-29 60-61 31m101-86-28 66-57 30m96-92-24 68-44 31m121-101 27 62 69 29m-81-93 27 53 70 24m-86-73 25 45 74 19"/>
+    <path d="m1262 196-9 81m24-79 4 83m11-84 16 81"/>
+  </g>
+  <!-- Asymmetric original skull and muscle structure -->
+  <path fill="#382d2c" d="M1172 126q-2-58 42-87 33-23 76-21 52 1 80 41 21 29 20 78l8 7-7 48-13 9-14 35-37 36-44 12-43-17-33-35-19-44-12-13Z"/>
+  <path fill="url(#muscle)" d="M1180 129q-3-52 34-82 31-24 73-22 46-1 76 39 20 31 18 78l7 8-6 34-11 12-17 37-32 31-38 12-39-16-31-33-18-44-14-11Z"/>
+  <path fill="#ca7857" d="M1182 131q4-69 58-93l-25 49-7 55-15 18Z"/>
+  <path fill="#9e4a3a" d="M1237 43q32-19 54-11l3 90-16 27-14-19-20-52Z"/>
+  <path fill="#c16c4e" d="m1298 33 27 14 25 59 6 42-21-12-15-51Z"/>
+  <path fill="#743b32" d="m1335 49 25 26 13 47 1 34-13-7-13-51Z"/>
+  <g fill="none" stroke="#e1ac82" stroke-linecap="round" opacity=".61">
+    <path stroke-width="2.5" d="M1217 59q-22 36-22 80m35-89q-24 41-23 89m34-96q-20 43-21 87m33-93q-15 41-16 88m26-90-8 86m19-87-1 89m11-88 8 86m3-81q18 35 22 84m-8-73q19 34 23 73m-9-54 16 60"/>
+    <path stroke-width="1.2" d="m1221 66-15 54m32-57-11 52m27-62-5 59m41-63 6 61m27-41 11 50"/>
+  </g>
+  <!-- Eye sockets align with the middle banner crop -->
+  <path fill="url(#bone)" d="M1199 137q8-15 20-12l25 5 27 12q7 3 13-3 12-12 26-10l21 2q19 5 27 17l-3 13q-15-9-32-8-14 0-23 4l-17 17-14-1q-8-12-19-17-13-6-25-6l-26 9-9-10Z"/>
+  <path fill="#332c29" d="M1204 162q19-11 42 1l15 12q-18 13-38 8l-11-3Zm89 13q10-17 25-18 21-3 36 8l-7 17q-25 8-54-7Z"/>
+  <path fill="#91795f" d="M1208 169q16-8 38 3l-9 7-22-3Zm92 5q20-11 43-4l-4 9-20 3Z"/>
+  <path fill="#e7d7b4" d="M1216 172q13-4 26 2l-14 1Zm89 2q16-5 32-1l-14 3Z"/>
+  <path fill="#242c2a" d="M1227 170h4v5h-4Zm89 2h4v4h-4Z"/>
+  <path fill="#efc79a" d="m1267 159 12 5 12-4-2 33 11 14-21 8-18-9 9-15Z"/>
+  <path fill="#40312c" d="m1274 190-7 12 10 2 2-15Zm9-1 1 15 9-2Z"/>
+  <path fill="#d7b38c" d="m1198 180 13 9 30 4 13 12-14 7-23-6-13 16-10-26Zm153 13 18-13-2 25-14 21-14-17-22-4 5-11Z"/>
+  <!-- Cheek muscle fans -->
+  <path fill="#a14b3b" d="m1202 214 17-13 23 14 3 29-22-12Zm135 0 17-6 10 17-14 21-16 6Z"/>
+  <g fill="none" stroke="#dba47c" stroke-width="2" opacity=".76">
+    <path d="m1208 214 29 17m-26-11 28 18m-22-10 22 16m111-28-11 23m16-18-15 23m18-17-17 25"/>
+  </g>
+  <!-- Unsmiling exposed jaw -->
+  <path fill="#382e2a" d="m1244 215 19 6 20-2 18 3 29-5 5 23-18 16-34 5-29-9-16-15Z"/>
+  <path fill="url(#bone)" d="m1244 215 20 7 18-2 19 3 29-6-2 12-26 5-20-2-20 1-17-6Z"/>
+  <path fill="#c9b08c" d="m1247 236 18 3 17-2 20 2 25-4-7 11-19 7-19 1-20-6Z"/>
+  <g stroke="#6e5544" stroke-width="1.4" fill="none">
+    <path d="m1252 219 1 10m8-7 1 10m8-10v10m9-11v10m9-10v11m9-9v10m9-11-1 11m9-12-1 10m9-12-1 11m-65 10 1 9m8-7 1 10m8-12v13m9-13v15m9-15v13m10-13-2 10m10-12-3 8"/>
+  </g>
+  <path fill="#d0ab82" d="m1223 236 23 14 36 13 36-7 24-11-14 16-44 14-36-14Z"/>
+  <path fill="none" stroke="#e8bc90" stroke-width="2" opacity=".64" d="M1185 111q6-56 53-76m-34 151 6 14m123-167q33 19 42 58"/>
+  <!-- The unbroken mass of the Wall -->
+  <path fill="#445750" d="M0 226 1600 234v186H0Z"/>
+  <path fill="url(#stone)" d="M0 243 1600 246v174H0Z"/>
+  <path fill="url(#rim)" d="m0 226 1600 8v12L0 243Z"/>
+  <path fill="#e3cda7" opacity=".62" d="m0 226 1600 8v3L0 229Z"/>
+  <path fill="#314b47" opacity=".55" d="M0 243 1600 246v7L0 250Z"/>
+  <!-- Staggered ashlar joints and weathered vertical courses -->
+  <g fill="none" stroke="#3b5550" opacity=".39" stroke-width="1.3">
+    <path d="m0 278 1600 2M0 317l1600 1M0 358h1600M0 398h1600"/>
+    <path d="m72 245 2 33m111-32-1 32m112-32-1 32m112-31v32m112-32v32m111-32 1 32m112-31v32m111-32 1 32m111-31 1 32m111-32v32m111-31 1 31m111-30 1 31m110-30 1 30m111-30v31"/>
+    <path d="m17 278 1 39m111-39 1 39m110-39 1 39m111-39 1 39m110-38 1 39m111-39v39m111-39 1 39m111-39 1 39m111-39 1 39m111-38 1 39m110-39 1 39m111-39 1 39m110-39 1 39m111-39 1 39m-1517 1v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40m112-40v40"/>
+  </g>
+  <g fill="#d8d1af" opacity=".1">
+    <path d="m782 253 9 0-3 71-4 19Zm151 0h13l-3 47-5 13Zm184 1h8l-2 95-4-29Zm196 0h11l-5 81-3 12Zm234 1h14l-3 64-7-11Z"/>
+  </g>
+  <g fill="#2f4944" opacity=".18">
+    <path d="M824 251h9l-3 57-4 16Zm219 0h13l-4 83-6-17Zm184 0h8l-3 101-4-21Zm188 0h12l-5 48-4 15Z"/>
+  </g>
+  <!-- A single hand curls over the coping -->
+  <path fill="#482e2a" d="M1450 234q-8-21 4-37 9-10 21 1 9-18 22-9 11-11 22-1 17-5 24 12l23 45-7 22-17 2-9-9-2 18-14 9-12-10-4 7-16-2-8-16-4 10-14-2-10-23Z"/>
+  <path fill="url(#muscle)" d="m1455 234 2-26q3-16 13-5l8 27 1-29q3-16 14-7l9 35-1-30q2-13 12-6l10 35-3-29q5-11 12-1l26 48-5 16-10 1-13-25-3 33-8 9-9-7-6-40-4 43-10-1-8-40-7 33-10-3Z"/>
+  <g fill="none" stroke="#dbad85" stroke-width="3" stroke-linecap="round">
+    <path d="m1462 210 9 28-3 17m17-53 11 33-2 29m14-62 11 33-2 31m9-61 20 36 4 12"/>
+  </g>
+  <g fill="#ceb28b"><path d="m1463 258 9 1-1 7-6-2Zm25 10 10 1-1 8-7-1Zm25 6 10-2-4 7-5-1Zm32-18 9-2-1 7-7 1Z"/></g>
+  <!-- Steam washes across the Wall, with hand-drawn tapered curls -->
+  <g fill="url(#steam)">
+    <path d="M1118 306q-57-25-37-69 16-33-7-54-22-20-7-42-3 29 24 39 32 26 15 59-20 36 47 51Z"/>
+    <path d="M1390 299q-42-41-17-65 25-29 2-62-18-26 5-57-5 28 13 48 36 34 7 67-28 26 25 54Z"/>
+    <path d="M1512 327q73-27 43-68-21-32 5-52-7 25 15 44 49 51-28 86Z"/>
+    <path d="M1213 277q-26 29 10 47 43 20 15 52 12-27-30-40-47-21 5-59Z"/>
+  </g>
+  <!-- Far settlement: pitched roofs, chimneys and a slender belfry -->
+  <g fill="#30433e">
+    <path d="m731 365 30-21 28 17 22-30 30 28 24-8 27-27 28 24 24-5 28 14 30-34 33 29 26-21 31 19 22-8 31 23 28-38 32 23 23-12 32 21 25-29 30 21 27-12 23 19 25-31 28 19 26-5 24 22 29-37 29 23 33-12 25 22v88H731Z"/>
+  </g>
+  <g fill="#172d2e" stroke="#172d2e" stroke-linejoin="round">
+    <path d="M744 420v-33l35-29 37 29v33m-6 0v-47l29-26 37 26v47m-14 0v-30l41-25 43 25v30m-9 0v-56l34-29 35 29v56m-8 0v-39l37-31 47 31v39m-8 0v-30l37-27 34 27v30m-4 0v-46l41-29 39 29v46m-4 0v-57l32-27 34 27v57m-7 0v-29l43-31 42 31v29m-6 0v-44l32-33 38 33v44m-3 0v-28l37-27 42 27v28m-4 0v-52l39-30 39 30v52m-7 0v-49l42-34 35 34v49Z"/>
+    <path d="m977 348 6-91 9-11 8 11 7 91Zm2-87 13-24 14 24Zm9-20 4-18 4 18Zm-14 52h36v6h-36Z"/>
+    <path d="M855 359v-23h7v24m157 13v-25h8v25m186-19v-26h7v27m193 11v-28h8v28m128-22v-22h9v22" stroke-width="2"/>
+  </g>
+  <path fill="#c3a475" opacity=".56" d="M987 270q5-8 9 0v14h-9Z"/>
+  <g fill="#bf8c59" opacity=".55"><path d="M833 378h4v7h-4Zm39 17h4v7h-4Zm94-25h4v8h-4Zm64 18h5v8h-5Zm113-8h4v7h-4Zm67-13h4v7h-4Zm112 24h4v7h-4Zm106-10h4v8h-4Zm83-6h5v8h-5Z"/></g>
+  <g fill="none" stroke="#a3976b" stroke-width="1" opacity=".26"><path d="m749 385 30-25 33 26m126-23 33-27 32 27m113 10 38-27 36 27m123 1 31-30 34 30m148-7 38-28 35 28"/></g>
+  <!-- Wire-borne scouts, deliberately tiny against the stone -->
+  <g fill="none" stroke="#b8bda7" stroke-width=".7" opacity=".7"><path d="M888 287 976 237m-90 50 42-49M1101 307l67-66m-66 66 101-67M816 264l44-28"/></g>
+  <g fill="#162e2e" stroke="#162e2e" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="889" cy="282" r="2.4"/><path d="m888 286-4 8 6 4 4-7 5 2m-11 1-7 8m6-15 8-4m-8 3-7-3" stroke-width="2" fill="none"/><path fill="#49624b" stroke="none" d="m885 285-10 1 1 9 11-5Z"/>
+    <circle cx="1101" cy="302" r="2.3"/><path d="m1100 306-4 6 6 3 5-4 4 1m-13 0-6 6m8-11 5-4" stroke-width="2" fill="none"/><path fill="#4b6148" stroke="none" d="m1097 305-11 2 2 8 11-5Z"/>
+    <circle cx="817" cy="261" r="1.8"/><path d="m816 264-3 6 4 3 4-3m-7-5 7-3" stroke-width="1.5" fill="none"/><path fill="#3e5744" stroke="none" d="m814 264-7 2 1 6 7-4Z"/>
+  </g>
+  <!-- Birds ride the last warm updraft -->
+  <g fill="none" stroke="#162f31" stroke-width="2.2" stroke-linecap="round"><path d="M910 127q7-2 10 4 3-8 10-9m-65 28q7-1 10 4 2-7 8-8m63-43q5-2 8 3 2-6 7-7m-121 7q5-1 7 3 1-5 6-7m142-4q4 0 6 4 2-5 7-5m-64-27q5-2 8 3 1-6 7-8m74-20q5 0 6 4 3-5 8-5m-111 37q4-1 6 3 2-4 5-5"/></g>
+  <path fill="url(#left)" d="M0 0h1600v420H0Z"/>
+  <path fill="url(#bottom)" d="M0 0h1600v420H0Z"/>
+</svg>

@@ -24,7 +24,11 @@ for (const f of cfg.scripts) {
 }
 let html = read('src/index.template.html');
 const put = (key, value) => { if (!html.includes(key)) throw new Error('template is missing ' + key); html = html.split(key).join(value); };
-put('/*__STYLE__*/', read('src/style.css'));
+// small theme drawings named in the styles are embedded, so the page still works when copied on its own
+const css = read('src/style.css').replace(/url\((assets\/theme\/[\w.-]+\.svg)\)/g, (m, f) => `url(data:image/svg+xml;base64,${fs.readFileSync(path.join(root, f)).toString('base64')})`);
+put('/*__STYLE__*/', css);
+const sheets = (cfg.sprites || []).filter(exists).map((f) => (read(f).match(/<defs[^>]*>([\s\S]*)<\/defs>/) || [, ''])[1]).join('');
+put('<!--__SPRITES__-->', `<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>${sheets}</defs></svg>`);
 put('<!--__SCRIPTS__-->', scripts);
 html = html.replace(/id="appVersion">v[\d.]+</, `id="appVersion">v${version}<`);
 fs.writeFileSync(path.join(root, 'index.html'), html);

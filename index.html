@@ -1817,37 +1817,749 @@ canvas.pop-key {
   }
 }
 
+.day-chip {
+  position: absolute;
+  left: 12px;
+  top: 54px;
+  z-index: 6;
+  font-size: 11px;
+  font-weight: 700;
+  color: #f4e3bd;
+  background: #0d1a20d9;
+  border: 1px solid #ffffff24;
+  border-radius: 999px;
+  padding: 3px 10px;
+  pointer-events: none;
+}
+.day-chip.dayNight,
+.day-chip.dayMoon {
+  color: #cfe0ff;
+  border-color: #7f9be07a;
+  background: #101a3ae6;
+}
+.day-chip.dayDay {
+  opacity: 0.75;
+}
+@media (max-width: 700px) {
+  .day-chip {
+    top: 44px;
+    font-size: 10px;
+  }
+}
+
+/* ==== 2.1 theme: stone walls, ember red and regiment emblems ==== */
+:root {
+  --ember: #c8412f;
+  --ember-hi: #e2674a;
+  --moss: #2f4a3b;
+  --parch: #e9dcb6;
+  --display: 'Noto Serif TC', 'Source Han Serif TC', 'Songti TC', 'PMingLiU', Georgia, serif;
+}
+body {
+  background:
+    radial-gradient(1100px 520px at 88% -8%, #6a2c1e4d, transparent 62%),
+    radial-gradient(900px 520px at -4% 0%, #1f3a3088, transparent 60%),
+    repeating-linear-gradient(0deg, #0000 0 46px, #00000024 46px 48px),
+    repeating-linear-gradient(90deg, #0000 0 118px, #00000014 118px 120px),
+    #0d1619;
+  background-attachment: fixed;
+}
+.watermark {
+  position: fixed;
+  right: -40px;
+  bottom: -50px;
+  width: 360px;
+  height: 360px;
+  opacity: 0.045;
+  pointer-events: none;
+  z-index: 0;
+}
+.site {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+/* Masthead: the Wall at sunset behind the title */
+.masthead {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid #4a3d29;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  padding: 12px 18px;
+  background: #0f1a1e;
+  box-shadow: 0 10px 30px #0007, inset 0 0 0 1px #00000080;
+}
+.masthead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 268px;
+  width: 640px;
+  z-index: -2;
+  background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDI9IjAuMTIiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjMTAyYTMwIi8+PHN0b3Agb2Zmc2V0PSIuNDYiIHN0b3AtY29sb3I9IiMzODUzNGMiLz48c3RvcCBvZmZzZXQ9Ii43OCIgc3RvcC1jb2xvcj0iI2FkNjU0OSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2RjODY1NCIvPjwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSIuODIiIGN5PSIuNjEiIHI9Ii42Ij48c3RvcCBzdG9wLWNvbG9yPSIjZThhMTZhIiBzdG9wLW9wYWNpdHk9Ii41OCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzgwM2YzNiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic3RvbmUiIHgxPSIwIiB5MT0iMCIgeDI9Ii4wNiIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiNjMGJhYTAiLz48c3RvcCBvZmZzZXQ9Ii4xNiIgc3RvcC1jb2xvcj0iIzkzOTg4NCIvPjxzdG9wIG9mZnNldD0iLjY1IiBzdG9wLWNvbG9yPSIjNjA3MzZhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMzA0OTRhIi8+PC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmltIiB4Mj0iMSIgeTI9IjAiPjxzdG9wIHN0b3AtY29sb3I9IiM1MTY1NWMiLz48c3RvcCBvZmZzZXQ9Ii43IiBzdG9wLWNvbG9yPSIjZDRjNGEwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZDZiNDhiIi8+PC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibXVzY2xlIiB4MT0iLjE1IiB5MT0iMCIgeDI9Ii45IiB5Mj0iLjciPjxzdG9wIHN0b3AtY29sb3I9IiNjZDcyNTYiLz48c3RvcCBvZmZzZXQ9Ii4yNSIgc3RvcC1jb2xvcj0iI2EwNDYzYiIvPjxzdG9wIG9mZnNldD0iLjY1IiBzdG9wLWNvbG9yPSIjNzMzNjMzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNDAyYzJjIi8+PC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYm9uZSIgeDE9IjAiIHkxPSIwIiB4Mj0iLjYiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjZTNjN2ExIi8+PHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iI2MxYWE4OSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzg5Nzg2NSIvPjwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWFtIiB4Mj0iLjIiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjZDlkM2I3IiBzdG9wLW9wYWNpdHk9IjAiLz48c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjZTBkNmI5IiBzdG9wLW9wYWNpdHk9Ii4zMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2U2Y2JhOCIgc3RvcC1vcGFjaXR5PSIuMDMiLz48L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsZWZ0IiB4Mj0iMSIgeTI9IjAiPjxzdG9wIHN0b3AtY29sb3I9IiMwZDE3MWIiLz48c3RvcCBvZmZzZXQ9Ii4zNSIgc3RvcC1jb2xvcj0iIzBkMTcxYiIgc3RvcC1vcGFjaXR5PSIuODMiLz48c3RvcCBvZmZzZXQ9Ii41OCIgc3RvcC1jb2xvcj0iIzBkMTcxYiIgc3RvcC1vcGFjaXR5PSIuMzYiLz48c3RvcCBvZmZzZXQ9Ii43OCIgc3RvcC1jb2xvcj0iIzBkMTcxYiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYm90dG9tIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjMGQxNzFiIiBzdG9wLW9wYWNpdHk9IjAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwZDE3MWIiLz48L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBmaWxsPSJ1cmwoI3NreSkiIGQ9Ik0wIDBoMTYwMHY0MjBIMFoiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI2dsb3cpIiBkPSJNMCAwaDE2MDB2NDIwSDBaIi8+CiAgPCEtLSBXaW5kLXNjb3VyZWQgY2xvdWQgc2hlbHZlcyAtLT4KICA8ZyBmaWxsPSIjMTQyZjMzIiBvcGFjaXR5PSIuNjYiPgogICAgPHBhdGggZD0iTTAgMTRRMTk0IDEgMzE0IDI1dDIyNCAzcTExNi0yNiAyMTktN3QxNDQgMFE4MDQgNTkgNjQ0IDUzVDM1OCA2NlExODYgNDMgMCA2MloiLz4KICAgIDxwYXRoIGQ9Ik02MTUgNzZxOTEtMjQgMTY1LTV0MTUxIDBxLTY1IDM2LTE2OSAyN3QtMTQ3LTIyWiIvPgogICAgPHBhdGggZD0iTTEwMTEgMHExMDkgMjIgMTkzIDExbDEyMi0xMVoiLz4KICAgIDxwYXRoIGQ9Ik0xMzU5IDU0cTgwLTI1IDE1Ny01bDg0LTd2MzZxLTExNyAwLTI0MS0yNFoiLz4KICA8L2c+CiAgPGcgZmlsbD0iI2QzOWE3MSIgb3BhY2l0eT0iLjE5Ij4KICAgIDxwYXRoIGQ9Ik02ODcgMTU3cTEzNS0zMSAyMzgtMThsMTgyLTExLTM0IDEzLTE4MCA4LTEyNCAxOVoiLz4KICAgIDxwYXRoIGQ9Im05MTcgOTUgOTYtMTcgMTA2IDgtNzUgNVoiLz4KICAgIDxwYXRoIGQ9Im0xMzcyIDEyNCAxMTktMTggMTA5IDl2N2wtMTM5LTNaIi8+CiAgICA8cGF0aCBkPSJtNzQ2IDIwNCAxNTMtMTIgNzggNS0xMDcgOFoiLz4KICA8L2c+CiAgPCEtLSBTdGVhbSBiZWhpbmQgdGhlIGdpYW50IC0tPgogIDxnIGZpbGw9InVybCgjc3RlYW0pIj4KICAgIDxwYXRoIGQ9Ik0xMTIxIDI2OXEtNzItNTItMzgtMTA1IDI1LTM4IDUtNjktMTgtMjggMTgtNjctMTggNDUgMyA2NCA0MyAzOSAxNSA3NS0zNSA0NSAzNCA4NFoiLz4KICAgIDxwYXRoIGQ9Ik0xMzkyIDI1MnE2OC02MSAxOC0xMDAtMzktMzAtOS02NiAxNi0yMi04LTYxIDU1IDQxIDMwIDcyLTE3IDI3IDEzIDQ2IDY5IDUwLTE1IDEzM1oiLz4KICAgIDxwYXRoIGQ9Ik0xNTE4IDI3NXE1Ny01MiAyMS0xMDAtMjMtMzkgMTEtNzQtMTQgMzkgMTcgNjcgNDYgNDMtMTggMTEzWiIvPgogICAgPHBhdGggZD0iTTExNzkgMTI1cS01NC0yNS0zNC01NSAxNS0yNC0xMC01OCA0OSAzMiAzMiA2MC05IDI0IDMxIDM5WiIvPgogIDwvZz4KICA8IS0tIFNob3VsZGVyIGdpcmRsZSBhbmQgbG9uZyBleHBvc2VkIG5lY2sgLS0+CiAgPHBhdGggZmlsbD0iIzUxMzQzMiIgZD0iTTEwMjEgMzA1cTMxLTY1IDkxLTY1bDg0LTM0aDE0Nmw3NyAyNnExMTgtNCAxODEgNjh2NzhoLTU3OVoiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI211c2NsZSkiIGQ9Ik0xMDQ3IDI5NHE0Ny00MiA5NC00NWw2OC0zNSAyMS00NWg5M2wyNiA0NiA3NCAzMnExMDktNSAxNzcgNzB2MjhIMTA0M1oiLz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNjMjhiNmQiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iLjY2Ij4KICAgIDxwYXRoIGQ9Im0xMjI1IDE4Mi0yOSA2MC02MSAzMW0xMDEtODYtMjggNjYtNTcgMzBtOTYtOTItMjQgNjgtNDQgMzFtMTIxLTEwMSAyNyA2MiA2OSAyOW0tODEtOTMgMjcgNTMgNzAgMjRtLTg2LTczIDI1IDQ1IDc0IDE5Ii8+CiAgICA8cGF0aCBkPSJtMTI2MiAxOTYtOSA4MW0yNC03OSA0IDgzbTExLTg0IDE2IDgxIi8+CiAgPC9nPgogIDwhLS0gQXN5bW1ldHJpYyBvcmlnaW5hbCBza3VsbCBhbmQgbXVzY2xlIHN0cnVjdHVyZSAtLT4KICA8cGF0aCBmaWxsPSIjMzgyZDJjIiBkPSJNMTE3MiAxMjZxLTItNTggNDItODcgMzMtMjMgNzYtMjEgNTIgMSA4MCA0MSAyMSAyOSAyMCA3OGw4IDctNyA0OC0xMyA5LTE0IDM1LTM3IDM2LTQ0IDEyLTQzLTE3LTMzLTM1LTE5LTQ0LTEyLTEzWiIvPgogIDxwYXRoIGZpbGw9InVybCgjbXVzY2xlKSIgZD0iTTExODAgMTI5cS0zLTUyIDM0LTgyIDMxLTI0IDczLTIyIDQ2LTEgNzYgMzkgMjAgMzEgMTggNzhsNyA4LTYgMzQtMTEgMTItMTcgMzctMzIgMzEtMzggMTItMzktMTYtMzEtMzMtMTgtNDQtMTQtMTFaIi8+CiAgPHBhdGggZmlsbD0iI2NhNzg1NyIgZD0iTTExODIgMTMxcTQtNjkgNTgtOTNsLTI1IDQ5LTcgNTUtMTUgMThaIi8+CiAgPHBhdGggZmlsbD0iIzllNGEzYSIgZD0iTTEyMzcgNDNxMzItMTkgNTQtMTFsMyA5MC0xNiAyNy0xNC0xOS0yMC01MloiLz4KICA8cGF0aCBmaWxsPSIjYzE2YzRlIiBkPSJtMTI5OCAzMyAyNyAxNCAyNSA1OSA2IDQyLTIxLTEyLTE1LTUxWiIvPgogIDxwYXRoIGZpbGw9IiM3NDNiMzIiIGQ9Im0xMzM1IDQ5IDI1IDI2IDEzIDQ3IDEgMzQtMTMtNy0xMy01MVoiLz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlMWFjODIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjYxIj4KICAgIDxwYXRoIHN0cm9rZS13aWR0aD0iMi41IiBkPSJNMTIxNyA1OXEtMjIgMzYtMjIgODBtMzUtODlxLTI0IDQxLTIzIDg5bTM0LTk2cS0yMCA0My0yMSA4N20zMy05M3EtMTUgNDEtMTYgODhtMjYtOTAtOCA4Nm0xOS04Ny0xIDg5bTExLTg4IDggODZtMy04MXExOCAzNSAyMiA4NG0tOC03M3ExOSAzNCAyMyA3M20tOS01NCAxNiA2MCIvPgogICAgPHBhdGggc3Ryb2tlLXdpZHRoPSIxLjIiIGQ9Im0xMjIxIDY2LTE1IDU0bTMyLTU3LTExIDUybTI3LTYyLTUgNTltNDEtNjMgNiA2MW0yNy00MSAxMSA1MCIvPgogIDwvZz4KICA8IS0tIEV5ZSBzb2NrZXRzIGFsaWduIHdpdGggdGhlIG1pZGRsZSBiYW5uZXIgY3JvcCAtLT4KICA8cGF0aCBmaWxsPSJ1cmwoI2JvbmUpIiBkPSJNMTE5OSAxMzdxOC0xNSAyMC0xMmwyNSA1IDI3IDEycTcgMyAxMy0zIDEyLTEyIDI2LTEwbDIxIDJxMTkgNSAyNyAxN2wtMyAxM3EtMTUtOS0zMi04LTE0IDAtMjMgNGwtMTcgMTctMTQtMXEtOC0xMi0xOS0xNy0xMy02LTI1LTZsLTI2IDktOS0xMFoiLz4KICA8cGF0aCBmaWxsPSIjMzMyYzI5IiBkPSJNMTIwNCAxNjJxMTktMTEgNDIgMWwxNSAxMnEtMTggMTMtMzggOGwtMTEtM1ptODkgMTNxMTAtMTcgMjUtMTggMjEtMyAzNiA4bC03IDE3cS0yNSA4LTU0LTdaIi8+CiAgPHBhdGggZmlsbD0iIzkxNzk1ZiIgZD0iTTEyMDggMTY5cTE2LTggMzggM2wtOSA3LTIyLTNabTkyIDVxMjAtMTEgNDMtNGwtNCA5LTIwIDNaIi8+CiAgPHBhdGggZmlsbD0iI2U3ZDdiNCIgZD0iTTEyMTYgMTcycTEzLTQgMjYgMmwtMTQgMVptODkgMnExNi01IDMyLTFsLTE0IDNaIi8+CiAgPHBhdGggZmlsbD0iIzI0MmMyYSIgZD0iTTEyMjcgMTcwaDR2NWgtNFptODkgMmg0djRoLTRaIi8+CiAgPHBhdGggZmlsbD0iI2VmYzc5YSIgZD0ibTEyNjcgMTU5IDEyIDUgMTItNC0yIDMzIDExIDE0LTIxIDgtMTgtOSA5LTE1WiIvPgogIDxwYXRoIGZpbGw9IiM0MDMxMmMiIGQ9Im0xMjc0IDE5MC03IDEyIDEwIDIgMi0xNVptOS0xIDEgMTUgOS0yWiIvPgogIDxwYXRoIGZpbGw9IiNkN2IzOGMiIGQ9Im0xMTk4IDE4MCAxMyA5IDMwIDQgMTMgMTItMTQgNy0yMy02LTEzIDE2LTEwLTI2Wm0xNTMgMTMgMTgtMTMtMiAyNS0xNCAyMS0xNC0xNy0yMi00IDUtMTFaIi8+CiAgPCEtLSBDaGVlayBtdXNjbGUgZmFucyAtLT4KICA8cGF0aCBmaWxsPSIjYTE0YjNiIiBkPSJtMTIwMiAyMTQgMTctMTMgMjMgMTQgMyAyOS0yMi0xMlptMTM1IDAgMTctNiAxMCAxNy0xNCAyMS0xNiA2WiIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2RiYTQ3YyIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuNzYiPgogICAgPHBhdGggZD0ibTEyMDggMjE0IDI5IDE3bS0yNi0xMSAyOCAxOG0tMjItMTAgMjIgMTZtMTExLTI4LTExIDIzbTE2LTE4LTE1IDIzbTE4LTE3LTE3IDI1Ii8+CiAgPC9nPgogIDwhLS0gVW5zbWlsaW5nIGV4cG9zZWQgamF3IC0tPgogIDxwYXRoIGZpbGw9IiMzODJlMmEiIGQ9Im0xMjQ0IDIxNSAxOSA2IDIwLTIgMTggMyAyOS01IDUgMjMtMTggMTYtMzQgNS0yOS05LTE2LTE1WiIvPgogIDxwYXRoIGZpbGw9InVybCgjYm9uZSkiIGQ9Im0xMjQ0IDIxNSAyMCA3IDE4LTIgMTkgMyAyOS02LTIgMTItMjYgNS0yMC0yLTIwIDEtMTctNloiLz4KICA8cGF0aCBmaWxsPSIjYzliMDhjIiBkPSJtMTI0NyAyMzYgMTggMyAxNy0yIDIwIDIgMjUtNC03IDExLTE5IDctMTkgMS0yMC02WiIvPgogIDxnIHN0cm9rZT0iIzZlNTU0NCIgc3Ryb2tlLXdpZHRoPSIxLjQiIGZpbGw9Im5vbmUiPgogICAgPHBhdGggZD0ibTEyNTIgMjE5IDEgMTBtOC03IDEgMTBtOC0xMHYxMG05LTExdjEwbTktMTB2MTFtOS05djEwbTktMTEtMSAxMW05LTEyLTEgMTBtOS0xMi0xIDExbS02NSAxMCAxIDltOC03IDEgMTBtOC0xMnYxM205LTEzdjE1bTktMTV2MTNtMTAtMTMtMiAxMG0xMC0xMi0zIDgiLz4KICA8L2c+CiAgPHBhdGggZmlsbD0iI2QwYWI4MiIgZD0ibTEyMjMgMjM2IDIzIDE0IDM2IDEzIDM2LTcgMjQtMTEtMTQgMTYtNDQgMTQtMzYtMTRaIi8+CiAgPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZThiYzkwIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9Ii42NCIgZD0iTTExODUgMTExcTYtNTYgNTMtNzZtLTM0IDE1MSA2IDE0bTEyMy0xNjdxMzMgMTkgNDIgNTgiLz4KICA8IS0tIFRoZSB1bmJyb2tlbiBtYXNzIG9mIHRoZSBXYWxsIC0tPgogIDxwYXRoIGZpbGw9IiM0NDU3NTAiIGQ9Ik0wIDIyNiAxNjAwIDIzNHYxODZIMFoiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI3N0b25lKSIgZD0iTTAgMjQzIDE2MDAgMjQ2djE3NEgwWiIvPgogIDxwYXRoIGZpbGw9InVybCgjcmltKSIgZD0ibTAgMjI2IDE2MDAgOHYxMkwwIDI0M1oiLz4KICA8cGF0aCBmaWxsPSIjZTNjZGE3IiBvcGFjaXR5PSIuNjIiIGQ9Im0wIDIyNiAxNjAwIDh2M0wwIDIyOVoiLz4KICA8cGF0aCBmaWxsPSIjMzE0YjQ3IiBvcGFjaXR5PSIuNTUiIGQ9Ik0wIDI0MyAxNjAwIDI0NnY3TDAgMjUwWiIvPgogIDwhLS0gU3RhZ2dlcmVkIGFzaGxhciBqb2ludHMgYW5kIHdlYXRoZXJlZCB2ZXJ0aWNhbCBjb3Vyc2VzIC0tPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNiNTU1MCIgb3BhY2l0eT0iLjM5IiBzdHJva2Utd2lkdGg9IjEuMyI+CiAgICA8cGF0aCBkPSJtMCAyNzggMTYwMCAyTTAgMzE3bDE2MDAgMU0wIDM1OGgxNjAwTTAgMzk4aDE2MDAiLz4KICAgIDxwYXRoIGQ9Im03MiAyNDUgMiAzM20xMTEtMzItMSAzMm0xMTItMzItMSAzMm0xMTItMzF2MzJtMTEyLTMydjMybTExMS0zMiAxIDMybTExMi0zMXYzMm0xMTEtMzIgMSAzMm0xMTEtMzEgMSAzMm0xMTEtMzJ2MzJtMTExLTMxIDEgMzFtMTExLTMwIDEgMzFtMTEwLTMwIDEgMzBtMTExLTMwdjMxIi8+CiAgICA8cGF0aCBkPSJtMTcgMjc4IDEgMzltMTExLTM5IDEgMzltMTEwLTM5IDEgMzltMTExLTM5IDEgMzltMTEwLTM4IDEgMzltMTExLTM5djM5bTExMS0zOSAxIDM5bTExMS0zOSAxIDM5bTExMS0zOSAxIDM5bTExMS0zOCAxIDM5bTExMC0zOSAxIDM5bTExMS0zOSAxIDM5bTExMC0zOSAxIDM5bTExMS0zOSAxIDM5bS0xNTE3IDF2NDBtMTEyLTQwdjQwbTExMi00MHY0MG0xMTItNDB2NDBtMTEyLTQwdjQwbTExMi00MHY0MG0xMTItNDB2NDBtMTEyLTQwdjQwbTExMi00MHY0MG0xMTItNDB2NDBtMTEyLTQwdjQwbTExMi00MHY0MG0xMTItNDB2NDBtMTEyLTQwdjQwIi8+CiAgPC9nPgogIDxnIGZpbGw9IiNkOGQxYWYiIG9wYWNpdHk9Ii4xIj4KICAgIDxwYXRoIGQ9Im03ODIgMjUzIDkgMC0zIDcxLTQgMTlabTE1MSAwaDEzbC0zIDQ3LTUgMTNabTE4NCAxaDhsLTIgOTUtNC0yOVptMTk2IDBoMTFsLTUgODEtMyAxMlptMjM0IDFoMTRsLTMgNjQtNy0xMVoiLz4KICA8L2c+CiAgPGcgZmlsbD0iIzJmNDk0NCIgb3BhY2l0eT0iLjE4Ij4KICAgIDxwYXRoIGQ9Ik04MjQgMjUxaDlsLTMgNTctNCAxNlptMjE5IDBoMTNsLTQgODMtNi0xN1ptMTg0IDBoOGwtMyAxMDEtNC0yMVptMTg4IDBoMTJsLTUgNDgtNCAxNVoiLz4KICA8L2c+CiAgPCEtLSBBIHNpbmdsZSBoYW5kIGN1cmxzIG92ZXIgdGhlIGNvcGluZyAtLT4KICA8cGF0aCBmaWxsPSIjNDgyZTJhIiBkPSJNMTQ1MCAyMzRxLTgtMjEgNC0zNyA5LTEwIDIxIDEgOS0xOCAyMi05IDExLTExIDIyLTEgMTctNSAyNCAxMmwyMyA0NS03IDIyLTE3IDItOS05LTIgMTgtMTQgOS0xMi0xMC00IDctMTYtMi04LTE2LTQgMTAtMTQtMi0xMC0yM1oiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI211c2NsZSkiIGQ9Im0xNDU1IDIzNCAyLTI2cTMtMTYgMTMtNWw4IDI3IDEtMjlxMy0xNiAxNC03bDkgMzUtMS0zMHEyLTEzIDEyLTZsMTAgMzUtMy0yOXE1LTExIDEyLTFsMjYgNDgtNSAxNi0xMCAxLTEzLTI1LTMgMzMtOCA5LTktNy02LTQwLTQgNDMtMTAtMS04LTQwLTcgMzMtMTAtM1oiLz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNkYmFkODUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj4KICAgIDxwYXRoIGQ9Im0xNDYyIDIxMCA5IDI4LTMgMTdtMTctNTMgMTEgMzMtMiAyOW0xNC02MiAxMSAzMy0yIDMxbTktNjEgMjAgMzYgNCAxMiIvPgogIDwvZz4KICA8ZyBmaWxsPSIjY2ViMjhiIj48cGF0aCBkPSJtMTQ2MyAyNTggOSAxLTEgNy02LTJabTI1IDEwIDEwIDEtMSA4LTctMVptMjUgNiAxMC0yLTQgNy01LTFabTMyLTE4IDktMi0xIDctNyAxWiIvPjwvZz4KICA8IS0tIFN0ZWFtIHdhc2hlcyBhY3Jvc3MgdGhlIFdhbGwsIHdpdGggaGFuZC1kcmF3biB0YXBlcmVkIGN1cmxzIC0tPgogIDxnIGZpbGw9InVybCgjc3RlYW0pIj4KICAgIDxwYXRoIGQ9Ik0xMTE4IDMwNnEtNTctMjUtMzctNjkgMTYtMzMtNy01NC0yMi0yMC03LTQyLTMgMjkgMjQgMzkgMzIgMjYgMTUgNTktMjAgMzYgNDcgNTFaIi8+CiAgICA8cGF0aCBkPSJNMTM5MCAyOTlxLTQyLTQxLTE3LTY1IDI1LTI5IDItNjItMTgtMjYgNS01Ny01IDI4IDEzIDQ4IDM2IDM0IDcgNjctMjggMjYgMjUgNTRaIi8+CiAgICA8cGF0aCBkPSJNMTUxMiAzMjdxNzMtMjcgNDMtNjgtMjEtMzIgNS01Mi03IDI1IDE1IDQ0IDQ5IDUxLTI4IDg2WiIvPgogICAgPHBhdGggZD0iTTEyMTMgMjc3cS0yNiAyOSAxMCA0NyA0MyAyMCAxNSA1MiAxMi0yNy0zMC00MC00Ny0yMSA1LTU5WiIvPgogIDwvZz4KICA8IS0tIEZhciBzZXR0bGVtZW50OiBwaXRjaGVkIHJvb2ZzLCBjaGltbmV5cyBhbmQgYSBzbGVuZGVyIGJlbGZyeSAtLT4KICA8ZyBmaWxsPSIjMzA0MzNlIj4KICAgIDxwYXRoIGQ9Im03MzEgMzY1IDMwLTIxIDI4IDE3IDIyLTMwIDMwIDI4IDI0LTggMjctMjcgMjggMjQgMjQtNSAyOCAxNCAzMC0zNCAzMyAyOSAyNi0yMSAzMSAxOSAyMi04IDMxIDIzIDI4LTM4IDMyIDIzIDIzLTEyIDMyIDIxIDI1LTI5IDMwIDIxIDI3LTEyIDIzIDE5IDI1LTMxIDI4IDE5IDI2LTUgMjQgMjIgMjktMzcgMjkgMjMgMzMtMTIgMjUgMjJ2ODhINzMxWiIvPgogIDwvZz4KICA8ZyBmaWxsPSIjMTcyZDJlIiBzdHJva2U9IiMxNzJkMmUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgogICAgPHBhdGggZD0iTTc0NCA0MjB2LTMzbDM1LTI5IDM3IDI5djMzbS02IDB2LTQ3bDI5LTI2IDM3IDI2djQ3bS0xNCAwdi0zMGw0MS0yNSA0MyAyNXYzMG0tOSAwdi01NmwzNC0yOSAzNSAyOXY1Nm0tOCAwdi0zOWwzNy0zMSA0NyAzMXYzOW0tOCAwdi0zMGwzNy0yNyAzNCAyN3YzMG0tNCAwdi00Nmw0MS0yOSAzOSAyOXY0Nm0tNCAwdi01N2wzMi0yNyAzNCAyN3Y1N20tNyAwdi0yOWw0My0zMSA0MiAzMXYyOW0tNiAwdi00NGwzMi0zMyAzOCAzM3Y0NG0tMyAwdi0yOGwzNy0yNyA0MiAyN3YyOG0tNCAwdi01MmwzOS0zMCAzOSAzMHY1Mm0tNyAwdi00OWw0Mi0zNCAzNSAzNHY0OVoiLz4KICAgIDxwYXRoIGQ9Im05NzcgMzQ4IDYtOTEgOS0xMSA4IDExIDcgOTFabTItODcgMTMtMjQgMTQgMjRabTktMjAgNC0xOCA0IDE4Wm0tMTQgNTJoMzZ2NmgtMzZaIi8+CiAgICA8cGF0aCBkPSJNODU1IDM1OXYtMjNoN3YyNG0xNTcgMTN2LTI1aDh2MjVtMTg2LTE5di0yNmg3djI3bTE5MyAxMXYtMjhoOHYyOG0xMjgtMjJ2LTIyaDl2MjIiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwvZz4KICA8cGF0aCBmaWxsPSIjYzNhNDc1IiBvcGFjaXR5PSIuNTYiIGQ9Ik05ODcgMjcwcTUtOCA5IDB2MTRoLTlaIi8+CiAgPGcgZmlsbD0iI2JmOGM1OSIgb3BhY2l0eT0iLjU1Ij48cGF0aCBkPSJNODMzIDM3OGg0djdoLTRabTM5IDE3aDR2N2gtNFptOTQtMjVoNHY4aC00Wm02NCAxOGg1djhoLTVabTExMy04aDR2N2gtNFptNjctMTNoNHY3aC00Wm0xMTIgMjRoNHY3aC00Wm0xMDYtMTBoNHY4aC00Wm04My02aDV2OGgtNVoiLz48L2c+CiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYTM5NzZiIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNiI+PHBhdGggZD0ibTc0OSAzODUgMzAtMjUgMzMgMjZtMTI2LTIzIDMzLTI3IDMyIDI3bTExMyAxMCAzOC0yNyAzNiAyN20xMjMgMSAzMS0zMCAzNCAzMG0xNDgtNyAzOC0yOCAzNSAyOCIvPjwvZz4KICA8IS0tIFdpcmUtYm9ybmUgc2NvdXRzLCBkZWxpYmVyYXRlbHkgdGlueSBhZ2FpbnN0IHRoZSBzdG9uZSAtLT4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNiOGJkYTciIHN0cm9rZS13aWR0aD0iLjciIG9wYWNpdHk9Ii43Ij48cGF0aCBkPSJNODg4IDI4NyA5NzYgMjM3bS05MCA1MCA0Mi00OU0xMTAxIDMwN2w2Ny02Nm0tNjYgNjYgMTAxLTY3TTgxNiAyNjRsNDQtMjgiLz48L2c+CiAgPGcgZmlsbD0iIzE2MmUyZSIgc3Ryb2tlPSIjMTYyZTJlIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgogICAgPGNpcmNsZSBjeD0iODg5IiBjeT0iMjgyIiByPSIyLjQiLz48cGF0aCBkPSJtODg4IDI4Ni00IDggNiA0IDQtNyA1IDJtLTExIDEtNyA4bTYtMTUgOC00bS04IDMtNy0zIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz48cGF0aCBmaWxsPSIjNDk2MjRiIiBzdHJva2U9Im5vbmUiIGQ9Im04ODUgMjg1LTEwIDEgMSA5IDExLTVaIi8+CiAgICA8Y2lyY2xlIGN4PSIxMTAxIiBjeT0iMzAyIiByPSIyLjMiLz48cGF0aCBkPSJtMTEwMCAzMDYtNCA2IDYgMyA1LTQgNCAxbS0xMyAwLTYgNm04LTExIDUtNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+PHBhdGggZmlsbD0iIzRiNjE0OCIgc3Ryb2tlPSJub25lIiBkPSJtMTA5NyAzMDUtMTEgMiAyIDggMTEtNVoiLz4KICAgIDxjaXJjbGUgY3g9IjgxNyIgY3k9IjI2MSIgcj0iMS44Ii8+PHBhdGggZD0ibTgxNiAyNjQtMyA2IDQgMyA0LTNtLTctNSA3LTMiIHN0cm9rZS13aWR0aD0iMS41IiBmaWxsPSJub25lIi8+PHBhdGggZmlsbD0iIzNlNTc0NCIgc3Ryb2tlPSJub25lIiBkPSJtODE0IDI2NC03IDIgMSA2IDctNFoiLz4KICA8L2c+CiAgPCEtLSBCaXJkcyByaWRlIHRoZSBsYXN0IHdhcm0gdXBkcmFmdCAtLT4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiMxNjJmMzEiIHN0cm9rZS13aWR0aD0iMi4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik05MTAgMTI3cTctMiAxMCA0IDMtOCAxMC05bS02NSAyOHE3LTEgMTAgNCAyLTcgOC04bTYzLTQzcTUtMiA4IDMgMi02IDctN20tMTIxIDdxNS0xIDcgMyAxLTUgNi03bTE0Mi00cTQgMCA2IDQgMi01IDctNW0tNjQtMjdxNS0yIDggMyAxLTYgNy04bTc0LTIwcTUgMCA2IDQgMy01IDgtNW0tMTExIDM3cTQtMSA2IDMgMi00IDUtNSIvPjwvZz4KICA8cGF0aCBmaWxsPSJ1cmwoI2xlZnQpIiBkPSJNMCAwaDE2MDB2NDIwSDBaIi8+CiAgPHBhdGggZmlsbD0idXJsKCNib3R0b20pIiBkPSJNMCAwaDE2MDB2NDIwSDBaIi8+Cjwvc3ZnPgo=) right top / auto 196% no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
+}
+.masthead::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, #0d171bd9 0%, #0d171b80 40%, #0d171b00 58%);
+}
+.masthead .topbar {
+  margin-bottom: 10px;
+}
+.masthead .hero {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 2px;
+}
+.crest {
+  background: radial-gradient(circle at 35% 30%, #2c4438, #14231d);
+  border-color: #c9a45c;
+  box-shadow: 0 0 0 3px #00000059, 0 4px 12px #0008;
+}
+.crest-ico {
+  width: 34px;
+  height: 34px;
+}
+.brand {
+  font-family: var(--display);
+  letter-spacing: 0.1em;
+}
+.hero h1 {
+  font-family: var(--display);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #fff7e6;
+  text-shadow: 0 2px 0 #00000080, 0 0 22px #c8412f55;
+}
+.epigraph {
+  font-family: var(--display);
+  font-style: italic;
+  color: #e7c9a0;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  opacity: 0.92;
+}
+.epigraph::before {
+  content: '';
+  display: inline-block;
+  width: 22px;
+  height: 2px;
+  background: var(--ember-hi);
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.year-plate {
+  border-left: 0;
+  padding: 6px 14px;
+  border: 1px solid #c9a45c88;
+  border-radius: 10px;
+  background: #0b1417c7;
+  box-shadow: inset 0 0 0 1px #00000080;
+}
+.year-plate strong {
+  font-family: var(--display);
+  color: #ffd98f;
+}
+.spoiler {
+  border-color: var(--ember-hi);
+  color: #ffc2b4;
+  background: #c8412f26;
+}
+@media (min-width: 1121px) {
+  .masthead {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    column-gap: 22px;
+    align-items: center;
+    padding: 10px 18px;
+  }
+  .masthead .topbar,
+  .masthead .hero {
+    display: contents;
+  }
+  .masthead .identity {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .masthead .hero > div:first-child {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    display: block;
+  }
+  .masthead .year-plate {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .masthead .top-actions {
+    grid-column: 4;
+    grid-row: 1;
+  }
+  .masthead .hero h1 {
+    font-size: clamp(22px, 1.9vw, 32px);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .masthead .hero .eyebrow,
+  .masthead .hero p {
+    display: none;
+  }
+  .layout {
+    margin-top: 0;
+  }
+}
+@media (min-width: 1121px) and (max-height: 820px) {
+  .epigraph {
+    display: none;
+  }
+}
+/* Panels: stone-dark with a gold hairline and riveted corners */
+.panel {
+  position: relative;
+  border-color: #40392b;
+  background: linear-gradient(160deg, #17252b, #0f191e 70%);
+  box-shadow: 0 12px 30px #0006, inset 0 1px 0 #ffffff0a;
+}
+.panel::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c9a45c99, transparent);
+  pointer-events: none;
+  z-index: 3;
+}
+.corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  z-index: 7;
+  opacity: 0.9;
+}
+.corner.tl {
+  left: 3px;
+  top: 3px;
+}
+.corner.tr {
+  right: 3px;
+  top: 3px;
+  transform: scaleX(-1);
+}
+.corner.bl {
+  left: 3px;
+  bottom: 3px;
+  transform: scaleY(-1);
+}
+.corner.br {
+  right: 3px;
+  bottom: 3px;
+  transform: scale(-1);
+}
+.map-panel {
+  border-color: #5c4a2e;
+  box-shadow: 0 0 0 3px #1c1610, 0 14px 34px #0008;
+}
+.sec-ico {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-right: 7px;
+  vertical-align: -4px;
+}
+.timeline-top {
+  justify-content: flex-start;
+}
+.timeline-top h2,
+.subsection,
+.status-top {
+  font-family: var(--display);
+  letter-spacing: 0.1em;
+}
+.status-top {
+  justify-content: flex-start;
+  gap: 0;
+}
+.status-top span:last-child {
+  margin-left: auto;
+}
+.subsection > span:last-child {
+  margin-left: auto;
+}
+.subsection {
+  justify-content: flex-start;
+}
+/* Story card: a picture for every event */
+.story-art {
+  position: relative;
+  height: 172px;
+  background: #070c0e;
+  overflow: hidden;
+  border-radius: var(--round) var(--round) 0 0;
+}
+.story-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, #111c21 2%, #111c21a6 17%, #111c2100 40%),
+    linear-gradient(90deg, #0d171b66, transparent 30%);
+  pointer-events: none;
+}
+.art-scene {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: artIn 0.6s ease both;
+}
+@keyframes artIn {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+/* manga panels: slanted frames with thick black gutters */
+.art-panels {
+  display: flex;
+  height: 100%;
+  gap: 5px;
+  background: #050809;
+  transform: skewX(-9deg) scale(1.12);
+  transform-origin: center;
+}
+.art-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  animation: artIn 0.5s ease both;
+}
+.art-panel:nth-child(2) {
+  animation-delay: 0.07s;
+}
+.art-panel:nth-child(3) {
+  animation-delay: 0.14s;
+}
+.art-panel:nth-child(4) {
+  animation-delay: 0.21s;
+}
+.art-panel img {
+  position: absolute;
+  left: -14%;
+  top: 0;
+  width: 128%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 22%;
+  transform: skewX(9deg);
+  filter: contrast(1.06) saturate(1.05);
+}
+.art-panel.team img {
+  object-position: 50% 50%;
+}
+.art-panel span {
+  position: absolute;
+  left: 50%;
+  top: 17px;
+  transform: skewX(9deg) translateX(-50%);
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff3d6;
+  background: #0b1417d9;
+  border: 1px solid #c9a45c66;
+  border-radius: 3px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+.story-head {
+  position: relative;
+  z-index: 2;
+  margin-top: -44px;
+  background: none;
+  border-bottom: 1px solid #ffffff14;
+}
+.story-head h2 {
+  font-family: var(--display);
+  font-weight: 900;
+  text-shadow: 0 2px 10px #000c;
+}
+.chapter .count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 4px;
+  border: 1px solid var(--cat, #8b9a92);
+  color: var(--cat, #cfd8d0);
+  background: #0b1417cc;
+}
+.tile-ico {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+.cat-attack {
+  --cat: #ee7257;
+}
+.cat-infiltrate {
+  --cat: #e5c36a;
+}
+.cat-defend {
+  --cat: #6bc8f0;
+}
+.cat-reveal {
+  --cat: #caa6ff;
+}
+.cat-expedition {
+  --cat: #8de5ba;
+}
+.cat-finale {
+  --cat: #f2a26b;
+}
+.outcome {
+  border-left-color: var(--ember-hi);
+  background: #c8412f17;
+}
+.steps li.current {
+  background: #3a2a20;
+  border-color: #a8643f;
+}
+.steps .current .step-num {
+  background: var(--ember-hi);
+  color: #fff;
+}
+/* Chronology tiles: a category stripe and icon */
+.event-tile {
+  border-left: 3px solid var(--cat, #54645f);
+  background: linear-gradient(180deg, #13222a, #0d1a20);
+}
+.event-tile .ey {
+  font-family: var(--display);
+  font-size: 13px;
+  color: #ffd98f;
+}
+.event-tile .ep {
+  color: var(--cat, #9cafb1);
+  font-weight: 700;
+}
+.event-tile.active {
+  border-color: var(--cat, #e5c98b);
+  background: linear-gradient(180deg, #3a2f26, #241c17);
+  box-shadow: 0 0 0 1px var(--cat, #e5c98b) inset;
+}
+.filter.active,
+.wall-filter.active {
+  background: linear-gradient(#e2c382, #b99357);
+  border-color: #e2c382;
+}
+/* Play: ember red, like the signal flare */
+.transport.primary {
+  background: linear-gradient(#dc523b, #a83224);
+  border-color: #ee7b62;
+  color: #fff;
+  text-shadow: 0 1px 0 #0006;
+}
+.rail {
+  accent-color: #e2674a;
+}
+.transport-bar {
+  background: linear-gradient(#111e23, #0d171b);
+}
+/* Cast: larger portraits with the regiment emblem */
+.avatar {
+  position: relative;
+  overflow: visible;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+}
+.avatar img {
+  border-radius: 50%;
+}
+.avatar.team-avatar {
+  border-radius: 10px;
+  width: 64px;
+}
+.avatar.team-avatar img {
+  border-radius: 8px;
+}
+.faction {
+  position: absolute;
+  right: -7px;
+  bottom: -6px;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 1px 2px #000);
+}
+.cast-item {
+  background: linear-gradient(160deg, #1a2a31, #111d22);
+  border-color: #3b4a4d;
+}
+.cast-item.active {
+  border-color: #e2674a;
+  box-shadow: 0 0 0 1px #e2674a inset;
+}
+.cast-item .name {
+  font-family: var(--display);
+  font-weight: 800;
+}
+.wall-status b {
+  font-family: var(--display);
+  letter-spacing: 0.08em;
+}
+@media (max-width: 700px) {
+  .masthead {
+    padding: 10px 12px;
+  }
+  .masthead::before {
+    left: 0;
+    right: 0;
+    width: auto;
+    background-size: cover;
+    background-position: 84% 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .masthead::after {
+    background:
+      linear-gradient(0deg, #0d171bf2 6%, #0d171b99 46%, #0d171b33 100%),
+      linear-gradient(90deg, #0d171be6, #0d171b66 55%, transparent 85%);
+  }
+  .story-art {
+    height: 132px;
+  }
+  .story-head {
+    margin-top: -38px;
+  }
+  .hero h1 {
+    font-size: 30px;
+  }
+  .epigraph {
+    font-size: 11.5px;
+  }
+  .watermark {
+    width: 220px;
+    height: 220px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .art-scene,
+  .art-panel {
+    animation: none;
+  }
+}
+.art-panels.n3 .art-panel:first-child span,
+.art-panels.n4 .art-panel:first-child span {
+  left: 60%;
+}
+.art-panels.n3 .art-panel:last-child span,
+.art-panels.n4 .art-panel:last-child span {
+  left: 40%;
+}
+/* masthead picture on tablets and phones: the whole banner, anchored right */
+@media (max-width: 1120px) {
+  .masthead::before {
+    left: 0;
+    right: 0;
+    width: auto;
+    background-size: auto 125%;
+    background-position: 100% 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .masthead::after {
+    background:
+      linear-gradient(0deg, #0d171bf2 6%, #0d171b99 46%, #0d171b33 100%),
+      linear-gradient(90deg, #0d171be6, #0d171b66 55%, transparent 85%);
+  }
+}
+@media (max-width: 700px) {
+  .masthead::before {
+    background-size: cover;
+    background-position: 84% 0;
+  }
+}
+/* the longer English title wraps on narrower desktops */
+@media (min-width: 1121px) and (max-width: 1500px) {
+  :lang(en) .masthead .hero h1 {
+    white-space: normal;
+    line-height: 1.12;
+    text-wrap: balance;
+    font-size: 22px;
+  }
+  :lang(en) .epigraph {
+    display: none;
+  }
+}
+@media (min-width: 1121px) {
+  :lang(en) .masthead::before {
+    right: 320px; /* the English buttons are wider */
+  }
+}
+
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>
+    <symbol id="em-survey" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#b8a67c" d="M8 6 32 3 56 6 54 35Q51 49 32 61 13 49 10 35Z"/>
+        <path fill="#344c4b" d="M13 11 32 8 51 11 49 34Q46 45 32 55 18 45 15 34Z"/>
+        <path fill="#3f66b0" d="M35 52Q39 38 29 26L12 10 13 23 19 28 13 26 16 34 24 38 18 36 23 44 30 47 32 52Z"/>
+        <path fill="none" d="M33 47 19 23"/>
+        <path fill="#f2f0e3" d="M28 51Q29 36 39 25L53 12 49 29 43 30 48 32 44 38 38 38 41 41 36 47 32 47 31 52Z"/>
+        <path fill="none" d="M31 47 47 23"/>
+      </g>
+    </symbol>
+    <symbol id="em-garrison" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#b8a67c" d="M8 6 32 3 56 6 54 35Q51 49 32 61 13 49 10 35Z"/>
+        <path fill="#eee2c7" d="M13 11 32 8 51 11 49 34Q46 45 32 55 18 45 15 34Z"/>
+        <path fill="#4f7354" d="M31 50 22 28l9 9 11-11-8 25Zm-1-8Q17 43 15 34q10-1 15 8Zm5 3q11 0 14-10-10-1-14 10Z"/>
+        <path fill="#b74e45" d="m15 16 8-4 8 4 2 8-7 8-10-2-6-7Z"/>
+        <path fill="#d36752" d="m22 18 6 2-2 6-7-1-1-5Z"/>
+        <path fill="#a93636" d="m36 20 8-4 8 5 1 8-7 7-10-2-5-7Z"/>
+        <path fill="#d36752" d="m42 23 6 2-3 6-7-2 1-5Z"/>
+      </g>
+    </symbol>
+    <symbol id="em-police" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#b8a67c" d="M8 6 32 3 56 6 54 35Q51 49 32 61 13 49 10 35Z"/>
+        <path fill="#eee2c7" d="M13 11 32 8 51 11 49 34Q46 45 32 55 18 45 15 34Z"/>
+        <path fill="#9eaf86" d="m34 22 14-12-6 17Z"/>
+        <path fill="#355c48" d="M18 45q5-11 1-19l7-8 1-8 9 9 6 7 8 8-4 6-9-3q-6 5-3 14l-8-3-8 1 4-6Z"/>
+        <path fill="#648c64" d="m27 19 9 5 5 7-8 2q-8 4-7 15l-7-3q6-11 3-18Z"/>
+        <path fill="none" d="m35 28 3 1m6 6 3 1M27 24l-4 8"/>
+      </g>
+    </symbol>
+    <symbol id="em-cadet" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#b8a67c" d="M8 6 32 3 56 6 54 35Q51 49 32 61 13 49 10 35Z"/>
+        <path fill="#775b45" d="M13 11 32 8 51 11 49 34Q46 45 32 55 18 45 15 34Z"/>
+        <path fill="#d7ded9" d="m17 13 7 3 21 26-5 4-22-26Zm30 0-7 3-21 26 5 4 22-26Z"/>
+        <path fill="#b49b64" d="m15 39 12 10m10-10 12 10M23 45l-7 8m25-8 7 8"/>
+      </g>
+    </symbol>
+    <symbol id="em-marley" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round">
+        <path fill="#9f3e3c" d="M5 11h54v41H5Z"/>
+        <path fill="#c65d4d" d="M5 11h54v7H5Zm0 34h54v7H5Z"/>
+        <path fill="#f0e0bd" d="M32.00,15.00 34.74,24.48 42.93,18.98 38.93,28.00 48.74,29.05 39.88,33.39 46.72,40.50 37.14,38.13 37.81,47.97 32.00,40.00 26.19,47.97 26.86,38.13 17.28,40.50 24.12,33.39 15.26,29.05 25.07,28.00 21.07,18.98 29.26,24.48Z"/>
+      </g>
+    </symbol>
+    <symbol id="em-titan" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#d9b392" d="M17 24Q12 7 30 5q22-2 20 20l4 2-2 12-5 2-5 13-10 7-12-8-6-15-4-5 1-9Z"/>
+        <path fill="#a87962" stroke="none" d="m15 24 8-5 7 4-6 8-8-3Zm20-1 10-4 5 6-7 6-8-2ZM21 48l11 7 11-7-4 8-7 5-8-6Z"/>
+        <path fill="#142329" d="m19 26 7 1-3 3-4-1Zm18 1 8-2-1 4-6 1Z"/>
+        <path fill="none" d="m32 27-3 9 6 1"/>
+        <path fill="#f6ead2" d="M17 37q15 11 30-1-3 16-15 16T17 37Z"/>
+        <path fill="none" stroke-width="1.5" d="M20 43q12 7 24-1m-19-1 1 9m6-7v9m6-10-1 9"/>
+      </g>
+    </symbol>
+    <symbol id="em-royal" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#aa6b43" d="m11 23 12 7 9-12 9 12 12-7-7 25H18Z"/>
+        <path fill="#d6b16b" d="m8 19 14 12L32 12l10 19 14-12-6 32H14Z"/>
+        <path fill="#b6854d" d="M14 44h36v10H14Z"/>
+        <path fill="#bb5141" d="m32 31 5 6-5 6-5-6Z"/>
+        <circle cx="8" cy="17" r="3" fill="#e8cd91"/><circle cx="32" cy="10" r="3" fill="#e8cd91"/><circle cx="56" cy="17" r="3" fill="#e8cd91"/>
+      </g>
+    </symbol>
+    <symbol id="em-wall" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round">
+        <path fill="#c9bea4" d="M7 12h10v8h10v-8h10v8h10v-8h10v44H7Z"/>
+        <path fill="#9c927c" d="M7 27h50v6H7Z" stroke="none"/>
+        <path fill="#24383a" d="M23 56V41a9 9 0 0 1 18 0v15Z"/>
+        <path fill="none" d="M7 36h16m18 0h16M7 46h16m18 0h16M17 28v8m30-8v8M13 36v10m38-10v10"/>
+        <path fill="none" stroke="#c9bea4" d="M29 44v12m6-12v12"/>
+      </g>
+    </symbol>
+    <symbol id="em-civil" viewBox="0 0 64 64">
+      <g stroke="#142329" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#a37953" d="M12 28h40v28H12Z"/>
+        <path fill="#c9b595" d="m5 28 27-23 27 23-7 6-20-17-20 17Z"/>
+        <path fill="#34494a" d="M18 56V44q0-6 6-6t6 6v12m7 0V43q0-6 6-6t6 6v13"/>
+        <circle cx="24" cy="32" r="5" fill="#e2c6a0"/>
+        <circle cx="43" cy="31" r="5" fill="#e2c6a0"/>
+        <path fill="#dad0af" d="M27 56v-8q0-6 6-6t6 6v8Z"/>
+        <circle cx="33" cy="39" r="4" fill="#e2c6a0"/>
+      </g>
+    </symbol>
+  
+    <symbol id="orn-corner" viewBox="0 0 40 40">
+      <path fill="#b99a60" stroke="#142329" stroke-width="1.5" d="M2 38V2h36l-7 6H9v23Z"/>
+      <path fill="none" stroke="#e0c58b" d="M4 31V4h27"/>
+      <circle cx="6" cy="6" r="2" fill="#5b4930"/><circle cx="6" cy="6" r=".8" fill="#e9ce93"/>
+      <path fill="none" stroke="#b99a60" d="M13 20v-7h7m-9 16 5-5m8-8 5-5"/>
+    </symbol>
+    <symbol id="orn-divider" viewBox="0 0 240 16">
+      <g fill="none" stroke="#b99a60" stroke-linejoin="round">
+        <path d="M0 8h94m52 0h94M10 11h65m90 0h65" opacity=".65"/>
+        <path fill="#b99a60" d="m120 12-12-2-9-8 11 3 6 4-3-6 7 5 7-5-3 6 6-4 11-3-9 8Z"/>
+        <path d="m94 5 3 3-3 3m52-6-3 3 3 3"/>
+      </g>
+    </symbol>
+    <symbol id="orn-blades" viewBox="0 0 32 32">
+      <g stroke="#142329" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+        <path fill="#cdd6cd" d="m5 3 5 2 15 19-3 2L5 8Zm22 0-5 2L7 24l3 2L27 8Z"/>
+        <path fill="none" stroke="#b99a60" stroke-width="2" d="m5 22 7 6m8-6 7 6M8 26l-3 4m19-4 3 4"/>
+      </g>
+    </symbol>
+    <symbol id="orn-key" viewBox="0 0 32 32">
+      <g fill="none" stroke="#b99a60" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke-width="3" d="M17 15 5 27m0-5 5 5m1-11 5 5"/>
+        <path stroke-width="2.5" d="M27 5q-6-5-10 0-5 4 0 9 5 5 9 0 5-4 1-9Z"/>
+        <path d="M23 6v7m-3-4h6"/>
+      </g>
+    </symbol>
+  </defs></svg>
+<svg class="watermark" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg>
 <div class="site">
+  <div class="masthead">
   <header class="topbar">
-    <div class="identity"><div class="crest">W</div><div><div class="topline">Paradis Archive / Interactive Chronicle</div><div class="brand">ATTACK ON TITAN <span style="color:var(--gold)">/</span> THE WALLS</div></div></div>
+    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle</div><div class="brand">ATTACK ON TITAN <span style="color:var(--gold)">/</span> THE WALLS</div></div></div>
     <div class="top-actions"><span class="spoiler" data-i18n="spoiler">全劇劇透</span><button class="lang-btn" id="langBtn" title="Switch language">ENGLISH</button></div>
   </header>
-  <div class="hero"><div><div class="eyebrow" data-i18n="kicker">三道城牆 · 114 年入侵及防衛史</div><h1 data-i18n="hero">城牆內外，誰曾經越界？</h1><p data-i18n="subtitle">拖動年份與事件進度，親眼睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重要路線。</p></div><div class="year-plate"><small data-i18n="year">故事年份</small><strong id="heroYear">743</strong></div></div>
+  <div class="hero"><div><div class="eyebrow" data-i18n="kicker">三道城牆 · 114 年入侵及防衛史</div><h1 data-i18n="hero">越牆者</h1><div class="epigraph" data-i18n="epigraph">那一天，人類想起了被巨人支配的恐懼。</div><p data-i18n="subtitle">拖動年份與事件進度，親眼睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重要路線。</p></div><div class="year-plate"><small data-i18n="year">故事年份</small><strong id="heroYear">743</strong></div></div>
+  </div>
   <div class="layout">
     <div class="left">
       <section class="panel map-panel">
         <div class="map-head"><div><strong data-i18n="mapTitle">帕拉迪島 · 三道城牆</strong><div class="map-sub" data-i18n="mapHint">按地圖地標以選擇地區 · 進攻位置按劇情示意</div></div><div class="map-toolbar"><button type="button" class="pop-toggle" id="popToggle" aria-pressed="true">人群動態：開</button><button class="icon-btn" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><input type="range" class="zoom-slider" id="zoomSlider" min="0" max="100" value="0" aria-label="Zoom"/><button class="icon-btn" id="zoomIn" aria-label="Zoom in" title="Zoom in">＋</button><button class="icon-btn auto-cam" id="zoomReset" aria-label="Auto camera" title="Auto camera" aria-pressed="true">↺</button></div></div>
-        <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="mapInfo" data-i18n="schematic" aria-live="polite">非精確測繪地圖，虛線為示意</span></div>
+        <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="dayChip" class="day-chip"></span><span id="mapInfo" data-i18n="schematic" aria-live="polite">非精確測繪地圖，虛線為示意</span></div>
         <div class="map-caption"><div class="map-legend"><span class="key"><i class="line" style="border-color:var(--red)"></i><span data-i18n="attack">進攻</span></span><span class="key"><i class="line" style="border-color:var(--blue)"></i><span data-i18n="defense">防守</span></span><span class="key"><i class="line dashed" style="border-color:var(--gold)"></i><span data-i18n="covert">潛入／未確定路線</span></span><span class="key"><i class="line" style="border-color:var(--green)"></i><span data-i18n="repair">修復</span></span><span class="key"><canvas class="pop-key" data-sprite="titan1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popTitans">純潔巨人</span></span><span class="key"><canvas class="pop-key" data-sprite="civ1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popCivilians">平民</span></span></div></div>
-        <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="6">6×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="26" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 27</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
+        <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="6">6×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="27" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 28</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
       </section>
       
     </div>
     <aside class="right">
-      <section class="panel story-card"><div class="story-head"><div class="chapter"><span id="chapterTag">CHAPTER 01 / 27</span><span class="count" id="categoryBadge">REVEAL</span></div><h2 id="storyTitle"></h2><div class="meta" id="storyMeta"></div></div><div class="story-body"><div class="section-h" data-i18n="what">發生甚麼事</div><p id="storyDesc" class="story-text"></p><div id="storyOutcome" class="outcome"></div><div class="subsection" style="margin-top:19px"><span data-i18n="sequence">逐步事件 / 動畫</span><span style="color:#a2b3ab;font-size:10px" id="beatCount"></span></div><ol class="steps" id="stepList"></ol></div></section>
+      <section class="panel story-card"><div class="story-art" id="storyArt"></div><div class="story-head"><div class="chapter"><span id="chapterTag">CHAPTER 01 / 28</span><span class="count" id="categoryBadge">REVEAL</span></div><h2 id="storyTitle"></h2><div class="meta" id="storyMeta"></div></div><div class="story-body"><div class="section-h" data-i18n="what">發生甚麼事</div><p id="storyDesc" class="story-text"></p><div id="storyOutcome" class="outcome"></div><div class="subsection" style="margin-top:19px"><span data-i18n="sequence">逐步事件 / 動畫</span><span style="color:#a2b3ab;font-size:10px" id="beatCount"></span></div><ol class="steps" id="stepList"></ol></div></section>
       <section class="panel timeline-panel">
-        <div class="timeline-top"><h2 data-i18n="timeline">CHRONOLOGY · 事件年表</h2></div>
+        <div class="timeline-top"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-key"/></svg><h2 data-i18n="timeline">CHRONOLOGY · 事件年表</h2></div>
         
         
         <div class="filters" id="categoryFilters"></div><div class="filters" id="wallFilters" style="margin-top:8px"></div>
         <div class="event-nav" id="eventCards"></div>
       </section>
-      <section class="panel status-panel"><div class="status-top"><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
-      <section class="panel cast-panel"><div class="subsection"><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.0.0</span></div></div>
+      <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
+      <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.1.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -2182,7 +2894,7 @@ const marcelMissionPortrait="data:image/webp;base64,UklGRmwtAABXRUJQVlA4IGAtAADQ
 
 </script>
 <script data-src="src/story-text.js">
-/* Story text for the 27 events: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
+/* Story text for the 28 events: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
    The movement on the map (routes and marks) is in story.js. Scene labels are original editorial summaries, not dialogue. */
 const EVENT_TEXT = [
   {
@@ -2555,6 +3267,67 @@ const EVENT_TEXT = [
         {
           zh: '新繼承者',
           en: 'New inheritor',
+        },
+      ],
+    ],
+    delta: {},
+  },
+  {
+    id: 'reclamation',
+    year: '846',
+    category: 'defend',
+    wall: 'rose',
+    place: 'trost',
+    title: {
+      zh: '瑪利亞奪還作戰：二十五萬難民被送出牆外',
+      en: 'The "reclamation" of Maria: 250,000 refugees sent outside',
+    },
+    description: {
+      zh: '瑪利亞失陷後一年，牆內糧食不足。王政府以「奪還瑪利亞」為名，將約二十五萬名難民（約佔人口兩成）由托洛斯特送出羅塞之牆，進入滿佈巨人嘅瑪利亞領土。',
+      en: 'A year after Maria fell, food inside the Walls ran short. In the name of "retaking Wall Maria", the royal government sent about 250,000 refugees, roughly a fifth of the population, out through Trost into Titan-filled Maria territory.',
+    },
+    outcome: {
+      zh: '生還者只有百餘人。呢次唔係敵人入牆，而係人類被送出牆外；牆內嘅糧食壓力因此減輕。',
+      en: 'Barely a couple of hundred came back. No enemy entered this time: people were sent out of the Wall, and the food shortage inside eased.',
+    },
+    beats: [
+      {
+        zh: '難民喺托洛斯特集結',
+        en: 'Refugees gather at Trost',
+      },
+      {
+        zh: '由城門進入瑪利亞領土',
+        en: 'They march out into Maria territory',
+      },
+      {
+        zh: '巨人被人群吸引圍攏',
+        en: 'Titans close in on the column',
+      },
+      {
+        zh: '只有極少數人返回',
+        en: 'Only a handful return',
+      },
+    ],
+    characters: [
+      [
+        'civ',
+        {
+          zh: '被徵召嘅難民',
+          en: 'Conscripted refugees',
+        },
+      ],
+      [
+        'pure',
+        {
+          zh: '被人群吸引',
+          en: 'Drawn to the crowd',
+        },
+      ],
+      [
+        'garrison',
+        {
+          zh: '守住城門',
+          en: 'Holds the gate',
         },
       ],
     ],
@@ -4062,6 +4835,15 @@ const SCENES = (() => {
       ],
       marks: [{ point: 'reiss', kind: 'reveal' }],
     },
+    reclamation: {
+      routes: [
+        r('civ', 'defense', ['roseLand', 'trostI', 'trost', 'trostO', 'between', at(232, 68)], 0.04, 0.62),
+        { ...r('garrison', 'defense', ['roseLand', 'trostI', 'trost'], 0, 0.3), offset: [24, 0] },
+        r('pure', 'attack', [at(226, 56), at(230, 66), 'between'], 0.34, 0.8),
+        r('civ', 'neutral', ['between', 'trostO', 'trost'], 0.84, 1),
+      ],
+      marks: [{ point: 'between', kind: 'attack', at: 0.56 }],
+    },
     cadets: {
       routes: [r('reiner', 'covert', ['trostI', 'cadetCamp'], 0, 0.65, true), { ...r('annie', 'covert', ['trostI', 'cadetCamp'], 0.2, 0.75, true), offset: [24, 0] }],
       marks: [{ point: 'cadetCamp', kind: 'infiltrate' }],
@@ -4161,11 +4943,29 @@ const SCENES = (() => {
     ambassadors: { routes: [r('alliance', 'neutral', ['sea', 'harborSea', 'harbor'], 0, 0.95, true)], marks: [{ point: 'harbor', kind: 'reveal' }] },
   };
 })();
+// Time of day within an event: [progress, light] pairs, 1 = day and 0 = night. Events not listed are in daylight.
+// Titans do not move at night - except under the moon at Utgard, the anomaly the soldiers noticed.
+const LIGHT = {
+  marcel: [[0, 0], [0.24, 0], [0.36, 1]], // the Warriors walk by night and are caught at dawn
+  refugees: [[0, 1], [0.6, 0.6], [1, 0.3]], // the evacuation runs into the evening
+  'founder-transfer': [[0, 0.3], [0.14, 0], [0.9, 0], [1, 0.25]], // the night of the fall
+  utgard: [[0, 0], [0.82, 0], [0.96, 1]], // a night siege; rescue at dawn
+  rod: [[0, 0], [0.3, 0], [0.48, 1]], // out of the cavern by night, Orvud at dawn
+  'maria-retaken': [[0, 0], [0.24, 0], [0.36, 1]], // the Scouts ride by night because Titans sleep
+};
+const NIGHT_ACTIVE = new Set(['utgard']);
 const events = EVENT_TEXT.map((t) => {
   const scene = SCENES[t.id];
   if (!scene) throw new Error('No scene for event ' + t.id);
-  return { ...t, routes: scene.routes, marks: scene.marks };
+  return { ...t, routes: scene.routes, marks: scene.marks, light: LIGHT[t.id] || [[0, 1]], nightActive: NIGHT_ACTIVE.has(t.id) };
 });
+// Daylight (0..1) at a point of the timeline.
+function lightAt(idx, p) {
+  const k = events[idx].light;
+  if (p <= k[0][0]) return k[0][1];
+  for (let i = 1; i < k.length; i++) if (p <= k[i][0]) { const f = (p - k[i - 1][0]) / (k[i][0] - k[i - 1][0]); return k[i - 1][1] + (k[i][1] - k[i - 1][1]) * (f * f * (3 - 2 * f)); }
+  return k[k.length - 1][1];
+}
 
 </script>
 <script data-src="src/population.js">
@@ -4319,6 +5119,9 @@ const events = EVENT_TEXT.map((t) => {
     inMaria.push(...first, ...second, ...third);
     // their homes after entering are resolved below; use Trost as the reference for "nearest" until then
     setCur(inMaria, (a) => lerp(a.home0, TROST.outer, 0.8));
+    // 846: the refugee column sent out through Trost draws the Titans nearest to it.
+    const drawn = nearest([...first, ...second], TROST.outer, 22);
+    move(drawn, ['reclamation', 0.22], ['reclamation', 0.7], 'maria', { near: TROST.beyond, radius: 30, spread: 0.5 });
     kill(take(inMaria, inMaria.filter((_, i) => i % 13 === 5)), ['cadets', 0.2], ['cadets', 0.9]); // early Survey Corps expeditions
     // 850: Trost. The Titans nearest the broken outer gate pour in and are all killed once it is sealed.
     const trostTitans = take(inMaria, nearest(inMaria, TROST.outer, 26));
@@ -4367,16 +5170,23 @@ const events = EVENT_TEXT.map((t) => {
     move(mariaFolk, ['maria-fall', 0.5], ['refugees', 0.5], 'rose', { flee: true, spread: 0.6 });
     for (const a of lost) { const m = a.ops[a.ops.length - 1], mid = m.T0 + (m.T1 - m.T0) * 0.45; a.ops.push({ type: 'fade', T0: mid, T1: mid + 0.08, v: 0, how: 'caught' }); }
     const survivors = mariaFolk.filter((a) => !lost.includes(a));
+    // 846: the "reclamation". About a fifth of the people are marched out through Trost into Titan country; a handful return.
+    const sent = survivors.slice(0, Math.round(nc * 0.2)), returned = sent.slice(0, 2);
+    move(sent, ['reclamation', 0.06], ['reclamation', 0.6], 'maria', { via: ['trost'], near: TROST.beyond, radius: 34, spread: 0.5 });
+    sent.filter((a) => !returned.includes(a)).forEach((a, i, list) => { const t0 = T('reclamation', 0.5 + 0.38 * (i / list.length)); a.ops.push({ type: 'fade', T0: t0, T1: t0 + 0.07, v: 0, how: 'caught' }); });
+    move(returned, ['reclamation', 0.82], ['reclamation', 1], 'rose', { via: ['trost'], flee: true, spread: 0.2 });
+    const alive = survivors.filter((a) => !sent.includes(a) || returned.includes(a));
     // 850: Trost is evacuated during the attack and lived in again afterwards.
     move(civD.trost, ['trost-attack', 0.2], ['trost-attack', 0.6], 'rose', { flee: true, spread: 0.3 });
     move(civD.trost, ['annie-mp', 0.1], ['annie-mp', 0.7], 'trost', { spread: 0.3 });
     fade(ragCiv, ['ragako', 0.28], ['ragako', 0.46], 0, { spread: 0.3, how: 'turned' });
     fade(ragCiv.slice(0, 1), ['alliance', 0.9], ['alliance', 1], 1);
     // 851 onwards: Maria is settled again.
-    const back = survivors.filter((_, i) => i % 3 !== 0);
+    const back = alive.filter((_, i) => i % 3 !== 0);
     move(back.filter((a) => a.area0 === 'maria'), ['sea', 0.4], ['sea', 1], 'maria', { spread: 0.6 });
     for (const id of ['holst', 'quinta', 'mariaN']) move(back.filter((a) => a.area0 === id), ['sea', 0.5], ['ships', 0.5], id, { spread: 0.5 });
     move(civD.shig, ['sea', 0.55], ['sea', 1], 'shig', { spread: 0.4 });
+    move(civRose.slice(0, Math.round(nc * 0.09)), ['sea', 0.45], ['ships', 0.4], 'maria', { spread: 0.6 }); // new settlers from Wall Rose
     // 854: Shiganshina's people get away from the fighting, and return once it is over.
     move(civD.shig, ['zeke-scream', 0.3], ['zeke-scream', 0.75], 'maria', { flee: true, spread: 0.3 });
     move(civD.shig, ['ambassadors', 0.1], ['ambassadors', 0.6], 'shig', { spread: 0.3, straight: true });
@@ -4402,12 +5212,19 @@ const events = EVENT_TEXT.map((t) => {
     events.forEach((ev, ei) => ev.routes.forEach((rt) => {
       if (rt.who !== 'scouts') return;
       const pts = rt.path.map((p) => (Array.isArray(p) ? p : opts.points[p]));
-      const geo = global.RouteGeo.build(pts, 1), r = rng(77 + ei * 31);
+      const geo = global.RouteGeo.build(pts, 1), r = rng(77 + ei * 31), wide = ev.id === 'female-forest' ? 3.4 : 1; // the long-range scouting formation fans out
       for (let i = 0; i < N.riders; i++) {
-        const a = { id: agents.length, kind: 'rider', r, variant: 1, area0: 'outside', home0: pts[0], vis0: 0, ops: [], phase: r() * 10, speed: 1, ride: { ei, geo, start: rt.start, end: rt.end, lag: 0.012 + 0.1 * (i / N.riders), side: (i % 2 ? 1 : -1) * (2.5 + 2.2 * Math.floor(i / 2)) } };
+        const a = { id: agents.length, kind: 'rider', r, variant: 1, area0: 'outside', home0: pts[0], vis0: 0, ops: [], phase: r() * 10, speed: 1, ride: { ei, geo, start: rt.start, end: rt.end, lag: 0.012 + 0.1 * (i / N.riders), side: (i % 2 ? 1 : -1) * (2.5 + 2.2 * Math.floor(i / 2)) * wide } };
         agents.push(a); riders.push(a);
       }
     }));
+    // 845: evacuation boats carry people up the river from Shiganshina, through the gates, to Trost.
+    const boats = [];
+    {
+      const river = global.RouteGeo.build([SHIG.centre, SHIG.inner, [C[0] + 1.5, C[1] + R.rose + 38], TROST.outer, TROST.centre, TROST.inner, at(R.rose - 26, 90)], 1);
+      const trips = [['maria-fall', 0.44], ['maria-fall', 0.53], ['maria-fall', 0.62], ['maria-fall', 0.72], ['maria-fall', 0.84], ['refugees', 0.04], ['refugees', 0.18], ['refugees', 0.33]];
+      for (const [id, p] of trips) { const a = { id: agents.length, kind: 'boat', r: rng(5), variant: 1, area0: 'maria', home0: SHIG.centre, vis0: 0, ops: [], phase: p * 9, speed: 1, ferry: { geo: river, T0: T(id, p), T1: T(id, p) + 0.36 } }; agents.push(a); boats.push(a); }
+    }
     // Wall cannons on the districts' outer walls.
     const cannons = [];
     for (const d of DISTRICTS) for (const off of [-48, 48]) { const a = ((d.deg + off) * Math.PI) / 180; cannons.push({ x: d.base[0] + Math.cos(a) * d.r, y: d.base[1] + Math.sin(a) * d.r, face: Math.cos(a) >= 0 ? 1 : -1, wall: d.wall, district: d.id }); }
@@ -4427,6 +5244,7 @@ const events = EVENT_TEXT.map((t) => {
       delete a.cur;
       // when this figure can be on screen at all (lets the renderer skip it cheaply)
       if (a.march) { a.t0 = wallsFall; a.t1 = a.march.T1; }
+      else if (a.ferry) { a.t0 = a.ferry.T0; a.t1 = a.ferry.T1; }
       else if (a.ride) { a.t0 = a.ride.ei; a.t1 = a.ride.ei + 1; }
       else {
         const fades = a.ops.filter((o) => o.type === 'fade');
@@ -4469,6 +5287,12 @@ const events = EVENT_TEXT.map((t) => {
         const p = lerp(m.from, m.to, clamp01(f));
         return { x: p[0], y: p[1], vis: Math.min(clamp01((Tl - wallsFall) / 0.04), clamp01((1 - f) / 0.06)), area: 'outside', marching: f > 0 };
       }
+      if (a.ferry) { // an evacuation boat on the river
+        const f = (Tl - a.ferry.T0) / (a.ferry.T1 - a.ferry.T0);
+        if (f < 0 || f > 1) return { x: a.home0[0], y: a.home0[1], vis: 0, area: 'maria' };
+        const pos = global.RouteGeo.at(a.ferry.geo.tab, f);
+        return { x: pos.x, y: pos.y, vis: Math.min(clamp01(f / 0.08), clamp01((1 - f) / 0.08)), area: 'maria', sailing: true };
+      }
       if (a.ride) { // a rider on a Survey Corps route, only during that event
         const rd = a.ride, p = Tl - rd.ei;
         if (p < 0 || p >= 1) return { x: a.home0[0], y: a.home0[1], vis: 0, area: 'outside' };
@@ -4499,7 +5323,7 @@ const events = EVENT_TEXT.map((t) => {
     function counts(Tl) {
       const out = { titan: { total: 0 }, civ: { total: 0 }, wallTitan: 0 };
       for (const a of agents) {
-        if (a.kind === 'rider') continue;
+        if (a.kind === 'rider' || a.kind === 'boat') continue;
         const s = stateAt(a, Tl, 0, { reduced: true });
         if (s.vis <= 0.5) continue;
         if (a.kind === 'wallTitan') { out.wallTitan++; continue; }
@@ -4541,6 +5365,7 @@ const events = EVENT_TEXT.map((t) => {
   sprites.rider={anims:{walk:anim(12,15,true),idle:anim(12,3,false)},baseHeight:21,stride:17};
   sprites.cannon={anims:{idle:anim(1,1,false),fire:anim(8,14,false)},baseHeight:12,stride:0};
   sprites.steam={anims:{puff:anim(12,12,false)},baseHeight:34,stride:0};
+  sprites.boat={anims:{walk:anim(8,6,true),idle:anim(8,2,false)},baseHeight:9,stride:10};
   var SPEC={sprites:sprites};
   function cycle(t){ t=Number(t)||0; return ((t%1)+1)%1; }
   function pt(x,y){return {x:x,y:y};}
@@ -4624,6 +5449,7 @@ const events = EVENT_TEXT.map((t) => {
       return {body:pt(0,-9.7+bob),head:pt(9.5,-13.3+bob),rider:pt(-0.5,-17.9+bob),legs:legs,bob:bob,tail:Math.sin(w)*0.6,lean:active?0.7+0.16*Math.sin(w):0.1};
     }
     if(name==='cannon')return {recoil:an==='fire'?-1.2*Math.pow(Math.sin(Math.PI*Math.min(t*3,1)),2):0,flash:an==='fire'?Math.max(0,1-t*4):0,smoke:an==='fire'?Math.sin(Math.PI*t):0,progress:t};
+    if(name==='boat')return {bob:Math.sin(w)*0.16,roll:Math.sin(w+0.5)*0.009,wave:Math.sin(w),passengerSway:Math.sin(w-0.35)*0.08};
     return {progress:t,rise:25*t,radius:3+10*t,opacity:Math.pow(Math.sin(Math.PI*t),0.8)};
   }
   function tint(hex,v){var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return 'rgb('+[r,g,b].map(function(c){return Math.round(v>=0?c+(255-c)*v:c*(1+v));}).join(',')+')';}
@@ -4773,6 +5599,41 @@ const events = EVENT_TEXT.map((t) => {
     if(p.flash){c.save();c.globalAlpha=p.flash;c.fillStyle='#f2a344';c.beginPath();c.moveTo(8,-7);c.lineTo(13,-11);c.lineTo(12,-8);c.lineTo(18,-8);c.lineTo(13,-6.5);c.lineTo(15,-3.5);c.closePath();c.fill();oval(c,10,-7,3.2,1.2,'#fff0b0',false,h);c.restore();}
     if(p.smoke){c.save();c.globalAlpha=p.smoke*0.46;for(var k=0;k<4;k++)oval(c,10+k*1.7+t*5,-8-k*0.9-t*5,1.4+t*3,1.5+t*2,'#c8c4b3',false,h);c.restore();}
   }
+  function boat(c,an,t,view,h){
+    var p=pose('boat',an,t),back=view==='b';
+    function polygon(points,color){c.fillStyle=color;c.beginPath();points.forEach(function(a,i){if(i)c.lineTo(a[0],a[1]);else c.moveTo(a[0],a[1]);});c.closePath();c.fill();}
+    // Shallow river wake remains separate from the gently rocking hull.
+    c.save();c.globalAlpha=0.32;oval(c,0,0.2,10.6,1.05,'#6f9b96',false,h);c.restore();
+    if(an==='walk'){
+      c.save();c.globalAlpha=0.5;
+      line(c,[pt(8.3,-0.5),pt(11.4+p.wave*0.25,-0.1),pt(9.4,0.8)],'#d1d4bb',0.25);
+      line(c,[pt(10.2,-0.7),pt(12.3+p.wave*0.35,0),pt(10.5,1)],'#91b6ac',0.18);
+      line(c,[pt(-11.8-p.wave*0.3,0.5),pt(-8.5,0.8)],'#a4bdb0',0.18);c.restore();
+    }
+    c.save();c.translate(0,p.bob);c.rotate(p.roll);
+    polygon([[-10,-3.7],[-7.3,-5.5],[6.9,-5.2],[10,-3.3],[6.5,-0.1],[-7.8,-0.6]],'#483c2e');
+    polygon([[-9.5,-3.7],[-7.2,-5.1],[6.8,-4.8],[9.5,-3.3],[6.2,-2],[-7.8,-2.4]],'#a0845c');
+    line(c,[pt(-7.2,-5.3),pt(6.9,-5),pt(9.6,-3.4)],'#b49a71',0.42);
+    if(h)for(var plank=0;plank<5;plank++)line(c,[pt(-7.5,-4.8+plank*0.5),pt(7.6,-4.5+plank*0.5)],'#756044',0.12);
+    // Two closely packed rows; heads and shoulders stay inside the nine-unit silhouette.
+    var passengers=[[-6,-5.1,0.86,'#737c6b'],[-3.4,-5,0.9,'#7a6657'],[-0.7,-4.9,0.86,'#8d8972'],[2,-4.8,0.91,'#657b82'],[4.8,-4.6,0.79,'#897459'],[-5,-3.5,0.91,'#697982'],[-2.2,-3.4,0.79,'#9a896e'],[0.5,-3.2,0.9,'#706452'],[3.2,-3.1,0.75,'#8b746a'],[5.7,-3,0.85,'#73806c']];
+    passengers.forEach(function(a,i){
+      var x=a[0]+p.passengerSway*(i%2?1:-1),y=a[1],s=a[2],skin=i%3===0?'#bc9676':'#d4b394';
+      segment(c,pt(x,y),pt(x+0.12,y-1.7*s),0.79*s,0.64*s,a[3],i<5,h);
+      oval(c,x+0.16,y-2.7*s,0.62*s,0.76*s,skin,i<5,h,-0.08);
+      if(back||i%3!==1)oval(c,x+0.04,y-3*s,0.65*s,back?0.62*s:0.39*s,i%4===0?'#b4aa8b':'#554b3d',i<5,h);
+      if(!back){oval(c,x+0.7*s,y-2.66*s,0.19*s,0.19*s,skin,false,h);if(h)oval(c,x+0.48*s,y-2.78*s,0.075,0.085,'#453c32',false,false);}
+      line(c,[pt(x-0.62*s,y-1.5*s),pt(x-0.85*s,y-0.45*s),pt(x-0.3*s,y-0.35*s)],tint(a[3],-0.13),0.4*s);
+    });
+    oval(c,-7.5,-3.2,1,0.7,'#b0a181',false,h);oval(c,7,-2.8,0.8,0.65,'#8d896b',false,h);
+    polygon([[-10,-3.7],[-7.8,-2.5],[6.6,-2.1],[10,-3.3],[7.4,-0.6],[5.8,0],[-7.4,-0.5],[-9,-1.7]],shade(c,0,-1.8,10,2,'#88623f',false,h));
+    line(c,[pt(-10,-3.7),pt(-7.8,-2.5),pt(6.6,-2.1),pt(10,-3.3)],'#c0a075',0.45);
+    line(c,[pt(-8.8,-2),pt(-7.2,-1.4),pt(6.3,-0.9),pt(8.5,-1.8)],'#503c2c',0.18);
+    [-6,-1,4].forEach(function(x){line(c,[pt(x,-2.35),pt(x+0.25,-0.4)],'#574431',0.36);if(h)oval(c,x+0.03,-2,0.1,0.12,'#c3ad83',false,false);});
+    // A coiled mooring rope catches the same upper-left light as the figures.
+    if(h){c.strokeStyle='#cab287';c.lineWidth=0.16;c.beginPath();c.ellipse(7.2,-2.5,0.7,0.28,-0.35,0,TAU);c.stroke();}
+    c.restore();
+  }
   function steam(c,t,h){
     var p=pose('steam','puff',t);c.save();c.globalAlpha=p.opacity*0.56;
     for(var i=0;i<7;i++){var a=i*2.4,x=Math.sin(a)*p.radius*0.55+Math.sin(t*TAU+i)*1.1,y=-3-p.rise*(0.48+i*0.075);oval(c,x,y,p.radius*(0.4+(i%3)*0.1),p.radius*(0.5+(i%2)*0.16),'#e7e1d1',i%3===0,h);}
@@ -4783,6 +5644,7 @@ const events = EVENT_TEXT.map((t) => {
     if(name==='titanLying')return [-20,-11,18,6];
     if(name==='rider')return [-15,-22,17,4];
     if(name==='cannon')return an==='fire'?[-12,-20,24,4]:[-12,-12,10,4];
+    if(name==='boat')return [-13,-10,14,3];
     if(name.indexOf('civ')===0)return [name==='civ4'?-15:-8,-13,8,4];
     if(name==='wallTitan')return [-14,-54,12,4];
     var r=rigs[name],left=r.quad?-14:r.belly?-10:-9,right=r.quad?16:r.hunch?14:r.belly?11:r.baby?11:10;
@@ -4821,6 +5683,7 @@ const events = EVENT_TEXT.map((t) => {
       else if(it.name.indexOf('civ')===0)civilians(c,it.name,it.an,t,it.view,high);
       else if(it.name==='rider')horse(c,it.an,t,it.view,high);
       else if(it.name==='cannon')cannon(c,it.an,t,high);
+      else if(it.name==='boat')boat(c,it.an,t,it.view,high);
       else steam(c,t,high);
       c.restore();
     });
@@ -5024,12 +5887,12 @@ const events = EVENT_TEXT.map((t) => {
 (function (global) {
   'use strict';
   const QUALITY = {
-    high: { mapPpu: 2.4, firstPpu: 0.7, dpr: 2, atlasUnit: 3, atlasQuality: 'high', logicEvery: 1 },
-    low: { mapPpu: 1.3, firstPpu: 0.5, dpr: 1.5, atlasUnit: 1.6, atlasQuality: 'low', logicEvery: 2 }, // crowd logic at half rate on phones
+    high: { mapPpu: 2.4, firstPpu: 0.7, dpr: 2, atlasUnit: 3, atlasQuality: 'high', logicEvery: 1, snow: 150, clouds: 8 },
+    low: { mapPpu: 1.3, firstPpu: 0.5, dpr: 1.5, atlasUnit: 1.6, atlasQuality: 'low', logicEvery: 2, snow: 50, clouds: 5 }, // crowd logic at half rate on phones
   };
   // World size of the figures: world units per sprite design unit (a Titan is about 30 design units tall).
-  const SIZE = { titan: 0.5, wallTitan: 0.62, civ: 0.6, rider: 0.6, cannon: 0.42, steam: 0.5 };
-  const MIN_PX = { titan: 0.26, wallTitan: 0.3, civ: 0.42, rider: 0.42, cannon: 0.32, steam: 0.26 }; // smallest screen px per design unit
+  const SIZE = { titan: 0.5, wallTitan: 0.62, civ: 0.6, rider: 0.6, cannon: 0.42, steam: 0.5, boat: 0.7 };
+  const MIN_PX = { titan: 0.26, wallTitan: 0.3, civ: 0.42, rider: 0.42, cannon: 0.32, steam: 0.26, boat: 0.4 }; // smallest screen px per design unit
   const MAX_PX = 2.6;
 
   function create(canvas, World, terrain, pop, qualityName) {
@@ -5056,7 +5919,7 @@ const events = EVENT_TEXT.map((t) => {
     const dyn = pop.agents.map(() => ({ has: false, x: 0, y: 0, face: 1, view: 'f', ph: 0, ox: 0, oy: 0, speed: 0 }));
     const cannonState = pop.cannons.map((c, i) => ({ next: 1 + (i % 5) * 0.37, start: -9 }));
     const items = [];
-    let logicEvery = Q.logicEvery, frameNo = 0, accDt = 0, lastT = -1;
+    let logicEvery = Q.logicEvery, frameNo = 0, accDt = 0, lastT = -1, titanClock = 0;
     const CELL = 40, grid = new Map(), civGrid = new Map();
     const key = (x, y) => ((x / CELL) | 0) * 4096 + ((y / CELL) | 0);
     const nearestIn = (g, x, y, maxD, skipRegion) => {
@@ -5072,11 +5935,12 @@ const events = EVENT_TEXT.map((t) => {
 
     function crowdFrame(T, t, dt, o) {
       items.length = 0; grid.clear(); civGrid.clear();
+      titanClock += dt * o.awake;
       const live = [];
       for (let i = 0; i < pop.agents.length; i++) {
         const a = pop.agents[i], d = dyn[i];
         if (T < a.t0 || T > a.t1) { d.has = false; continue; }
-        const s = pop.stateAt(a, T, t, o);
+        const s = pop.stateAt(a, T, a.kind === 'titan' ? titanClock : t, o); // Titans stand still at night: their clock stops
         if (s.vis < 0.02) { d.has = false; continue; }
         const e = { a, d, s, x: s.x, y: s.y, region: pop.regionOfArea(s.area) };
         live.push(e);
@@ -5092,7 +5956,7 @@ const events = EVENT_TEXT.map((t) => {
           if (a.kind === 'civ') { // run from a Titan in the same territory
             const n = nearestIn(grid, s.x, s.y, 30, e.region);
             if (n) { const k = ((30 - n.d) / 30) * 6 / (n.d || 1); tx = (s.x - n.o.x) * k; ty = (s.y - n.o.y) * k; scared = true; }
-          } else if (a.kind === 'titan' && !a.lying && !s.moving) { // lean towards people, even through a Wall
+          } else if (a.kind === 'titan' && !a.lying && !s.moving && o.awake > 0.5) { // lean towards people, even through a Wall
             const n = nearestIn(civGrid, s.x, s.y, 38);
             if (n) { const k = Math.min(5, n.d * 0.5) / (n.d || 1); tx = (n.o.x - s.x) * k; ty = (n.o.y - s.y) * k; reaching = n.o.region !== e.region; }
           }
@@ -5108,7 +5972,7 @@ const events = EVENT_TEXT.map((t) => {
         const walking = d.speed > 0.35 && !o.reduced;
         if (walking) d.ph += moved / stride;
         let anim = 'idle';
-        if (a.kind === 'wallTitan') anim = 'walk';
+        if (a.kind === 'wallTitan' || a.kind === 'boat') anim = 'walk';
         else if (walking) anim = a.kind === 'civ' && (s.flee || scared) ? 'run' : 'walk';
         else if (reaching) anim = 'reach';
         items.push({ kind: a.kind, name, anim, view: d.view, face: d.face, x, y, ph: d.ph, alpha: s.vis, dying: s.dying, how: s.how, t0: a.phase, agent: a });
@@ -5158,6 +6022,7 @@ const events = EVENT_TEXT.map((t) => {
     }
     // Plain shapes used until the designed sprites are loaded.
     function fallback(kind, x, y, k) {
+      if (kind === 'boat') { ctx.fillStyle = '#6d5335'; ctx.beginPath(); ctx.ellipse(x, y - 2 * k, 10 * k, 3.4 * k, 0, 0, 6.3); ctx.fill(); ctx.fillStyle = '#5d7c95'; for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.arc(x + i * 3.4 * k, y - 5.5 * k, 1.5 * k, 0, 6.3); ctx.fill(); } return; }
       const h = (kind === 'titan' ? 30 : kind === 'wallTitan' ? 46 : kind === 'rider' ? 16 : 11) * k;
       ctx.fillStyle = 'rgba(20,30,20,.3)'; ctx.beginPath(); ctx.ellipse(x, y, h * 0.3, h * 0.09, 0, 0, 6.3); ctx.fill();
       ctx.fillStyle = kind === 'titan' ? '#e2b79b' : kind === 'wallTitan' ? '#b5483c' : kind === 'civ' ? '#5d7c95' : kind === 'rider' ? '#3f6b3c' : '#555';
@@ -5232,7 +6097,7 @@ const events = EVENT_TEXT.map((t) => {
       if (sc.crowd) {
         // the crowd's logic may run every 2nd or 3rd frame on slower devices; drawing stays every frame
         accDt += sc.dt; frameNo++;
-        if (frameNo % logicEvery === 0 || Math.abs(sc.T - lastT) > 0.02) { crowdFrame(sc.T, sc.t, accDt, { reduced: sc.reduced }); accDt = 0; }
+        if (frameNo % logicEvery === 0 || Math.abs(sc.T - lastT) > 0.02) { crowdFrame(sc.T, sc.t, accDt, { reduced: sc.reduced, awake: sc.awake ?? 1 }); accDt = 0; }
         lastT = sc.T;
         const list = items;
         const pad = 60, hw = vw / 2, hh = vh / 2;
@@ -5243,9 +6108,71 @@ const events = EVENT_TEXT.map((t) => {
         }
         ctx.globalAlpha = 1;
       }
+      weather(view, sc);
+      for (const fl of sc.flares || []) drawFlare(view, fl);
+      nightfall(view, sc);
       // aged-paper vignette over the whole view
       const vg = ctx.createRadialGradient(vw / 2, vh / 2, Math.min(vw, vh) * 0.45, vw / 2, vh / 2, Math.max(vw, vh) * 0.78);
       vg.addColorStop(0, 'rgba(60,40,14,0)'); vg.addColorStop(1, 'rgba(60,40,14,.26)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, vw, vh);
+    }
+    // ---- Weather: drifting cloud shadows, two rain clouds, snow over the northern mountains ----
+    const wr = (() => { let s = 20261117; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); })();
+    const clouds = Array.from({ length: Q.clouds }, (_, i) => ({ x: wr() * World.W, y: 80 + wr() * (World.H - 160), r: 70 + wr() * 90, v: 5 + wr() * 7, rain: i < 2 }));
+    const flakes = Array.from({ length: Q.snow }, () => ({ x: 120 + wr() * 760, y: 120 + wr() * 420, v: 9 + wr() * 9, ph: wr() * 6.3 }));
+    const drops = Array.from({ length: 34 }, () => [wr() * 2 - 1, wr() * 2 - 1, wr()]);
+    let shade = null;
+    function weather(view, sc) {
+      const s = view.s, dt = sc.reduced ? 0 : sc.dt, hw = vw / 2, hh = vh / 2;
+      if (!shade) { shade = document.createElement('canvas'); shade.width = shade.height = 128; const g = shade.getContext('2d'), gr = g.createRadialGradient(64, 64, 8, 64, 64, 64); gr.addColorStop(0, 'rgba(18,28,40,.9)'); gr.addColorStop(0.6, 'rgba(18,28,40,.5)'); gr.addColorStop(1, 'rgba(18,28,40,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); }
+      for (const c of clouds) {
+        c.x += c.v * dt; if (c.x - c.r > World.W + 60) { c.x = -c.r - 40; c.y = 80 + ((c.y * 7.3) % (World.H - 160)); }
+        const sx = (c.x - view.x) * s + hw, sy = (c.y - view.y) * s + hh, rr = c.r * s;
+        if (sx + rr < 0 || sy + rr < 0 || sx - rr > vw || sy - rr > vh) continue;
+        ctx.globalAlpha = c.rain ? 0.34 : 0.16; ctx.drawImage(shade, sx - rr, sy - rr * 0.7, rr * 2, rr * 1.4);
+        if (c.rain && !sc.reduced) { // rain falling under the cloud
+          ctx.globalAlpha = 0.5; ctx.strokeStyle = '#cfe3f2'; ctx.lineWidth = Math.max(1, Math.min(1.6, s * 0.7)); ctx.beginPath();
+          const len = Math.max(5, Math.min(12, 6 * s));
+          for (const [dx, dy, ph] of drops) { const f = (sc.t * 1.6 + ph) % 1, x = sx + dx * rr * 0.72 - f * len * 0.5, y = sy + dy * rr * 0.42 + f * len * 2.2; ctx.moveTo(x, y); ctx.lineTo(x - len * 0.32, y + len); }
+          ctx.stroke();
+        }
+      }
+      // snow: only over the northern mountains
+      ctx.globalAlpha = 0.85; ctx.fillStyle = '#ffffff';
+      const size = Math.max(0.9, Math.min(2, s * 1.1));
+      for (const f of flakes) {
+        f.y += f.v * dt; f.x += Math.sin(sc.t * 0.8 + f.ph) * 3 * dt; if (f.y > 540) f.y = 120;
+        const sx = (f.x - view.x) * s + hw, sy = (f.y - view.y) * s + hh;
+        if (sx < 0 || sy < 0 || sx > vw || sy > vh) continue;
+        ctx.globalAlpha = 0.85 * Math.min(1, (540 - f.y) / 60); ctx.fillRect(sx, sy, size, size);
+      }
+      ctx.globalAlpha = 1;
+    }
+    // A signal flare: a coloured smoke trail rising from the riders (f = 0..1 through its life).
+    function drawFlare(view, fl) {
+      const s = view.s, sx = (fl.x - view.x) * s + vw / 2, sy = (fl.y - view.y) * s + vh / 2;
+      const rise = Math.min(1, fl.f / 0.3), H = Math.max(34, Math.min(130, 44 * s)) * rise, a = fl.f < 0.7 ? 1 : Math.max(0, (1 - fl.f) / 0.3), drift = 10 * fl.f;
+      ctx.globalAlpha = 0.85 * a; ctx.strokeStyle = fl.color; ctx.lineCap = 'round'; ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.moveTo(sx, sy - 6); ctx.quadraticCurveTo(sx + drift * 0.2, sy - H * 0.6, sx + drift, sy - H); ctx.stroke();
+      ctx.fillStyle = fl.color;
+      for (const [k, r] of [[1, 6 + 9 * fl.f], [0.82, 4 + 6 * fl.f], [0.62, 3 + 4 * fl.f]]) { ctx.globalAlpha = 0.6 * a * k; ctx.beginPath(); ctx.arc(sx + drift * k, sy - H * k, r, 0, 6.3); ctx.fill(); }
+      ctx.globalAlpha = 1;
+    }
+    // Night: the scene darkens to moonlit blue, and towns that still have people show their lights.
+    function nightfall(view, sc) {
+      const night = 1 - (sc.light ?? 1);
+      if (night < 0.01) return;
+      const mix = (a, b) => Math.round(a + (b - a) * night), s = view.s;
+      ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = 'rgb(' + mix(255, 44) + ',' + mix(255, 60) + ',' + mix(255, 116) + ')'; ctx.fillRect(0, 0, vw, vh);
+      ctx.globalCompositeOperation = 'screen';
+      const lit = [[C, 15]];
+      for (const d of DISTRICTS) if (!(d.wall === 'maria' && (sc.walls.w.maria === 'lost' || sc.walls.w.maria === 'collapsed' && false))) lit.push([d.centre, d.r * 0.8]);
+      for (const [p, r] of lit) {
+        const sx = (p[0] - view.x) * s + vw / 2, sy = (p[1] - view.y) * s + vh / 2, rr = Math.max(7, r * s * 1.5);
+        if (sx + rr < 0 || sy + rr < 0 || sx - rr > vw || sy - rr > vh) continue;
+        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, rr); g.addColorStop(0, 'rgba(255,196,96,' + 0.55 * night + ')'); g.addColorStop(1, 'rgba(255,170,60,0)');
+        ctx.fillStyle = g; ctx.fillRect(sx - rr, sy - rr, rr * 2, rr * 2);
+      }
+      ctx.globalCompositeOperation = 'source-over';
     }
     // The figure under a screen point, if it is the lying Ragako Titan (for its explanation).
     function lyingAt(view, px, py) {
@@ -5278,7 +6205,8 @@ const TXT = {
   zh: {
     spoiler: '全劇劇透',
     kicker: '三道城牆 · 114 年入侵及防衛史',
-    hero: '城牆內外，誰曾經越界？',
+    hero: '越牆者',
+    epigraph: '那一天，人類想起了被巨人支配的恐懼。',
     subtitle: '拖動年份與事件進度，睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重大事件。',
     year: '故事年份',
     mapTitle: '帕拉迪島 · 三道城牆',
@@ -5339,6 +6267,11 @@ const TXT = {
       districts: '其他城區',
     },
     popAbout: '約',
+    dayDay: '日間',
+    dayDusk: '黃昏／黎明',
+    dayNight: '夜晚 · 巨人靜止',
+    dayMoon: '月夜 · 巨人異常活動',
+    flareInfo: '信號彈：紅＝發現巨人 · 綠＝行進方向 · 黑＝奇行種',
     popWall: '城牆巨人',
     popWallNow: '由三道城牆走出，向海岸行進',
     popLyingTag: '拉加哥村的巨人（無法行動）',
@@ -5347,7 +6280,8 @@ const TXT = {
   en: {
     spoiler: 'FULL STORY SPOILERS',
     kicker: 'THREE WALLS · 114 YEARS OF CONFLICT',
-    hero: 'Who crossed the Walls—and how?',
+    hero: 'Those Who Crossed the Walls',
+    epigraph: 'On that day, humanity remembered the terror of being ruled by them.',
     subtitle:
       'Scrub time to follow attacks, infiltration, defense and wall recovery. Explore the story in chronological order, from the formation of the Walls to the aftermath.',
     year: 'STORY YEAR',
@@ -5409,6 +6343,11 @@ const TXT = {
       districts: 'other districts',
     },
     popAbout: 'about',
+    dayDay: 'Day',
+    dayDusk: 'Dusk / dawn',
+    dayNight: 'Night · Titans do not move',
+    dayMoon: 'Moonlit night · Titans active (an anomaly)',
+    flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
     popWallNow: 'stepping out of the three Walls and marching to the sea',
     popLyingTag: 'Ragako Titan (cannot move)',
@@ -5462,6 +6401,56 @@ const locations = [
 ].map(([key, wall]) => { const d = World.district(key); return { key, wall, p: d ? d.centre : P[key], r: d ? d.r : key === 'forest' ? 22 : 13 }; });
 const routeColors = { attack: '#ff8477', defense: '#6bc8f0', covert: '#ecc985', repair: '#8de5ba', neutral: '#e8e4d7' };
 const routeClass = { attack: 'attacking', defense: 'defending', covert: 'infiltrating', repair: 'repairing', neutral: 'neutral' };
+// Emblems (SVG symbols from assets/theme) used across the page.
+const icon = (id, cls) => `<svg class="${cls}" viewBox="0 0 ${id.startsWith('orn-') ? '32 32' : '64 64'}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const CAT_ICON = { attack: 'em-titan', infiltrate: 'orn-key', defend: 'em-garrison', reveal: 'em-royal', expedition: 'em-survey', finale: 'em-wall' };
+// Which emblem each character or group carries.
+const FACTION = {
+  eren: 'survey', mikasa: 'survey', armin: 'survey', arminE: 'survey', levi: 'survey', erwin: 'survey', keith: 'survey', scouts: 'survey', alliance: 'survey',
+  garrison: 'garrison', historia: 'royal', karl: 'royal', fried: 'royal', rod: 'royal',
+  reiner: 'marley', bert: 'marley', annie: 'marley', marcel: 'marley', zeke: 'marley', pieck: 'marley', porco: 'marley', gabi: 'marley', falco: 'marley', marley: 'marley', yelena: 'marley', ony: 'marley', volunteers: 'marley',
+  ymir: 'titan', pure: 'titan', walltitans: 'titan', grisha: 'titan', kruger: 'titan', civ: 'civil',
+};
+// The picture at the top of the story card: a scene picture where there is one, otherwise manga-style
+// panels of the event's main characters.
+const SCENE_ART = {
+  founding: ['wall-sunset', '50% 30%'], marcel: ['ymir-titan', '70% 40%'], 'maria-fall': ['pure-titans', '50% 22%'], refugees: ['refugee-boats', '50% 45%'],
+  reclamation: ['refugee-boats', '40% 78%'], cadets: ['survey-corps', '50% 30%'], 'trost-seal': ['wall-sunset', '50% 62%'], rumbling: ['rumbling', '50% 35%'], alliance: ['alliance', '50% 55%'],
+};
+function renderArt(ev) {
+  const el = $('#storyArt');
+  if (el.dataset.ev === ev.id + S.lang) return;
+  el.dataset.ev = ev.id + S.lang;
+  el.replaceChildren();
+  el.className = 'story-art';
+  const scene = SCENE_ART[ev.id];
+  if (scene) {
+    const img = document.createElement('img');
+    img.className = 'art-scene';
+    img.alt = '';
+    img.decoding = 'async';
+    img.style.objectPosition = scene[1];
+    img.onerror = () => { el.dataset.ev = ''; delete SCENE_ART[ev.id]; renderArt(ev); }; // no picture file (the page was copied on its own): fall back to the panels
+    img.src = 'assets/scenes/' + scene[0] + '.webp';
+    el.appendChild(img);
+    return;
+  }
+  const who = ev.characters.map((c) => c[0]).filter((w) => portraits[w]).slice(0, 4);
+  const wrap = document.createElement('div');
+  wrap.className = 'art-panels n' + who.length;
+  for (const w of who) {
+    const p = document.createElement('div');
+    p.className = 'art-panel' + (teamActors.has(w) ? ' team' : '');
+    const img = document.createElement('img');
+    img.alt = '';
+    img.src = actorPortrait(w);
+    const name = document.createElement('span');
+    name.textContent = tr(cast[w]);
+    p.append(img, name);
+    wrap.appendChild(p);
+  }
+  el.appendChild(wrap);
+}
 const tags = { attack: 'ATTACK', infiltrate: 'INFILTRATION', defend: 'DEFENSE', reveal: 'REVELATION', expedition: 'EXPEDITION', finale: 'FINALE' };
 const elem = (t, attrs = {}, parent = null) => {
   let x = document.createElementNS('http://www.w3.org/2000/svg', t);
@@ -5577,8 +6566,8 @@ function buildCards() {
     let ev = events[visible[n]];
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'event-tile' + (visible[n] === S.idx ? ' active' : '');
-    b.innerHTML = `<div class="ey">${ev.year}</div><div class="et"></div><div class="ep">${tags[ev.category]}</div>`;
+    b.className = 'event-tile cat-' + ev.category + (visible[n] === S.idx ? ' active' : '');
+    b.innerHTML = `<div class="ey">${ev.year}</div><div class="et"></div><div class="ep">${icon(CAT_ICON[ev.category], 'tile-ico')}${tags[ev.category]}</div>`;
     b.querySelector('.et').textContent = tr(ev.title);
     b.onclick = () => selectEvent(visible[n]);
     parent.appendChild(b);
@@ -5616,7 +6605,9 @@ function paintEvent() {
   }
   $('#heroYear').textContent = ev.year;
   $('#chapterTag').textContent = `CHAPTER ${String(S.idx + 1).padStart(2, '0')} / ${events.length}`;
-  $('#categoryBadge').textContent = tags[ev.category];
+  $('#categoryBadge').innerHTML = icon(CAT_ICON[ev.category], 'tile-ico') + tags[ev.category];
+  $('#categoryBadge').className = 'count cat-' + ev.category;
+  renderArt(ev);
   $('#storyTitle').textContent = tr(ev.title);
   $('#storyDesc').textContent = tr(ev.description);
   $('#storyOutcome').textContent = tr(ev.outcome);
@@ -5636,6 +6627,7 @@ function paintEvent() {
     const cards = $('#eventCards');
     cards.scrollTo({ left: tile.offsetLeft - (cards.clientWidth - tile.offsetWidth) / 2, behavior: 'auto' });
   }
+  $('#mapInfo').textContent = ev.id === 'female-forest' ? t.flareInfo : t.schematic;
   renderSteps();
   renderWallStatus();
   renderCast();
@@ -5761,6 +6753,7 @@ function renderCast() {
     portrait.width = 48;
     portrait.height = 48;
     a.appendChild(portrait);
+    if (FACTION[who]) a.insertAdjacentHTML('beforeend', icon('em-' + FACTION[who], 'faction'));
     const x = document.createElement('span');
     x.innerHTML = '<span class="name"></span><span class="role"></span>';
     x.querySelector('.name').textContent = tr(cast[who]);
@@ -6039,8 +7032,36 @@ function animate(t) {
   if (CAM.moved) applyCamera();
   if (S.playing || CAM.moved) renderDynamic();
   CAM.moved = false;
-  STAGE.draw(CAM.view, { T: S.idx + S.p, t: t / 1000, dt, walls: wallState(S.idx), crowd: S.pop, reduced: REDUCED });
+  const light = lightAt(S.idx, S.p), awake = events[S.idx].nightActive ? 1 : Math.max(0, Math.min(1, (light - 0.2) / 0.4)); // Titans stop at night, except at Utgard
+  renderDayChip(light);
+  STAGE.draw(CAM.view, { T: S.idx + S.p, t: t / 1000, dt, walls: wallState(S.idx), crowd: S.pop, reduced: REDUCED, light, awake, flares: flaresNow() });
   requestAnimationFrame(animate);
+}
+// Signal flares of the long-range scouting formation (57th expedition): fired at set moments of the scene.
+const FLARES = [[0.2, 44, '#e2473b'], [0.24, 24, '#e2473b'], [0.29, 0, '#59c36a'], [0.36, -32, '#262626'], [0.42, 36, '#e2473b'], [0.47, 0, '#59c36a'], [0.56, -20, '#59c36a'], [0.63, 30, '#262626']];
+const NO_FLARES = [];
+function flaresNow() {
+  if (events[S.idx].id !== 'female-forest') return NO_FLARES;
+  const en = sceneRoutes.find((e) => e.R.who === 'scouts');
+  if (!en) return NO_FLARES;
+  const out = [];
+  for (const [p, side, color] of FLARES) {
+    const f = (S.p - p) / 0.11;
+    if (f < 0 || f > 1) continue;
+    const q = RouteGeo.at(en.geo.tab, RouteGeo.ease(Math.max(0, Math.min(1, (p - en.R.start) / (en.R.end - en.R.start)))));
+    out.push({ x: q.x - Math.sin(q.angle) * side, y: q.y + Math.cos(q.angle) * side, color, f });
+  }
+  return out;
+}
+// Time of day shown on the map.
+let dayChipSig = '';
+function renderDayChip(light) {
+  const t = TXT[S.lang], key = light > 0.75 ? 'dayDay' : light > 0.28 ? 'dayDusk' : events[S.idx].nightActive ? 'dayMoon' : 'dayNight', sig = S.lang + key;
+  if (sig === dayChipSig) return;
+  dayChipSig = sig;
+  const el = $('#dayChip');
+  el.textContent = (key === 'dayDay' ? '☀ ' : key === 'dayDusk' ? '◐ ' : '☾ ') + t[key];
+  el.className = 'day-chip ' + key;
 }
 // Short scenes play faster than the rest (multiplies the chosen speed).
 const EVENT_PACE = { founding: 2.5, grisha: 2 };
@@ -6244,6 +7265,7 @@ $('#popToggle').onclick = () => {
 $('#playBtn').addEventListener('click', () => {
   if (S.playing) setAuto(true); // pressing Play hands the camera back to the story
 });
+for (const p of document.querySelectorAll('.panel')) for (const c of ['tl', 'tr', 'bl', 'br']) p.insertAdjacentHTML('beforeend', `<svg class="corner ${c}" viewBox="0 0 40 40" aria-hidden="true"><use href="#orn-corner"/></svg>`);
 requestAnimationFrame(animate);
 new ResizeObserver(resizeMap).observe(mapViewport);
 function fitLayout() {

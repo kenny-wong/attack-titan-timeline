@@ -148,6 +148,9 @@
     inMaria.push(...first, ...second, ...third);
     // their homes after entering are resolved below; use Trost as the reference for "nearest" until then
     setCur(inMaria, (a) => lerp(a.home0, TROST.outer, 0.8));
+    // 846: the refugee column sent out through Trost draws the Titans nearest to it.
+    const drawn = nearest([...first, ...second], TROST.outer, 22);
+    move(drawn, ['reclamation', 0.22], ['reclamation', 0.7], 'maria', { near: TROST.beyond, radius: 30, spread: 0.5 });
     kill(take(inMaria, inMaria.filter((_, i) => i % 13 === 5)), ['cadets', 0.2], ['cadets', 0.9]); // early Survey Corps expeditions
     // 850: Trost. The Titans nearest the broken outer gate pour in and are all killed once it is sealed.
     const trostTitans = take(inMaria, nearest(inMaria, TROST.outer, 26));
@@ -196,16 +199,23 @@
     move(mariaFolk, ['maria-fall', 0.5], ['refugees', 0.5], 'rose', { flee: true, spread: 0.6 });
     for (const a of lost) { const m = a.ops[a.ops.length - 1], mid = m.T0 + (m.T1 - m.T0) * 0.45; a.ops.push({ type: 'fade', T0: mid, T1: mid + 0.08, v: 0, how: 'caught' }); }
     const survivors = mariaFolk.filter((a) => !lost.includes(a));
+    // 846: the "reclamation". About a fifth of the people are marched out through Trost into Titan country; a handful return.
+    const sent = survivors.slice(0, Math.round(nc * 0.2)), returned = sent.slice(0, 2);
+    move(sent, ['reclamation', 0.06], ['reclamation', 0.6], 'maria', { via: ['trost'], near: TROST.beyond, radius: 34, spread: 0.5 });
+    sent.filter((a) => !returned.includes(a)).forEach((a, i, list) => { const t0 = T('reclamation', 0.5 + 0.38 * (i / list.length)); a.ops.push({ type: 'fade', T0: t0, T1: t0 + 0.07, v: 0, how: 'caught' }); });
+    move(returned, ['reclamation', 0.82], ['reclamation', 1], 'rose', { via: ['trost'], flee: true, spread: 0.2 });
+    const alive = survivors.filter((a) => !sent.includes(a) || returned.includes(a));
     // 850: Trost is evacuated during the attack and lived in again afterwards.
     move(civD.trost, ['trost-attack', 0.2], ['trost-attack', 0.6], 'rose', { flee: true, spread: 0.3 });
     move(civD.trost, ['annie-mp', 0.1], ['annie-mp', 0.7], 'trost', { spread: 0.3 });
     fade(ragCiv, ['ragako', 0.28], ['ragako', 0.46], 0, { spread: 0.3, how: 'turned' });
     fade(ragCiv.slice(0, 1), ['alliance', 0.9], ['alliance', 1], 1);
     // 851 onwards: Maria is settled again.
-    const back = survivors.filter((_, i) => i % 3 !== 0);
+    const back = alive.filter((_, i) => i % 3 !== 0);
     move(back.filter((a) => a.area0 === 'maria'), ['sea', 0.4], ['sea', 1], 'maria', { spread: 0.6 });
     for (const id of ['holst', 'quinta', 'mariaN']) move(back.filter((a) => a.area0 === id), ['sea', 0.5], ['ships', 0.5], id, { spread: 0.5 });
     move(civD.shig, ['sea', 0.55], ['sea', 1], 'shig', { spread: 0.4 });
+    move(civRose.slice(0, Math.round(nc * 0.09)), ['sea', 0.45], ['ships', 0.4], 'maria', { spread: 0.6 }); // new settlers from Wall Rose
     // 854: Shiganshina's people get away from the fighting, and return once it is over.
     move(civD.shig, ['zeke-scream', 0.3], ['zeke-scream', 0.75], 'maria', { flee: true, spread: 0.3 });
     move(civD.shig, ['ambassadors', 0.1], ['ambassadors', 0.6], 'shig', { spread: 0.3, straight: true });
@@ -231,12 +241,19 @@
     events.forEach((ev, ei) => ev.routes.forEach((rt) => {
       if (rt.who !== 'scouts') return;
       const pts = rt.path.map((p) => (Array.isArray(p) ? p : opts.points[p]));
-      const geo = global.RouteGeo.build(pts, 1), r = rng(77 + ei * 31);
+      const geo = global.RouteGeo.build(pts, 1), r = rng(77 + ei * 31), wide = ev.id === 'female-forest' ? 3.4 : 1; // the long-range scouting formation fans out
       for (let i = 0; i < N.riders; i++) {
-        const a = { id: agents.length, kind: 'rider', r, variant: 1, area0: 'outside', home0: pts[0], vis0: 0, ops: [], phase: r() * 10, speed: 1, ride: { ei, geo, start: rt.start, end: rt.end, lag: 0.012 + 0.1 * (i / N.riders), side: (i % 2 ? 1 : -1) * (2.5 + 2.2 * Math.floor(i / 2)) } };
+        const a = { id: agents.length, kind: 'rider', r, variant: 1, area0: 'outside', home0: pts[0], vis0: 0, ops: [], phase: r() * 10, speed: 1, ride: { ei, geo, start: rt.start, end: rt.end, lag: 0.012 + 0.1 * (i / N.riders), side: (i % 2 ? 1 : -1) * (2.5 + 2.2 * Math.floor(i / 2)) * wide } };
         agents.push(a); riders.push(a);
       }
     }));
+    // 845: evacuation boats carry people up the river from Shiganshina, through the gates, to Trost.
+    const boats = [];
+    {
+      const river = global.RouteGeo.build([SHIG.centre, SHIG.inner, [C[0] + 1.5, C[1] + R.rose + 38], TROST.outer, TROST.centre, TROST.inner, at(R.rose - 26, 90)], 1);
+      const trips = [['maria-fall', 0.44], ['maria-fall', 0.53], ['maria-fall', 0.62], ['maria-fall', 0.72], ['maria-fall', 0.84], ['refugees', 0.04], ['refugees', 0.18], ['refugees', 0.33]];
+      for (const [id, p] of trips) { const a = { id: agents.length, kind: 'boat', r: rng(5), variant: 1, area0: 'maria', home0: SHIG.centre, vis0: 0, ops: [], phase: p * 9, speed: 1, ferry: { geo: river, T0: T(id, p), T1: T(id, p) + 0.36 } }; agents.push(a); boats.push(a); }
+    }
     // Wall cannons on the districts' outer walls.
     const cannons = [];
     for (const d of DISTRICTS) for (const off of [-48, 48]) { const a = ((d.deg + off) * Math.PI) / 180; cannons.push({ x: d.base[0] + Math.cos(a) * d.r, y: d.base[1] + Math.sin(a) * d.r, face: Math.cos(a) >= 0 ? 1 : -1, wall: d.wall, district: d.id }); }
@@ -256,6 +273,7 @@
       delete a.cur;
       // when this figure can be on screen at all (lets the renderer skip it cheaply)
       if (a.march) { a.t0 = wallsFall; a.t1 = a.march.T1; }
+      else if (a.ferry) { a.t0 = a.ferry.T0; a.t1 = a.ferry.T1; }
       else if (a.ride) { a.t0 = a.ride.ei; a.t1 = a.ride.ei + 1; }
       else {
         const fades = a.ops.filter((o) => o.type === 'fade');
@@ -298,6 +316,12 @@
         const p = lerp(m.from, m.to, clamp01(f));
         return { x: p[0], y: p[1], vis: Math.min(clamp01((Tl - wallsFall) / 0.04), clamp01((1 - f) / 0.06)), area: 'outside', marching: f > 0 };
       }
+      if (a.ferry) { // an evacuation boat on the river
+        const f = (Tl - a.ferry.T0) / (a.ferry.T1 - a.ferry.T0);
+        if (f < 0 || f > 1) return { x: a.home0[0], y: a.home0[1], vis: 0, area: 'maria' };
+        const pos = global.RouteGeo.at(a.ferry.geo.tab, f);
+        return { x: pos.x, y: pos.y, vis: Math.min(clamp01(f / 0.08), clamp01((1 - f) / 0.08)), area: 'maria', sailing: true };
+      }
       if (a.ride) { // a rider on a Survey Corps route, only during that event
         const rd = a.ride, p = Tl - rd.ei;
         if (p < 0 || p >= 1) return { x: a.home0[0], y: a.home0[1], vis: 0, area: 'outside' };
@@ -328,7 +352,7 @@
     function counts(Tl) {
       const out = { titan: { total: 0 }, civ: { total: 0 }, wallTitan: 0 };
       for (const a of agents) {
-        if (a.kind === 'rider') continue;
+        if (a.kind === 'rider' || a.kind === 'boat') continue;
         const s = stateAt(a, Tl, 0, { reduced: true });
         if (s.vis <= 0.5) continue;
         if (a.kind === 'wallTitan') { out.wallTitan++; continue; }

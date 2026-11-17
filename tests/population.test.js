@@ -112,3 +112,32 @@ test('a phone gets fewer civilians and riders but the same 300 Titans', () => {
   assert.strictEqual(low.counts(low.T('grisha', 0.5)).titan.total, 300);
   assert.ok(low.agents.filter((a) => a.kind === 'civ').length < civs.length);
 });
+
+test('846: about a fifth of the people are sent out through Trost and only a handful return', () => {
+  const before = pop.counts(T('reclamation', 0)), during = pop.counts(T('reclamation', 0.5)), after = pop.counts(T('reclamation', 1));
+  assert.strictEqual(before.civ.maria || 0, 0);
+  assert.ok(during.civ.maria >= 20, 'people are in Maria territory: ' + during.civ.maria);
+  const lostShare = (before.civ.total - after.civ.total) / before.civ.total;
+  assert.ok(lostShare > 0.14 && lostShare < 0.24, 'share lost: ' + lostShare);
+  assert.strictEqual(after.civ.maria || 0, 0);
+  assert.strictEqual(after.titan.total, before.titan.total); // nobody fights back
+  assert.ok(during.titan.maria > before.titan.maria, 'Titans are drawn to the crowd');
+});
+
+test('evacuation boats go up the river from Shiganshina to behind Wall Rose in 845, and are not counted as people', () => {
+  const boats = pop.agents.filter((a) => a.kind === 'boat');
+  assert.strictEqual(boats.length, 8);
+  for (const b of boats) {
+    assert.ok(b.t0 >= T('maria-fall', 0.4) && b.t1 <= T('refugees', 0.75), 'boats sail during the evacuation');
+    const at = (f) => pop.stateAt(b, b.t0 + (b.t1 - b.t0) * f, 0, { reduced: true });
+    const a = at(0.05), m = at(0.5), z = at(0.95);
+    assert.strictEqual(reg(a), 'shig');
+    assert.strictEqual(reg(z), 'rose');
+    assert.ok(a.y > m.y && m.y > z.y, 'they sail north');
+    assert.ok(Math.abs(m.x - World.C[0]) < 6, 'on the river');
+    assert.strictEqual(pop.stateAt(b, b.t0 - 0.05, 0, {}).vis, 0);
+    assert.strictEqual(pop.stateAt(b, b.t1 + 0.05, 0, {}).vis, 0);
+  }
+  const k = pop.counts(T('maria-fall', 0.7));
+  assert.strictEqual(k.civ.total, at(T('maria-fall', 0.7), civs).length);
+});

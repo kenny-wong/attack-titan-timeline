@@ -12,7 +12,8 @@ const TXT = {
   zh: {
     spoiler: '全劇劇透',
     kicker: '三道城牆 · 114 年入侵及防衛史',
-    hero: '城牆內外，誰曾經越界？',
+    hero: '越牆者',
+    epigraph: '那一天，人類想起了被巨人支配的恐懼。',
     subtitle: '拖動年份與事件進度，睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重大事件。',
     year: '故事年份',
     mapTitle: '帕拉迪島 · 三道城牆',
@@ -73,6 +74,11 @@ const TXT = {
       districts: '其他城區',
     },
     popAbout: '約',
+    dayDay: '日間',
+    dayDusk: '黃昏／黎明',
+    dayNight: '夜晚 · 巨人靜止',
+    dayMoon: '月夜 · 巨人異常活動',
+    flareInfo: '信號彈：紅＝發現巨人 · 綠＝行進方向 · 黑＝奇行種',
     popWall: '城牆巨人',
     popWallNow: '由三道城牆走出，向海岸行進',
     popLyingTag: '拉加哥村的巨人（無法行動）',
@@ -81,7 +87,8 @@ const TXT = {
   en: {
     spoiler: 'FULL STORY SPOILERS',
     kicker: 'THREE WALLS · 114 YEARS OF CONFLICT',
-    hero: 'Who crossed the Walls—and how?',
+    hero: 'Those Who Crossed the Walls',
+    epigraph: 'On that day, humanity remembered the terror of being ruled by them.',
     subtitle:
       'Scrub time to follow attacks, infiltration, defense and wall recovery. Explore the story in chronological order, from the formation of the Walls to the aftermath.',
     year: 'STORY YEAR',
@@ -143,6 +150,11 @@ const TXT = {
       districts: 'other districts',
     },
     popAbout: 'about',
+    dayDay: 'Day',
+    dayDusk: 'Dusk / dawn',
+    dayNight: 'Night · Titans do not move',
+    dayMoon: 'Moonlit night · Titans active (an anomaly)',
+    flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
     popWallNow: 'stepping out of the three Walls and marching to the sea',
     popLyingTag: 'Ragako Titan (cannot move)',
@@ -196,6 +208,56 @@ const locations = [
 ].map(([key, wall]) => { const d = World.district(key); return { key, wall, p: d ? d.centre : P[key], r: d ? d.r : key === 'forest' ? 22 : 13 }; });
 const routeColors = { attack: '#ff8477', defense: '#6bc8f0', covert: '#ecc985', repair: '#8de5ba', neutral: '#e8e4d7' };
 const routeClass = { attack: 'attacking', defense: 'defending', covert: 'infiltrating', repair: 'repairing', neutral: 'neutral' };
+// Emblems (SVG symbols from assets/theme) used across the page.
+const icon = (id, cls) => `<svg class="${cls}" viewBox="0 0 ${id.startsWith('orn-') ? '32 32' : '64 64'}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const CAT_ICON = { attack: 'em-titan', infiltrate: 'orn-key', defend: 'em-garrison', reveal: 'em-royal', expedition: 'em-survey', finale: 'em-wall' };
+// Which emblem each character or group carries.
+const FACTION = {
+  eren: 'survey', mikasa: 'survey', armin: 'survey', arminE: 'survey', levi: 'survey', erwin: 'survey', keith: 'survey', scouts: 'survey', alliance: 'survey',
+  garrison: 'garrison', historia: 'royal', karl: 'royal', fried: 'royal', rod: 'royal',
+  reiner: 'marley', bert: 'marley', annie: 'marley', marcel: 'marley', zeke: 'marley', pieck: 'marley', porco: 'marley', gabi: 'marley', falco: 'marley', marley: 'marley', yelena: 'marley', ony: 'marley', volunteers: 'marley',
+  ymir: 'titan', pure: 'titan', walltitans: 'titan', grisha: 'titan', kruger: 'titan', civ: 'civil',
+};
+// The picture at the top of the story card: a scene picture where there is one, otherwise manga-style
+// panels of the event's main characters.
+const SCENE_ART = {
+  founding: ['wall-sunset', '50% 30%'], marcel: ['ymir-titan', '70% 40%'], 'maria-fall': ['pure-titans', '50% 22%'], refugees: ['refugee-boats', '50% 45%'],
+  reclamation: ['refugee-boats', '40% 78%'], cadets: ['survey-corps', '50% 30%'], 'trost-seal': ['wall-sunset', '50% 62%'], rumbling: ['rumbling', '50% 35%'], alliance: ['alliance', '50% 55%'],
+};
+function renderArt(ev) {
+  const el = $('#storyArt');
+  if (el.dataset.ev === ev.id + S.lang) return;
+  el.dataset.ev = ev.id + S.lang;
+  el.replaceChildren();
+  el.className = 'story-art';
+  const scene = SCENE_ART[ev.id];
+  if (scene) {
+    const img = document.createElement('img');
+    img.className = 'art-scene';
+    img.alt = '';
+    img.decoding = 'async';
+    img.style.objectPosition = scene[1];
+    img.onerror = () => { el.dataset.ev = ''; delete SCENE_ART[ev.id]; renderArt(ev); }; // no picture file (the page was copied on its own): fall back to the panels
+    img.src = 'assets/scenes/' + scene[0] + '.webp';
+    el.appendChild(img);
+    return;
+  }
+  const who = ev.characters.map((c) => c[0]).filter((w) => portraits[w]).slice(0, 4);
+  const wrap = document.createElement('div');
+  wrap.className = 'art-panels n' + who.length;
+  for (const w of who) {
+    const p = document.createElement('div');
+    p.className = 'art-panel' + (teamActors.has(w) ? ' team' : '');
+    const img = document.createElement('img');
+    img.alt = '';
+    img.src = actorPortrait(w);
+    const name = document.createElement('span');
+    name.textContent = tr(cast[w]);
+    p.append(img, name);
+    wrap.appendChild(p);
+  }
+  el.appendChild(wrap);
+}
 const tags = { attack: 'ATTACK', infiltrate: 'INFILTRATION', defend: 'DEFENSE', reveal: 'REVELATION', expedition: 'EXPEDITION', finale: 'FINALE' };
 const elem = (t, attrs = {}, parent = null) => {
   let x = document.createElementNS('http://www.w3.org/2000/svg', t);
@@ -311,8 +373,8 @@ function buildCards() {
     let ev = events[visible[n]];
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'event-tile' + (visible[n] === S.idx ? ' active' : '');
-    b.innerHTML = `<div class="ey">${ev.year}</div><div class="et"></div><div class="ep">${tags[ev.category]}</div>`;
+    b.className = 'event-tile cat-' + ev.category + (visible[n] === S.idx ? ' active' : '');
+    b.innerHTML = `<div class="ey">${ev.year}</div><div class="et"></div><div class="ep">${icon(CAT_ICON[ev.category], 'tile-ico')}${tags[ev.category]}</div>`;
     b.querySelector('.et').textContent = tr(ev.title);
     b.onclick = () => selectEvent(visible[n]);
     parent.appendChild(b);
@@ -350,7 +412,9 @@ function paintEvent() {
   }
   $('#heroYear').textContent = ev.year;
   $('#chapterTag').textContent = `CHAPTER ${String(S.idx + 1).padStart(2, '0')} / ${events.length}`;
-  $('#categoryBadge').textContent = tags[ev.category];
+  $('#categoryBadge').innerHTML = icon(CAT_ICON[ev.category], 'tile-ico') + tags[ev.category];
+  $('#categoryBadge').className = 'count cat-' + ev.category;
+  renderArt(ev);
   $('#storyTitle').textContent = tr(ev.title);
   $('#storyDesc').textContent = tr(ev.description);
   $('#storyOutcome').textContent = tr(ev.outcome);
@@ -370,6 +434,7 @@ function paintEvent() {
     const cards = $('#eventCards');
     cards.scrollTo({ left: tile.offsetLeft - (cards.clientWidth - tile.offsetWidth) / 2, behavior: 'auto' });
   }
+  $('#mapInfo').textContent = ev.id === 'female-forest' ? t.flareInfo : t.schematic;
   renderSteps();
   renderWallStatus();
   renderCast();
@@ -495,6 +560,7 @@ function renderCast() {
     portrait.width = 48;
     portrait.height = 48;
     a.appendChild(portrait);
+    if (FACTION[who]) a.insertAdjacentHTML('beforeend', icon('em-' + FACTION[who], 'faction'));
     const x = document.createElement('span');
     x.innerHTML = '<span class="name"></span><span class="role"></span>';
     x.querySelector('.name').textContent = tr(cast[who]);
@@ -773,8 +839,36 @@ function animate(t) {
   if (CAM.moved) applyCamera();
   if (S.playing || CAM.moved) renderDynamic();
   CAM.moved = false;
-  STAGE.draw(CAM.view, { T: S.idx + S.p, t: t / 1000, dt, walls: wallState(S.idx), crowd: S.pop, reduced: REDUCED });
+  const light = lightAt(S.idx, S.p), awake = events[S.idx].nightActive ? 1 : Math.max(0, Math.min(1, (light - 0.2) / 0.4)); // Titans stop at night, except at Utgard
+  renderDayChip(light);
+  STAGE.draw(CAM.view, { T: S.idx + S.p, t: t / 1000, dt, walls: wallState(S.idx), crowd: S.pop, reduced: REDUCED, light, awake, flares: flaresNow() });
   requestAnimationFrame(animate);
+}
+// Signal flares of the long-range scouting formation (57th expedition): fired at set moments of the scene.
+const FLARES = [[0.2, 44, '#e2473b'], [0.24, 24, '#e2473b'], [0.29, 0, '#59c36a'], [0.36, -32, '#262626'], [0.42, 36, '#e2473b'], [0.47, 0, '#59c36a'], [0.56, -20, '#59c36a'], [0.63, 30, '#262626']];
+const NO_FLARES = [];
+function flaresNow() {
+  if (events[S.idx].id !== 'female-forest') return NO_FLARES;
+  const en = sceneRoutes.find((e) => e.R.who === 'scouts');
+  if (!en) return NO_FLARES;
+  const out = [];
+  for (const [p, side, color] of FLARES) {
+    const f = (S.p - p) / 0.11;
+    if (f < 0 || f > 1) continue;
+    const q = RouteGeo.at(en.geo.tab, RouteGeo.ease(Math.max(0, Math.min(1, (p - en.R.start) / (en.R.end - en.R.start)))));
+    out.push({ x: q.x - Math.sin(q.angle) * side, y: q.y + Math.cos(q.angle) * side, color, f });
+  }
+  return out;
+}
+// Time of day shown on the map.
+let dayChipSig = '';
+function renderDayChip(light) {
+  const t = TXT[S.lang], key = light > 0.75 ? 'dayDay' : light > 0.28 ? 'dayDusk' : events[S.idx].nightActive ? 'dayMoon' : 'dayNight', sig = S.lang + key;
+  if (sig === dayChipSig) return;
+  dayChipSig = sig;
+  const el = $('#dayChip');
+  el.textContent = (key === 'dayDay' ? '☀ ' : key === 'dayDusk' ? '◐ ' : '☾ ') + t[key];
+  el.className = 'day-chip ' + key;
 }
 // Short scenes play faster than the rest (multiplies the chosen speed).
 const EVENT_PACE = { founding: 2.5, grisha: 2 };
@@ -978,6 +1072,7 @@ $('#popToggle').onclick = () => {
 $('#playBtn').addEventListener('click', () => {
   if (S.playing) setAuto(true); // pressing Play hands the camera back to the story
 });
+for (const p of document.querySelectorAll('.panel')) for (const c of ['tl', 'tr', 'bl', 'br']) p.insertAdjacentHTML('beforeend', `<svg class="corner ${c}" viewBox="0 0 40 40" aria-hidden="true"><use href="#orn-corner"/></svg>`);
 requestAnimationFrame(animate);
 new ResizeObserver(resizeMap).observe(mapViewport);
 function fitLayout() {

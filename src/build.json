@@ -1,5 +1,8 @@
 {
-  "data": { "WORLD_COAST": "src/world-coast.json", "TERRAIN_GRID": "assets/map-designs/world-terrain.json" },
+  "data": {
+    "WORLD_COAST": "src/world-coast.json",
+    "TERRAIN_GRID": "assets/map-designs/world-terrain.json"
+  },
   "scripts": [
     "src/portraits.js",
     "src/route-geometry.js",
@@ -14,5 +17,11 @@
     "src/stage.js",
     "src/app.js"
   ],
-  "optional": ["assets/population/puppets.js"]
+  "optional": [
+    "assets/population/puppets.js"
+  ],
+  "sprites": [
+    "assets/theme/emblems.svg",
+    "assets/theme/ornaments.svg"
+  ]
 }

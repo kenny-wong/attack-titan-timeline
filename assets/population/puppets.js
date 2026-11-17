@@ -24,6 +24,7 @@
   sprites.rider={anims:{walk:anim(12,15,true),idle:anim(12,3,false)},baseHeight:21,stride:17};
   sprites.cannon={anims:{idle:anim(1,1,false),fire:anim(8,14,false)},baseHeight:12,stride:0};
   sprites.steam={anims:{puff:anim(12,12,false)},baseHeight:34,stride:0};
+  sprites.boat={anims:{walk:anim(8,6,true),idle:anim(8,2,false)},baseHeight:9,stride:10};
   var SPEC={sprites:sprites};
   function cycle(t){ t=Number(t)||0; return ((t%1)+1)%1; }
   function pt(x,y){return {x:x,y:y};}
@@ -107,6 +108,7 @@
       return {body:pt(0,-9.7+bob),head:pt(9.5,-13.3+bob),rider:pt(-0.5,-17.9+bob),legs:legs,bob:bob,tail:Math.sin(w)*0.6,lean:active?0.7+0.16*Math.sin(w):0.1};
     }
     if(name==='cannon')return {recoil:an==='fire'?-1.2*Math.pow(Math.sin(Math.PI*Math.min(t*3,1)),2):0,flash:an==='fire'?Math.max(0,1-t*4):0,smoke:an==='fire'?Math.sin(Math.PI*t):0,progress:t};
+    if(name==='boat')return {bob:Math.sin(w)*0.16,roll:Math.sin(w+0.5)*0.009,wave:Math.sin(w),passengerSway:Math.sin(w-0.35)*0.08};
     return {progress:t,rise:25*t,radius:3+10*t,opacity:Math.pow(Math.sin(Math.PI*t),0.8)};
   }
   function tint(hex,v){var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return 'rgb('+[r,g,b].map(function(c){return Math.round(v>=0?c+(255-c)*v:c*(1+v));}).join(',')+')';}
@@ -256,6 +258,41 @@
     if(p.flash){c.save();c.globalAlpha=p.flash;c.fillStyle='#f2a344';c.beginPath();c.moveTo(8,-7);c.lineTo(13,-11);c.lineTo(12,-8);c.lineTo(18,-8);c.lineTo(13,-6.5);c.lineTo(15,-3.5);c.closePath();c.fill();oval(c,10,-7,3.2,1.2,'#fff0b0',false,h);c.restore();}
     if(p.smoke){c.save();c.globalAlpha=p.smoke*0.46;for(var k=0;k<4;k++)oval(c,10+k*1.7+t*5,-8-k*0.9-t*5,1.4+t*3,1.5+t*2,'#c8c4b3',false,h);c.restore();}
   }
+  function boat(c,an,t,view,h){
+    var p=pose('boat',an,t),back=view==='b';
+    function polygon(points,color){c.fillStyle=color;c.beginPath();points.forEach(function(a,i){if(i)c.lineTo(a[0],a[1]);else c.moveTo(a[0],a[1]);});c.closePath();c.fill();}
+    // Shallow river wake remains separate from the gently rocking hull.
+    c.save();c.globalAlpha=0.32;oval(c,0,0.2,10.6,1.05,'#6f9b96',false,h);c.restore();
+    if(an==='walk'){
+      c.save();c.globalAlpha=0.5;
+      line(c,[pt(8.3,-0.5),pt(11.4+p.wave*0.25,-0.1),pt(9.4,0.8)],'#d1d4bb',0.25);
+      line(c,[pt(10.2,-0.7),pt(12.3+p.wave*0.35,0),pt(10.5,1)],'#91b6ac',0.18);
+      line(c,[pt(-11.8-p.wave*0.3,0.5),pt(-8.5,0.8)],'#a4bdb0',0.18);c.restore();
+    }
+    c.save();c.translate(0,p.bob);c.rotate(p.roll);
+    polygon([[-10,-3.7],[-7.3,-5.5],[6.9,-5.2],[10,-3.3],[6.5,-0.1],[-7.8,-0.6]],'#483c2e');
+    polygon([[-9.5,-3.7],[-7.2,-5.1],[6.8,-4.8],[9.5,-3.3],[6.2,-2],[-7.8,-2.4]],'#a0845c');
+    line(c,[pt(-7.2,-5.3),pt(6.9,-5),pt(9.6,-3.4)],'#b49a71',0.42);
+    if(h)for(var plank=0;plank<5;plank++)line(c,[pt(-7.5,-4.8+plank*0.5),pt(7.6,-4.5+plank*0.5)],'#756044',0.12);
+    // Two closely packed rows; heads and shoulders stay inside the nine-unit silhouette.
+    var passengers=[[-6,-5.1,0.86,'#737c6b'],[-3.4,-5,0.9,'#7a6657'],[-0.7,-4.9,0.86,'#8d8972'],[2,-4.8,0.91,'#657b82'],[4.8,-4.6,0.79,'#897459'],[-5,-3.5,0.91,'#697982'],[-2.2,-3.4,0.79,'#9a896e'],[0.5,-3.2,0.9,'#706452'],[3.2,-3.1,0.75,'#8b746a'],[5.7,-3,0.85,'#73806c']];
+    passengers.forEach(function(a,i){
+      var x=a[0]+p.passengerSway*(i%2?1:-1),y=a[1],s=a[2],skin=i%3===0?'#bc9676':'#d4b394';
+      segment(c,pt(x,y),pt(x+0.12,y-1.7*s),0.79*s,0.64*s,a[3],i<5,h);
+      oval(c,x+0.16,y-2.7*s,0.62*s,0.76*s,skin,i<5,h,-0.08);
+      if(back||i%3!==1)oval(c,x+0.04,y-3*s,0.65*s,back?0.62*s:0.39*s,i%4===0?'#b4aa8b':'#554b3d',i<5,h);
+      if(!back){oval(c,x+0.7*s,y-2.66*s,0.19*s,0.19*s,skin,false,h);if(h)oval(c,x+0.48*s,y-2.78*s,0.075,0.085,'#453c32',false,false);}
+      line(c,[pt(x-0.62*s,y-1.5*s),pt(x-0.85*s,y-0.45*s),pt(x-0.3*s,y-0.35*s)],tint(a[3],-0.13),0.4*s);
+    });
+    oval(c,-7.5,-3.2,1,0.7,'#b0a181',false,h);oval(c,7,-2.8,0.8,0.65,'#8d896b',false,h);
+    polygon([[-10,-3.7],[-7.8,-2.5],[6.6,-2.1],[10,-3.3],[7.4,-0.6],[5.8,0],[-7.4,-0.5],[-9,-1.7]],shade(c,0,-1.8,10,2,'#88623f',false,h));
+    line(c,[pt(-10,-3.7),pt(-7.8,-2.5),pt(6.6,-2.1),pt(10,-3.3)],'#c0a075',0.45);
+    line(c,[pt(-8.8,-2),pt(-7.2,-1.4),pt(6.3,-0.9),pt(8.5,-1.8)],'#503c2c',0.18);
+    [-6,-1,4].forEach(function(x){line(c,[pt(x,-2.35),pt(x+0.25,-0.4)],'#574431',0.36);if(h)oval(c,x+0.03,-2,0.1,0.12,'#c3ad83',false,false);});
+    // A coiled mooring rope catches the same upper-left light as the figures.
+    if(h){c.strokeStyle='#cab287';c.lineWidth=0.16;c.beginPath();c.ellipse(7.2,-2.5,0.7,0.28,-0.35,0,TAU);c.stroke();}
+    c.restore();
+  }
   function steam(c,t,h){
     var p=pose('steam','puff',t);c.save();c.globalAlpha=p.opacity*0.56;
     for(var i=0;i<7;i++){var a=i*2.4,x=Math.sin(a)*p.radius*0.55+Math.sin(t*TAU+i)*1.1,y=-3-p.rise*(0.48+i*0.075);oval(c,x,y,p.radius*(0.4+(i%3)*0.1),p.radius*(0.5+(i%2)*0.16),'#e7e1d1',i%3===0,h);}
@@ -266,6 +303,7 @@
     if(name==='titanLying')return [-20,-11,18,6];
     if(name==='rider')return [-15,-22,17,4];
     if(name==='cannon')return an==='fire'?[-12,-20,24,4]:[-12,-12,10,4];
+    if(name==='boat')return [-13,-10,14,3];
     if(name.indexOf('civ')===0)return [name==='civ4'?-15:-8,-13,8,4];
     if(name==='wallTitan')return [-14,-54,12,4];
     var r=rigs[name],left=r.quad?-14:r.belly?-10:-9,right=r.quad?16:r.hunch?14:r.belly?11:r.baby?11:10;
@@ -304,6 +342,7 @@
       else if(it.name.indexOf('civ')===0)civilians(c,it.name,it.an,t,it.view,high);
       else if(it.name==='rider')horse(c,it.an,t,it.view,high);
       else if(it.name==='cannon')cannon(c,it.an,t,high);
+      else if(it.name==='boat')boat(c,it.an,t,it.view,high);
       else steam(c,t,high);
       c.restore();
     });

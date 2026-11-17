@@ -10,8 +10,8 @@ const region = (p) => World.regionOf(pt(p));
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const labelKeys = read('src/app.js').match(/const labels = \{([\s\S]*?)\n\};/)[1].match(/^\s+(\w+): C\(/gm).map((s) => s.trim().split(':')[0]);
 
-test('there are 27 events and every route and mark point exists', () => {
-  assert.strictEqual(E.length, 27);
+test('there are 28 events and every route and mark point exists', () => {
+  assert.strictEqual(E.length, 28);
   for (const e of E) {
     for (const r of e.routes) for (const p of r.path) assert.ok(pt(p) && isFinite(pt(p)[0]), `${e.id}: unknown point ${p}`);
     for (const m of e.marks) assert.ok(pt(m.point), `${e.id}: unknown mark point ${m.point}`);
@@ -91,4 +91,29 @@ test('places are where the story puts them', () => {
   for (const k of ['krugerWall', 'landing', 'shore', 'harbor', 'northShore']) { assert.strictEqual(region(k), 'outside', k + ' is on land'); assert.ok(World.coastDist(P[k]) < 12, k + ' is on the coast'); }
   for (const k of ['ship', 'harborSea', 'sea']) assert.strictEqual(region(k), 'sea', k + ' is at sea');
   assert.ok(P.krugerWall[1] > World.C[1] + World.R.maria, "Marley's sea wall is on the south coast");
+});
+
+test('the 846 "reclamation" follows the fall of Maria and sends people out through Trost, not a breach', () => {
+  const i = E.findIndex((e) => e.id === 'reclamation'), e = E[i];
+  assert.strictEqual(e.year, '846');
+  assert.ok(i > E.findIndex((x) => x.id === 'refugees') && i === E.findIndex((x) => x.id === 'cadets') - 1);
+  const out = e.routes.find((r) => r.who === 'civ').path;
+  assert.ok(out.includes('trostI') && out.includes('trostO'), 'the refugees leave by both of Trost gates');
+  assert.strictEqual(region(out.at(-1)), 'maria');
+  assert.ok(!e.wallDelta || !Object.values(e.wallDelta).some((v) => /breach|lost/.test(String(v))), 'no gate is broken in 846');
+});
+
+test('events are in daylight unless the story sets them at night', () => {
+  const idx = (id) => E.findIndex((e) => e.id === id);
+  assert.strictEqual(c.lightAt(idx('trost-attack'), 0.5), 1);
+  assert.strictEqual(c.lightAt(idx('utgard'), 0.4), 0);
+  assert.strictEqual(c.lightAt(idx('utgard'), 1), 1); // rescue at dawn
+  assert.strictEqual(c.lightAt(idx('maria-retaken'), 0.1), 0); // the Scouts ride in the dark
+  assert.strictEqual(c.lightAt(idx('maria-retaken'), 0.6), 1);
+  for (const e of E) {
+    for (let p = 0; p <= 1.0001; p += 0.05) { const l = c.lightAt(E.indexOf(e), p); assert.ok(l >= 0 && l <= 1, e.id + ' light ' + l); }
+    for (let k = 1; k < e.light.length; k++) assert.ok(e.light[k][0] > e.light[k - 1][0], e.id + ': light keys in order');
+  }
+  // Titans move at night only at Utgard
+  assert.strictEqual(E.filter((e) => e.nightActive).map((e) => e.id).join(), 'utgard');
 });
