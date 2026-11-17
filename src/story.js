@@ -58,6 +58,46 @@ const TITAN_FORM = {
   'zeke-scream': { zeke: [[0.3]], falco: [[0.8]] },
   rumbling: { eren: [[0.08, 1, 'erenFounder']] },
 };
+// Key scenes: a short cut-in in the middle of the map while the story plays with the auto camera on.
+//   at    scene progress at which it appears (playback holds while it shows)
+//   beat  which step text of the event is its caption
+//   pics  one or two pictures: 'titan:<key>' (assets/scenes/titans) or 'scene:<name>' (assets/scenes)
+//   fx    motion: breach (shake), transform (lightning), attack (speed lines), seal (green glow), scene (slow pan)
+//   symbolic  the picture stands for the moment; nobody is in that Titan form on the map
+const KEY_SCENES = {
+  founding: [{ at: 0.3, beat: 0, pics: ['scene:wall-sunset'], fx: 'scene' }],
+  marcel: [{ at: 0.48, beat: 1, pics: ['scene:ymir-titan'], fx: 'attack' }],
+  'maria-fall': [
+    { at: 0.35, beat: 1, pics: ['titan:bert'], fx: 'breach' },
+    { at: 0.67, beat: 2, pics: ['titan:reiner'], fx: 'breach' },
+  ],
+  refugees: [{ at: 0.25, beat: 0, pics: ['scene:refugee-boats'], fx: 'scene' }],
+  'founder-transfer': [{ at: 0.66, beat: 1, pics: ['titan:grisha', 'titan:fried'], fx: 'transform' }],
+  reclamation: [{ at: 0.56, beat: 2, pics: ['scene:pure-titans'], fx: 'attack' }],
+  cadets: [{ at: 0.6, beat: 1, pics: ['scene:survey-corps'], fx: 'scene' }],
+  'trost-attack': [{ at: 0.4, beat: 1, pics: ['titan:bert'], fx: 'breach' }],
+  'trost-seal': [{ at: 0.74, beat: 2, pics: ['titan:eren'], fx: 'seal' }],
+  'female-forest': [{ at: 0.3, beat: 1, pics: ['titan:annie'], fx: 'transform' }],
+  stohess: [{ at: 0.34, beat: 1, pics: ['titan:annie', 'titan:eren'], fx: 'transform' }],
+  ragako: [{ at: 0.52, beat: 2, pics: ['titan:zeke'], fx: 'attack' }],
+  utgard: [{ at: 0.55, beat: 2, pics: ['titan:ymir'], fx: 'transform' }],
+  'reveal-escape': [{ at: 0.13, beat: 1, pics: ['titan:reiner', 'titan:bert'], fx: 'transform' }],
+  rod: [{ at: 0.1, beat: 0, pics: ['titan:rod'], fx: 'transform' }],
+  'maria-retaken': [
+    { at: 0.36, beat: 1, pics: ['titan:eren'], fx: 'seal' },
+    { at: 0.56, beat: 2, pics: ['titan:zeke', 'titan:reiner'], fx: 'attack' },
+    { at: 0.9, beat: 3, pics: ['titan:armin'], fx: 'transform', symbolic: true },
+  ],
+  liberio: [{ at: 0.12, beat: 0, pics: ['titan:eren'], fx: 'attack' }],
+  pieck: [{ at: 0.82, beat: 2, pics: ['titan:porco'], fx: 'attack' }],
+  'marley-854': [{ at: 0.52, beat: 2, pics: ['titan:reiner', 'titan:pieck'], fx: 'attack' }],
+  'zeke-scream': [{ at: 0.46, beat: 1, pics: ['titan:zeke'], fx: 'transform' }],
+  rumbling: [
+    { at: 0.2, beat: 0, pics: ['titan:erenFounder'], fx: 'transform' },
+    { at: 0.52, beat: 2, pics: ['scene:rumbling'], fx: 'breach' },
+  ],
+  alliance: [{ at: 0.3, beat: 0, pics: ['scene:alliance'], fx: 'scene' }],
+};
 // The picture key of the Titan a character is at this moment, or null while human.
 function titanFormAt(eventId, who, p) {
   const windows = TITAN_FORM[eventId] && TITAN_FORM[eventId][who];

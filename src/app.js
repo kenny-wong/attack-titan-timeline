@@ -474,6 +474,7 @@ function buildCards() {
   $('#rangeEnd').textContent = yearText(events[visible.at(-1)].year);
 }
 function selectEvent(i, { keepPlaying = false } = {}) {
+  endCut(); // a key scene never outlives its event
   S.idx = i;
   S.p = 0;
   S.actor = null;
@@ -916,6 +917,51 @@ function userView(v) {
 function fitView() {
   if (CAM.auto) CAM.retarget = true;
 }
+// ---- Key scenes: a cut-in card in the middle of the map, only while the story plays with the auto camera on ----
+const CUT = { el: $('#cutin'), active: null, until: 0, out: false, seen: -1 };
+const cutSrc = (pic) => (pic.startsWith('titan:') ? 'assets/scenes/titans/' : 'assets/scenes/') + pic.split(':')[1] + '.webp';
+const cutFallback = (pic) => (pic.startsWith('titan:') && typeof titanPortraits !== 'undefined' ? titanPortraits[pic.split(':')[1]] : null); // the small embedded picture, when the page was copied on its own
+function showCut(ev, k, now) {
+  const el = CUT.el, card = document.createElement('div'), frame = document.createElement('div'), inner = document.createElement('div'), pics = document.createElement('div');
+  card.className = 'cutin-card fx-' + k.fx + ' n' + k.pics.length;
+  frame.className = 'cutin-frame';
+  inner.className = 'cutin-inner';
+  pics.className = 'cutin-pics';
+  for (const p of k.pics) {
+    const w = document.createElement('div'), img = document.createElement('img');
+    w.className = 'cutin-pic';
+    img.alt = '';
+    img.onerror = () => {
+      const fb = cutFallback(p);
+      if (fb && img.src !== fb) img.src = fb;
+      else endCut(); // no picture at all: skip the cut-in
+    };
+    img.src = cutSrc(p);
+    w.appendChild(img);
+    pics.appendChild(w);
+  }
+  inner.appendChild(pics);
+  inner.insertAdjacentHTML('beforeend', '<div class="cutin-lines"></div><div class="cutin-flash"></div>' + (k.fx === 'transform' ? '<svg class="cutin-bolt" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="54,0 36,46 50,46 38,100 68,38 54,38 64,0"/></svg>' : '') + '<div class="cutin-cap"><span class="cutin-year"></span><strong></strong></div>');
+  inner.querySelector('.cutin-year').textContent = yearText(ev.year);
+  inner.querySelector('.cutin-cap strong').textContent = tr(ev.beats[k.beat]);
+  frame.appendChild(inner);
+  card.appendChild(frame);
+  card.onclick = endCut; // tap to skip
+  el.replaceChildren(card);
+  el.className = 'cutin';
+  el.hidden = false;
+  $('.map-viewport').classList.toggle('quake', k.fx === 'breach');
+  CUT.active = k;
+  CUT.out = false;
+  CUT.until = now + Math.max(1400, Math.min(2800, 2600 / Math.pow(S.speed, 0.6))); // shorter at faster playback
+}
+function endCut() {
+  if (!CUT.active) return;
+  CUT.active = null;
+  CUT.el.hidden = true;
+  CUT.el.replaceChildren();
+  $('.map-viewport').classList.remove('quake');
+}
 // If frames run slow for a while, the crowd's logic steps down to every 2nd, then every 3rd frame.
 const LOAD = { ema: 0.016, frames: 0 };
 function animate(t) {
@@ -925,8 +971,19 @@ function animate(t) {
     LOAD.ema += (dt - LOAD.ema) * 0.03;
     if (++LOAD.frames > 150 && LOAD.ema > 0.024) { STAGE.slower(); LOAD.frames = 0; LOAD.ema = 0.016; }
   }
-  if (S.playing) {
+  if (CUT.active) {
+    // a key scene is on: the story holds until it is over (or playback or the auto camera is switched off)
+    if (!S.playing || !CAM.auto || t >= CUT.until) endCut();
+    else if (!CUT.out && t >= CUT.until - 320) { CUT.out = true; CUT.el.classList.add('out'); }
+  }
+  if (CUT.seen !== S.idx) { CUT.seen = S.idx; for (const k of KEY_SCENES[events[S.idx].id] || []) for (const p of k.pics) new Image().src = cutSrc(p); } // have this event's pictures ready
+  if (S.playing && !CUT.active) {
+    const i0 = S.idx, p0 = S.p;
     S.p += (dt * 1000) / (13000 / (S.speed * (EVENT_PACE[events[S.idx].id] || 1)));
+    if (CAM.auto && !REDUCED && S.idx === i0) {
+      const k = (KEY_SCENES[events[i0].id] || []).find((c) => p0 < c.at && S.p >= c.at);
+      if (k) { S.p = k.at; showCut(events[i0], k, t); }
+    }
     if (S.p >= 1) {
       const pos = visible.indexOf(S.idx);
       if (pos < visible.length - 1) selectEvent(visible[pos + 1], { keepPlaying: true });

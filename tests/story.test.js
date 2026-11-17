@@ -176,3 +176,35 @@ test('850: Zeke comes from the south coast through lost Maria territory, and the
     assert.strictEqual(region(r.path.at(-1)), 'rose');
   }
 });
+
+test('key scenes belong to their events, have a caption and pictures, and show a Titan only while someone is that Titan', () => {
+  const fs = require('node:fs'), path = require('node:path');
+  const { root } = require('./helpers.js');
+  let n = 0;
+  for (const [id, list] of Object.entries(c.KEY_SCENES)) {
+    const e = ev(id);
+    assert.ok(e, 'unknown event ' + id);
+    let last = 0;
+    for (const k of list) {
+      n++;
+      assert.ok(k.at > last && k.at < 1, id + ': key scenes in order, inside the event');
+      last = k.at;
+      assert.ok(e.beats[k.beat], id + ': no step ' + k.beat + ' for the caption');
+      assert.ok(['breach', 'transform', 'attack', 'seal', 'scene'].includes(k.fx), id + ': unknown motion ' + k.fx);
+      assert.ok(k.pics.length >= 1 && k.pics.length <= 2);
+      for (const p of k.pics) {
+        const [kind, name] = p.split(':');
+        assert.ok(fs.existsSync(path.join(root, kind === 'titan' ? 'assets/scenes/titans' : 'assets/scenes', name + '.webp')), 'no picture file for ' + p);
+        if (kind === 'titan') {
+          assert.ok(fs.existsSync(path.join(root, 'assets/portraits/titans', name + '.webp')), 'no embedded fallback for ' + p);
+          if (!k.symbolic) assert.ok(e.characters.some((x) => c.titanFormAt(id, x[0], k.at) === name), id + ' at ' + k.at + ': nobody is the ' + name + ' Titan then');
+        }
+      }
+    }
+  }
+  assert.ok(n >= 20, 'key scenes: ' + n);
+  // a gate breach cut-in comes with the breach itself
+  const fall = c.KEY_SCENES['maria-fall'], marks = ev('maria-fall').marks;
+  assert.strictEqual(fall[0].at, marks.find((m) => m.point === 'shigO').at);
+  assert.strictEqual(fall[1].at, marks.find((m) => m.point === 'shigI').at);
+});

@@ -2540,6 +2540,306 @@ body {
   }
 }
 
+/* ==== 2.5: key-scene cut-ins in the middle of the map ==== */
+.cutin {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, #00000073 0%, #000000b8 100%);
+  animation: cutBack 0.3s ease both;
+}
+.cutin[hidden] {
+  display: none;
+}
+.cutin.out {
+  animation: cutBackOut 0.32s ease both;
+}
+.cutin-card {
+  position: relative;
+  width: min(78%, 620px);
+  aspect-ratio: 16 / 9;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 16px 30px #000d);
+  animation: cutIn 0.42s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+.cutin.out .cutin-card {
+  animation: cutOut 0.32s ease both;
+}
+.cutin-frame {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #f4d79b, #a67c3d 55%, #f0cf8e);
+  clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+}
+.cutin-inner {
+  position: absolute;
+  inset: 3px;
+  overflow: hidden;
+  background: #050809;
+  clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+}
+.cutin-pics {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 5px;
+  background: #050809;
+}
+.n2 .cutin-pics {
+  transform: skewX(-9deg) scale(1.1);
+}
+.cutin-pic {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+.cutin-pic img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: cutKen 3.2s linear both;
+}
+.n2 .cutin-pic img {
+  left: -12%;
+  width: 124%;
+  transform: skewX(9deg);
+  animation-name: cutKen2;
+}
+.cutin-pic:nth-child(2) img {
+  animation-delay: 0.12s;
+}
+/* manga focus lines around the picture */
+.cutin-lines {
+  position: absolute;
+  inset: -40%;
+  background: repeating-conic-gradient(from 0deg, #ffffff38 0 1.1deg, transparent 1.1deg 6.5deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 26%, #000 62%);
+  mask-image: radial-gradient(circle, transparent 26%, #000 62%);
+  mix-blend-mode: screen;
+  animation: cutSpin 9s linear infinite;
+  opacity: 0.85;
+}
+.fx-scene .cutin-lines,
+.fx-seal .cutin-lines {
+  display: none;
+}
+.cutin-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  animation: cutFlash 0.75s ease-out both;
+}
+.fx-transform .cutin-flash {
+  background: radial-gradient(circle at 50% 40%, #fffbe0, #ffe66b 45%, #ffb43b00 80%);
+}
+.fx-breach .cutin-flash {
+  background: radial-gradient(circle at 50% 60%, #fff1d6, #ff7a3d 50%, #c8412f00 85%);
+}
+.fx-attack .cutin-flash {
+  background: linear-gradient(120deg, #ff5a4466, #ff5a4400 60%);
+}
+.fx-seal .cutin-flash {
+  background: radial-gradient(circle at 50% 55%, #eafff3, #8de5ba 50%, #8de5ba00 85%);
+}
+.fx-scene .cutin-flash {
+  background: #fff;
+  animation-duration: 0.45s;
+}
+.cutin-bolt {
+  position: absolute;
+  left: 30%;
+  top: 0;
+  width: 40%;
+  height: 100%;
+  fill: #fff9c4;
+  filter: drop-shadow(0 0 8px #ffe66b) drop-shadow(0 0 18px #ffb43b);
+  opacity: 0;
+  animation: cutBolt 0.7s ease-out both;
+}
+.fx-breach .cutin-frame {
+  animation: cutShake 0.6s linear 0.1s;
+}
+.fx-seal .cutin-frame {
+  background: linear-gradient(135deg, #d9ffe9, #4fae84 55%, #c6f6dc);
+}
+.fx-breach .cutin-frame,
+.fx-attack .cutin-frame {
+  background: linear-gradient(135deg, #ffd0b8, #c8412f 55%, #ffb49a);
+}
+.cutin-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 30px 9% 11px 7%;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  background: linear-gradient(0deg, #000000f0, #000000a8 58%, transparent);
+  animation: cutCap 0.4s ease 0.14s both;
+}
+.cutin-year {
+  flex: none;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 13px;
+  color: #ffd98f;
+  border: 1px solid #c9a45c;
+  border-radius: 4px;
+  padding: 0 7px;
+  background: #0b1417cc;
+}
+.cutin-cap strong {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 19px;
+  line-height: 1.25;
+  color: #fff7e6;
+  text-shadow: 0 2px 6px #000;
+}
+/* the ground shakes when a gate breaks or the Walls fall */
+.map-viewport.quake #stage,
+.map-viewport.quake #mapSvg {
+  animation: cutQuake 0.55s linear 0.1s;
+}
+@keyframes cutBack {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cutBackOut {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes cutIn {
+  from {
+    opacity: 0;
+    transform: scale(0.55) rotate(-3deg);
+  }
+}
+@keyframes cutOut {
+  to {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+@keyframes cutKen {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes cutKen2 {
+  from {
+    transform: skewX(9deg) scale(1.1);
+  }
+  to {
+    transform: skewX(9deg) scale(1);
+  }
+}
+@keyframes cutSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cutFlash {
+  0% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes cutBolt {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.2);
+    transform-origin: top;
+  }
+  18% {
+    opacity: 1;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+@keyframes cutCap {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes cutShake {
+  0%,
+  100% {
+    transform: none;
+  }
+  12% {
+    transform: translate(-7px, 4px);
+  }
+  27% {
+    transform: translate(6px, -5px);
+  }
+  43% {
+    transform: translate(-5px, -3px);
+  }
+  60% {
+    transform: translate(4px, 4px);
+  }
+  78% {
+    transform: translate(-2px, 2px);
+  }
+}
+@keyframes cutQuake {
+  0%,
+  100% {
+    transform: none;
+  }
+  15% {
+    transform: translate(-4px, 3px);
+  }
+  32% {
+    transform: translate(4px, -3px);
+  }
+  50% {
+    transform: translate(-3px, -2px);
+  }
+  70% {
+    transform: translate(2px, 2px);
+  }
+}
+@media (max-width: 700px) {
+  .cutin-card {
+    width: 90%;
+  }
+  .cutin-cap {
+    padding: 22px 9% 8px 7%;
+    gap: 7px;
+  }
+  .cutin-cap strong {
+    font-size: 14px;
+  }
+  .cutin-year {
+    font-size: 11px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2670,7 +2970,7 @@ body {
     <div class="left">
       <section class="panel map-panel">
         <div class="map-head"><div><strong data-i18n="mapTitle">帕拉迪島 · 三道城牆</strong><div class="map-sub" data-i18n="mapHint">按地圖地標以選擇地區 · 進攻位置按劇情示意</div></div><div class="map-toolbar"><button type="button" class="pop-toggle" id="popToggle" aria-pressed="true">人群動態：開</button><button class="icon-btn" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><input type="range" class="zoom-slider" id="zoomSlider" min="0" max="100" value="0" aria-label="Zoom"/><button class="icon-btn" id="zoomIn" aria-label="Zoom in" title="Zoom in">＋</button><button type="button" class="pop-toggle auto-cam" id="zoomReset" aria-pressed="true">自動鏡頭：開</button></div></div>
-        <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="dayChip" class="day-chip"></span><span id="mapInfo" data-i18n="schematic" aria-live="polite">非精確測繪地圖，虛線為示意</span></div>
+        <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="dayChip" class="day-chip"></span><span id="mapInfo" data-i18n="schematic" aria-live="polite">非精確測繪地圖，虛線為示意</span><div class="cutin" id="cutin" hidden aria-hidden="true"></div></div>
         <div class="map-caption"><div class="map-legend"><span class="key"><i class="line" style="border-color:var(--red)"></i><span data-i18n="attack">進攻</span></span><span class="key"><i class="line" style="border-color:var(--blue)"></i><span data-i18n="defense">防守</span></span><span class="key"><i class="line dashed" style="border-color:var(--gold)"></i><span data-i18n="covert">潛入／未確定路線</span></span><span class="key"><i class="line" style="border-color:var(--green)"></i><span data-i18n="repair">修復</span></span><span class="key"><canvas class="pop-key" data-sprite="titan1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popTitans">純潔巨人</span></span><span class="key"><canvas class="pop-key" data-sprite="civ1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popCivilians">平民</span></span></div></div>
         <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="6">6×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="27" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 28</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
       </section>
@@ -2687,7 +2987,7 @@ body {
       </section>
       <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.4.0</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.5.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -5172,6 +5472,46 @@ const TITAN_FORM = {
   'zeke-scream': { zeke: [[0.3]], falco: [[0.8]] },
   rumbling: { eren: [[0.08, 1, 'erenFounder']] },
 };
+// Key scenes: a short cut-in in the middle of the map while the story plays with the auto camera on.
+//   at    scene progress at which it appears (playback holds while it shows)
+//   beat  which step text of the event is its caption
+//   pics  one or two pictures: 'titan:<key>' (assets/scenes/titans) or 'scene:<name>' (assets/scenes)
+//   fx    motion: breach (shake), transform (lightning), attack (speed lines), seal (green glow), scene (slow pan)
+//   symbolic  the picture stands for the moment; nobody is in that Titan form on the map
+const KEY_SCENES = {
+  founding: [{ at: 0.3, beat: 0, pics: ['scene:wall-sunset'], fx: 'scene' }],
+  marcel: [{ at: 0.48, beat: 1, pics: ['scene:ymir-titan'], fx: 'attack' }],
+  'maria-fall': [
+    { at: 0.35, beat: 1, pics: ['titan:bert'], fx: 'breach' },
+    { at: 0.67, beat: 2, pics: ['titan:reiner'], fx: 'breach' },
+  ],
+  refugees: [{ at: 0.25, beat: 0, pics: ['scene:refugee-boats'], fx: 'scene' }],
+  'founder-transfer': [{ at: 0.66, beat: 1, pics: ['titan:grisha', 'titan:fried'], fx: 'transform' }],
+  reclamation: [{ at: 0.56, beat: 2, pics: ['scene:pure-titans'], fx: 'attack' }],
+  cadets: [{ at: 0.6, beat: 1, pics: ['scene:survey-corps'], fx: 'scene' }],
+  'trost-attack': [{ at: 0.4, beat: 1, pics: ['titan:bert'], fx: 'breach' }],
+  'trost-seal': [{ at: 0.74, beat: 2, pics: ['titan:eren'], fx: 'seal' }],
+  'female-forest': [{ at: 0.3, beat: 1, pics: ['titan:annie'], fx: 'transform' }],
+  stohess: [{ at: 0.34, beat: 1, pics: ['titan:annie', 'titan:eren'], fx: 'transform' }],
+  ragako: [{ at: 0.52, beat: 2, pics: ['titan:zeke'], fx: 'attack' }],
+  utgard: [{ at: 0.55, beat: 2, pics: ['titan:ymir'], fx: 'transform' }],
+  'reveal-escape': [{ at: 0.13, beat: 1, pics: ['titan:reiner', 'titan:bert'], fx: 'transform' }],
+  rod: [{ at: 0.1, beat: 0, pics: ['titan:rod'], fx: 'transform' }],
+  'maria-retaken': [
+    { at: 0.36, beat: 1, pics: ['titan:eren'], fx: 'seal' },
+    { at: 0.56, beat: 2, pics: ['titan:zeke', 'titan:reiner'], fx: 'attack' },
+    { at: 0.9, beat: 3, pics: ['titan:armin'], fx: 'transform', symbolic: true },
+  ],
+  liberio: [{ at: 0.12, beat: 0, pics: ['titan:eren'], fx: 'attack' }],
+  pieck: [{ at: 0.82, beat: 2, pics: ['titan:porco'], fx: 'attack' }],
+  'marley-854': [{ at: 0.52, beat: 2, pics: ['titan:reiner', 'titan:pieck'], fx: 'attack' }],
+  'zeke-scream': [{ at: 0.46, beat: 1, pics: ['titan:zeke'], fx: 'transform' }],
+  rumbling: [
+    { at: 0.2, beat: 0, pics: ['titan:erenFounder'], fx: 'transform' },
+    { at: 0.52, beat: 2, pics: ['scene:rumbling'], fx: 'breach' },
+  ],
+  alliance: [{ at: 0.3, beat: 0, pics: ['scene:alliance'], fx: 'scene' }],
+};
 // The picture key of the Titan a character is at this moment, or null while human.
 function titanFormAt(eventId, who, p) {
   const windows = TITAN_FORM[eventId] && TITAN_FORM[eventId][who];
@@ -7128,6 +7468,7 @@ function buildCards() {
   $('#rangeEnd').textContent = yearText(events[visible.at(-1)].year);
 }
 function selectEvent(i, { keepPlaying = false } = {}) {
+  endCut(); // a key scene never outlives its event
   S.idx = i;
   S.p = 0;
   S.actor = null;
@@ -7570,6 +7911,51 @@ function userView(v) {
 function fitView() {
   if (CAM.auto) CAM.retarget = true;
 }
+// ---- Key scenes: a cut-in card in the middle of the map, only while the story plays with the auto camera on ----
+const CUT = { el: $('#cutin'), active: null, until: 0, out: false, seen: -1 };
+const cutSrc = (pic) => (pic.startsWith('titan:') ? 'assets/scenes/titans/' : 'assets/scenes/') + pic.split(':')[1] + '.webp';
+const cutFallback = (pic) => (pic.startsWith('titan:') && typeof titanPortraits !== 'undefined' ? titanPortraits[pic.split(':')[1]] : null); // the small embedded picture, when the page was copied on its own
+function showCut(ev, k, now) {
+  const el = CUT.el, card = document.createElement('div'), frame = document.createElement('div'), inner = document.createElement('div'), pics = document.createElement('div');
+  card.className = 'cutin-card fx-' + k.fx + ' n' + k.pics.length;
+  frame.className = 'cutin-frame';
+  inner.className = 'cutin-inner';
+  pics.className = 'cutin-pics';
+  for (const p of k.pics) {
+    const w = document.createElement('div'), img = document.createElement('img');
+    w.className = 'cutin-pic';
+    img.alt = '';
+    img.onerror = () => {
+      const fb = cutFallback(p);
+      if (fb && img.src !== fb) img.src = fb;
+      else endCut(); // no picture at all: skip the cut-in
+    };
+    img.src = cutSrc(p);
+    w.appendChild(img);
+    pics.appendChild(w);
+  }
+  inner.appendChild(pics);
+  inner.insertAdjacentHTML('beforeend', '<div class="cutin-lines"></div><div class="cutin-flash"></div>' + (k.fx === 'transform' ? '<svg class="cutin-bolt" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="54,0 36,46 50,46 38,100 68,38 54,38 64,0"/></svg>' : '') + '<div class="cutin-cap"><span class="cutin-year"></span><strong></strong></div>');
+  inner.querySelector('.cutin-year').textContent = yearText(ev.year);
+  inner.querySelector('.cutin-cap strong').textContent = tr(ev.beats[k.beat]);
+  frame.appendChild(inner);
+  card.appendChild(frame);
+  card.onclick = endCut; // tap to skip
+  el.replaceChildren(card);
+  el.className = 'cutin';
+  el.hidden = false;
+  $('.map-viewport').classList.toggle('quake', k.fx === 'breach');
+  CUT.active = k;
+  CUT.out = false;
+  CUT.until = now + Math.max(1400, Math.min(2800, 2600 / Math.pow(S.speed, 0.6))); // shorter at faster playback
+}
+function endCut() {
+  if (!CUT.active) return;
+  CUT.active = null;
+  CUT.el.hidden = true;
+  CUT.el.replaceChildren();
+  $('.map-viewport').classList.remove('quake');
+}
 // If frames run slow for a while, the crowd's logic steps down to every 2nd, then every 3rd frame.
 const LOAD = { ema: 0.016, frames: 0 };
 function animate(t) {
@@ -7579,8 +7965,19 @@ function animate(t) {
     LOAD.ema += (dt - LOAD.ema) * 0.03;
     if (++LOAD.frames > 150 && LOAD.ema > 0.024) { STAGE.slower(); LOAD.frames = 0; LOAD.ema = 0.016; }
   }
-  if (S.playing) {
+  if (CUT.active) {
+    // a key scene is on: the story holds until it is over (or playback or the auto camera is switched off)
+    if (!S.playing || !CAM.auto || t >= CUT.until) endCut();
+    else if (!CUT.out && t >= CUT.until - 320) { CUT.out = true; CUT.el.classList.add('out'); }
+  }
+  if (CUT.seen !== S.idx) { CUT.seen = S.idx; for (const k of KEY_SCENES[events[S.idx].id] || []) for (const p of k.pics) new Image().src = cutSrc(p); } // have this event's pictures ready
+  if (S.playing && !CUT.active) {
+    const i0 = S.idx, p0 = S.p;
     S.p += (dt * 1000) / (13000 / (S.speed * (EVENT_PACE[events[S.idx].id] || 1)));
+    if (CAM.auto && !REDUCED && S.idx === i0) {
+      const k = (KEY_SCENES[events[i0].id] || []).find((c) => p0 < c.at && S.p >= c.at);
+      if (k) { S.p = k.at; showCut(events[i0], k, t); }
+    }
     if (S.p >= 1) {
       const pos = visible.indexOf(S.idx);
       if (pos < visible.length - 1) selectEvent(visible[pos + 1], { keepPlaying: true });

@@ -2531,3 +2531,303 @@ body {
     text-overflow: ellipsis;
   }
 }
+
+/* ==== 2.5: key-scene cut-ins in the middle of the map ==== */
+.cutin {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, #00000073 0%, #000000b8 100%);
+  animation: cutBack 0.3s ease both;
+}
+.cutin[hidden] {
+  display: none;
+}
+.cutin.out {
+  animation: cutBackOut 0.32s ease both;
+}
+.cutin-card {
+  position: relative;
+  width: min(78%, 620px);
+  aspect-ratio: 16 / 9;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 16px 30px #000d);
+  animation: cutIn 0.42s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+.cutin.out .cutin-card {
+  animation: cutOut 0.32s ease both;
+}
+.cutin-frame {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #f4d79b, #a67c3d 55%, #f0cf8e);
+  clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+}
+.cutin-inner {
+  position: absolute;
+  inset: 3px;
+  overflow: hidden;
+  background: #050809;
+  clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+}
+.cutin-pics {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 5px;
+  background: #050809;
+}
+.n2 .cutin-pics {
+  transform: skewX(-9deg) scale(1.1);
+}
+.cutin-pic {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+.cutin-pic img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: cutKen 3.2s linear both;
+}
+.n2 .cutin-pic img {
+  left: -12%;
+  width: 124%;
+  transform: skewX(9deg);
+  animation-name: cutKen2;
+}
+.cutin-pic:nth-child(2) img {
+  animation-delay: 0.12s;
+}
+/* manga focus lines around the picture */
+.cutin-lines {
+  position: absolute;
+  inset: -40%;
+  background: repeating-conic-gradient(from 0deg, #ffffff38 0 1.1deg, transparent 1.1deg 6.5deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 26%, #000 62%);
+  mask-image: radial-gradient(circle, transparent 26%, #000 62%);
+  mix-blend-mode: screen;
+  animation: cutSpin 9s linear infinite;
+  opacity: 0.85;
+}
+.fx-scene .cutin-lines,
+.fx-seal .cutin-lines {
+  display: none;
+}
+.cutin-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  animation: cutFlash 0.75s ease-out both;
+}
+.fx-transform .cutin-flash {
+  background: radial-gradient(circle at 50% 40%, #fffbe0, #ffe66b 45%, #ffb43b00 80%);
+}
+.fx-breach .cutin-flash {
+  background: radial-gradient(circle at 50% 60%, #fff1d6, #ff7a3d 50%, #c8412f00 85%);
+}
+.fx-attack .cutin-flash {
+  background: linear-gradient(120deg, #ff5a4466, #ff5a4400 60%);
+}
+.fx-seal .cutin-flash {
+  background: radial-gradient(circle at 50% 55%, #eafff3, #8de5ba 50%, #8de5ba00 85%);
+}
+.fx-scene .cutin-flash {
+  background: #fff;
+  animation-duration: 0.45s;
+}
+.cutin-bolt {
+  position: absolute;
+  left: 30%;
+  top: 0;
+  width: 40%;
+  height: 100%;
+  fill: #fff9c4;
+  filter: drop-shadow(0 0 8px #ffe66b) drop-shadow(0 0 18px #ffb43b);
+  opacity: 0;
+  animation: cutBolt 0.7s ease-out both;
+}
+.fx-breach .cutin-frame {
+  animation: cutShake 0.6s linear 0.1s;
+}
+.fx-seal .cutin-frame {
+  background: linear-gradient(135deg, #d9ffe9, #4fae84 55%, #c6f6dc);
+}
+.fx-breach .cutin-frame,
+.fx-attack .cutin-frame {
+  background: linear-gradient(135deg, #ffd0b8, #c8412f 55%, #ffb49a);
+}
+.cutin-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 30px 9% 11px 7%;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  background: linear-gradient(0deg, #000000f0, #000000a8 58%, transparent);
+  animation: cutCap 0.4s ease 0.14s both;
+}
+.cutin-year {
+  flex: none;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 13px;
+  color: #ffd98f;
+  border: 1px solid #c9a45c;
+  border-radius: 4px;
+  padding: 0 7px;
+  background: #0b1417cc;
+}
+.cutin-cap strong {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 19px;
+  line-height: 1.25;
+  color: #fff7e6;
+  text-shadow: 0 2px 6px #000;
+}
+/* the ground shakes when a gate breaks or the Walls fall */
+.map-viewport.quake #stage,
+.map-viewport.quake #mapSvg {
+  animation: cutQuake 0.55s linear 0.1s;
+}
+@keyframes cutBack {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cutBackOut {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes cutIn {
+  from {
+    opacity: 0;
+    transform: scale(0.55) rotate(-3deg);
+  }
+}
+@keyframes cutOut {
+  to {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+@keyframes cutKen {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes cutKen2 {
+  from {
+    transform: skewX(9deg) scale(1.1);
+  }
+  to {
+    transform: skewX(9deg) scale(1);
+  }
+}
+@keyframes cutSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cutFlash {
+  0% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes cutBolt {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.2);
+    transform-origin: top;
+  }
+  18% {
+    opacity: 1;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+@keyframes cutCap {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes cutShake {
+  0%,
+  100% {
+    transform: none;
+  }
+  12% {
+    transform: translate(-7px, 4px);
+  }
+  27% {
+    transform: translate(6px, -5px);
+  }
+  43% {
+    transform: translate(-5px, -3px);
+  }
+  60% {
+    transform: translate(4px, 4px);
+  }
+  78% {
+    transform: translate(-2px, 2px);
+  }
+}
+@keyframes cutQuake {
+  0%,
+  100% {
+    transform: none;
+  }
+  15% {
+    transform: translate(-4px, 3px);
+  }
+  32% {
+    transform: translate(4px, -3px);
+  }
+  50% {
+    transform: translate(-3px, -2px);
+  }
+  70% {
+    transform: translate(2px, 2px);
+  }
+}
+@media (max-width: 700px) {
+  .cutin-card {
+    width: 90%;
+  }
+  .cutin-cap {
+    padding: 22px 9% 8px 7%;
+    gap: 7px;
+  }
+  .cutin-cap strong {
+    font-size: 14px;
+  }
+  .cutin-year {
+    font-size: 11px;
+  }
+}

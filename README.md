@@ -2,7 +2,7 @@
 
 An interactive timeline in three languages (Traditional Chinese, English and Japanese) of who crossed the three Walls in *Attack on Titan*, and how. It shows 28 events from 743 to 857 on an illustrated map of Paradis Island:
 
-- playback with a camera that follows the action, or zoom and pan yourself (mouse wheel, slider, drag, pinch);
+- playback with a camera that follows the action, or zoom and pan yourself (mouse wheel, slider, drag, pinch); with the auto camera on, key scenes cut in at the centre of the map (a gate breaking, a transformation, the Rumbling);
 - animated routes for every character, with unconfirmed routes marked as such; a Titan shifter's portrait changes to their Titan at the moment they transform;
 - live Walls: gates break, are sealed, and the Walls fall in the Rumbling;
 - a simulated crowd: about 300 Pure Titans that gather where people live, civilians who retreat behind the Walls and resettle, Survey Corps riders, wall cannons, the Wall Titans, and the crawling Titan dragging itself from the south coast;
@@ -30,7 +30,7 @@ npm test        # Node's built-in test runner, no dependencies
 - `src/`: the sources: world geometry, terrain, camera, story text and scenes, crowd simulation, map painter, stage and app (see `src/build.json` for the order).
 - `assets/population/puppets.js`: the animated figures (drawn with Canvas 2D into a sprite atlas); `puppets-preview.html` shows them.
 - `assets/theme/`: regiment emblems, ornaments and the masthead banner (original drawings, embedded by the build); `theme-preview.html` shows them.
-- `assets/scenes/`: scene pictures for the story card, with their sources in `sources.json`.
+- `assets/scenes/`: scene pictures for the story card and the key-scene cut-ins (`titans/` holds the wide Titan pictures), with their sources in `sources.json`.
 - `assets/map-designs/world-terrain.json`, `src/world-coast.json`: terrain classes and coastline of the map.
 - `assets/portraits/`, `assets/icon-options/`: portrait images and their sources (`assets/portraits/titans/` holds the Titan forms); `icon-choices.html`, `titan-choices.html` and `map-choices.html` are earlier design comparisons.
 - `original/Attack_on_Titan_Walls_V2.html`: the first version of the page, kept for reference.
