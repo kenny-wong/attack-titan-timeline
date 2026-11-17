@@ -161,29 +161,105 @@ const TXT = {
     popLyingInfo:
       'The Ragako Titan (cannot move): the Scouts found it lying in the village, its limbs too thin to walk. It stays there until the Titans’ power ends and it becomes human again.',
   },
+  ja: {
+    spoiler: '全編ネタバレ',
+    kicker: '三つの壁 · 侵入と防衛の114年',
+    hero: '進撃の巨人',
+    epigraph: 'その日、人類は思い出した。ヤツらに支配されていた恐怖を……',
+    subtitle: '年と進行度を動かして、巨人の侵攻、潜入、防衛、門の修復を追う。壁の誕生からその後まで、物語を時系列でたどる。',
+    year: '物語の年',
+    mapTitle: 'パラディ島 · 三つの壁',
+    mapHint: 'ホイールやピンチで拡大縮小 · ドラッグで移動 · 再生中はカメラが自動で追う',
+    attack: '侵攻',
+    defense: '防衛',
+    covert: '潜入／未確定の経路',
+    repair: '修復',
+    schematic: '概略図：破線はおおよその経路',
+    timeline: 'CHRONOLOGY · 出来事年表',
+    play: '再生',
+    pause: '一時停止',
+    scene: 'この出来事の進行',
+    what: '何が起きたか',
+    sequence: '場面の流れ／アニメーション',
+    status: 'この時点の三つの壁',
+    stateHint: '状態は年を追って累積',
+    cast: '登場人物と関わり',
+    castHint: '人物を選ぶと地図上の移動経路を強調',
+    notes:
+      '注：地図はオリジナルのイラストです。島の輪郭、各区の位置、地形はファン作成の参考地図をもとに描き直したもので、公式の測量図ではありません。経路は概念的なもので正確な位置ではなく、原作で描かれていない入口は破線で示しています。画面はオリジナルの説明用アニメーションで、公式アニメの映像ではありません。',
+    sources: '物語の参照元：',
+    location: '場所',
+    phase: '段階',
+    wall: '壁',
+    state: { intact: '健在', lost: '領土喪失', breached: '外門破壊', collapsed: '崩壊' },
+    category: {
+      all: 'すべて',
+      attack: '巨人の侵攻',
+      infiltrate: '潜入',
+      defend: '防衛／奪還',
+      reveal: '正体／真相',
+      expedition: '壁外調査',
+      finale: '最終章',
+    },
+    wallnames: { all: '全地域', maria: 'マリア', rose: 'ローゼ', sina: 'シーナ', outside: '壁外／海外' },
+    gates: { shigO: 'シガンシナ区外門', shigI: 'シガンシナ区内門', trostO: 'トロスト区外門' },
+    gstates: { intact: '無傷', broken: '破壊', sealed: '封鎖', collapsed: '消滅' },
+    shown: '表示中',
+    approx: '概略の経路',
+    allWalls: '三つの壁すべて',
+    clickloc: '区を選ぶと関連する出来事へ',
+    noRoute: 'この出来事は正体の判明や壁の状態に関するもので、確認された越境経路はない',
+    popTitans: '無垢の巨人',
+    popCivilians: '住民',
+    popOn: '群衆表示：オン',
+    popOff: '群衆表示：オフ',
+    popNone: '島内にはいない',
+    popSep: '、',
+    popZones: {
+      outside: '壁外',
+      shig: 'シガンシナ区',
+      maria: 'マリア領',
+      trost: 'トロスト区',
+      rose: 'ローゼ領',
+      ragakoFixed: 'ラガコ村（1体、動けない）',
+      sina: 'シーナ領',
+      districts: 'その他の区',
+    },
+    popAbout: '約',
+    dayDay: '昼',
+    dayDusk: '夕暮れ／夜明け',
+    dayNight: '夜 · 巨人は動かない',
+    dayMoon: '月夜 · 巨人が活動（異常）',
+    flareInfo: '信煙弾：赤＝巨人発見 · 緑＝進路変更 · 黒＝奇行種',
+    popWall: '壁の巨人',
+    popWallNow: '三つの壁から現れ、海へ進む',
+    popLyingTag: 'ラガコ村の巨人（動けない）',
+    popLyingInfo: 'ラガコ村の巨人（動けない）：調査兵団が村で横たわっているのを発見した。手足が細すぎて歩けず、巨人の力が消えて人間に戻るまでそこに留まる。',
+  },
 };
-const tr = (v) => (typeof v === 'string' ? v : (v?.[S.lang] ?? ''));
+const yearText = (y) => (S.lang === 'en' ? y.replace('約', 'c. ') : y); // '約832' is shared by Chinese and Japanese
+const tr = (v) => (typeof v === 'string' ? v : (v?.[S.lang] ?? v?.en ?? '')); // a text without the current language falls back to English
 // Names of places (used in the story card and on the map).
 const labels = {
-  south: C('牆外南部（巨人聚集地）', 'South of the Walls (Titan country)'),
-  shig: C('希干希納', 'Shiganshina'),
-  trost: C('托洛斯特', 'Trost'),
-  stohess: C('史托黑斯', 'Stohess'),
-  karanes: C('卡拉涅斯', 'Karanes'),
-  orvud: C('奧爾福德', 'Orvud'),
-  orvudWall: C('奧爾福德', 'Orvud'),
-  mitras: C('米特拉斯', 'Mitras'),
-  ragako: C('拉加哥村', 'Ragako'),
-  utgard: C('厄特加爾城', 'Utgard Castle'),
-  forest: C('巨大樹森林', 'Forest of Giant Trees'),
-  reiss: C('雷斯家禮拜堂', 'Reiss chapel'),
-  cadetCamp: C('訓練兵團駐地（羅塞之牆內）', 'Cadet camp (inside Wall Rose)'),
-  roseLand: C('羅塞之牆內', 'Inside Wall Rose'),
-  roseSW: C('羅塞之牆頂（西南）', 'Atop Wall Rose (south-west)'),
-  shore: C('帕拉迪島南岸', 'South coast of Paradis'),
-  harbor: C('港口', 'Harbour'),
-  krugerWall: C('馬萊海岸壁', 'Marley’s sea wall'),
-  sea: C('海外', 'Overseas'),
+  south: C('牆外南部（巨人聚集地）', 'South of the Walls (Titan country)', '壁外南部（巨人の集まる地）'),
+  shig: C('希干希納', 'Shiganshina', 'シガンシナ区'),
+  trost: C('托洛斯特', 'Trost', 'トロスト区'),
+  stohess: C('史托黑斯', 'Stohess', 'ストヘス区'),
+  karanes: C('卡拉涅斯', 'Karanes', 'カラネス区'),
+  orvud: C('奧爾福德', 'Orvud', 'オルブド区'),
+  orvudWall: C('奧爾福德', 'Orvud', 'オルブド区'),
+  mitras: C('米特拉斯', 'Mitras', '王都ミットラス'),
+  ragako: C('拉加哥村', 'Ragako', 'ラガコ村'),
+  utgard: C('厄特加爾城', 'Utgard Castle', 'ウトガルド城'),
+  forest: C('巨大樹森林', 'Forest of Giant Trees', '巨大樹の森'),
+  reiss: C('雷斯家禮拜堂', 'Reiss chapel', 'レイス家礼拝堂'),
+  cadetCamp: C('訓練兵團駐地（羅塞之牆內）', 'Cadet camp (inside Wall Rose)', '訓練兵団の駐屯地（ウォール・ローゼ内）'),
+  roseLand: C('羅塞之牆內', 'Inside Wall Rose', 'ウォール・ローゼ内'),
+  roseSW: C('羅塞之牆頂（西南）', 'Atop Wall Rose (south-west)', 'ウォール・ローゼの上（南西）'),
+  shore: C('帕拉迪島南岸', 'South coast of Paradis', 'パラディ島南岸'),
+  harbor: C('港口', 'Harbour', '港'),
+  krugerWall: C('馬萊海岸壁', 'Marley’s sea wall', 'マーレの海岸壁'),
+  sea: C('海外', 'Overseas', '海外'),
 };
 // Labels drawn on the map: where they sit, and from which zoom level (screen px per world unit) they show.
 const MAP_LABELS = (() => {
@@ -192,14 +268,14 @@ const MAP_LABELS = (() => {
   out.push({ key: 'shig', text: labels.shig, min: 0.3, ...beside('shig') });
   for (const id of ['trost', 'stohess', 'karanes', 'orvud']) out.push({ key: id, text: labels[id], min: 0.62, ...beside(id) });
   out.push({ key: 'mitras', text: labels.mitras, p: World.C, dx: 0, dy: 17, align: 'c', min: 0.3 });
-  for (const d of World.DISTRICTS.filter((d) => d.minor)) out.push({ key: d.id, text: C(d.zh, d.en), min: 1.25, minor: true, ...beside(d.id) });
+  for (const d of World.DISTRICTS.filter((d) => d.minor)) out.push({ key: d.id, text: C(d.zh, d.en, d.ja), min: 1.25, minor: true, ...beside(d.id) });
   out.push({ key: 'ragako', text: labels.ragako, p: P.ragako, dx: 10, dy: 3, align: 'l', min: 0.9, minor: true });
   out.push({ key: 'utgard', text: labels.utgard, p: P.utgard, dx: -10, dy: 3, align: 'r', min: 0.9, minor: true });
   out.push({ key: 'reiss', text: labels.reiss, p: P.reiss, dx: 10, dy: 0, align: 'l', min: 0.9, minor: true });
   out.push({ key: 'forest', text: labels.forest, p: P.forest, dx: 0, dy: 26, align: 'c', min: 0.75, minor: true });
   out.push({ key: 'harbor', text: labels.harbor, p: P.harbor, dx: -12, dy: 2, align: 'r', min: 0.42, minor: true, since: 'overseas' });
   out.push({ key: 'krugerWall', text: labels.krugerWall, p: P.krugerWall, dx: 0, dy: 15, align: 'c', min: 0.42, minor: true });
-  out.push({ key: 'south', text: C('巨人聚集地', 'Titan country'), p: P.south, dx: 46, dy: 0, align: 'l', min: 0.42, max: 1.6, minor: true });
+  out.push({ key: 'south', text: C('巨人聚集地', 'Titan country', '巨人の集まる地'), p: P.south, dx: 46, dy: 0, align: 'l', min: 0.42, max: 1.6, minor: true });
   return out;
 })();
 // Clickable places and the wall filter they select.
@@ -374,15 +450,15 @@ function buildCards() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'event-tile cat-' + ev.category + (visible[n] === S.idx ? ' active' : '');
-    b.innerHTML = `<div class="ey">${ev.year}</div><div class="et"></div><div class="ep">${icon(CAT_ICON[ev.category], 'tile-ico')}${tags[ev.category]}</div>`;
+    b.innerHTML = `<div class="ey">${yearText(ev.year)}</div><div class="et"></div><div class="ep">${icon(CAT_ICON[ev.category], 'tile-ico')}${tags[ev.category]}</div>`;
     b.querySelector('.et').textContent = tr(ev.title);
     b.onclick = () => selectEvent(visible[n]);
     parent.appendChild(b);
   }
   $('#eventSlider').max = Math.max(0, visible.length - 1);
   $('#eventSlider').value = visible.indexOf(S.idx);
-  $('#rangeStart').textContent = events[visible[0]].year;
-  $('#rangeEnd').textContent = events[visible.at(-1)].year;
+  $('#rangeStart').textContent = yearText(events[visible[0]].year);
+  $('#rangeEnd').textContent = yearText(events[visible.at(-1)].year);
 }
 function selectEvent(i, { keepPlaying = false } = {}) {
   S.idx = i;
@@ -410,7 +486,7 @@ function paintEvent() {
     lastPainted = S.idx;
     for (const s of ['.story-head', '.story-body', '#castList']) swapIn(s);
   }
-  $('#heroYear').textContent = ev.year;
+  $('#heroYear').textContent = yearText(ev.year);
   $('#chapterTag').textContent = `CHAPTER ${String(S.idx + 1).padStart(2, '0')} / ${events.length}`;
   $('#categoryBadge').innerHTML = icon(CAT_ICON[ev.category], 'tile-ico') + tags[ev.category];
   $('#categoryBadge').className = 'count cat-' + ev.category;
@@ -419,7 +495,7 @@ function paintEvent() {
   $('#storyDesc').textContent = tr(ev.description);
   $('#storyOutcome').textContent = tr(ev.outcome);
   $('#storyMeta').replaceChildren();
-  for (const s of [t.wall + ': ' + (t.wallnames[ev.wall] || ev.wall), tr(labels[ev.place] || C(ev.place, ev.place)), ev.year]) {
+  for (const s of [t.wall + ': ' + (t.wallnames[ev.wall] || ev.wall), tr(labels[ev.place] || C(ev.place, ev.place)), yearText(ev.year)]) {
     const b = document.createElement('b');
     b.textContent = s;
     $('#storyMeta').appendChild(b);
@@ -638,8 +714,8 @@ function rebuildMap() {
   }
   // Place labels and the three Wall name tags
   for (const L of MAP_LABELS) if (!L.since || S.idx >= events.findIndex((e) => e.id === L.since)) pin(labelBox(labelLayer, tr(L.text), L.align, 'point-label' + (L.minor ? ' minor' : '')), L.p, L.dx, L.dy, { min: L.min, max: L.max });
-  for (const [id, zh, en, deg] of [['maria', '瑪利亞之牆', 'Wall Maria', -132], ['rose', '羅塞之牆', 'Wall Rose', -138], ['sina', '席納之牆', 'Wall Sina', -146]]) {
-    const g = labelBox(labelLayer, tr(C(zh, en)), 'r', 'wall-tag');
+  for (const [id, zh, en, ja, deg] of [['maria', '瑪利亞之牆', 'Wall Maria', 'ウォール・マリア', -132], ['rose', '羅塞之牆', 'Wall Rose', 'ウォール・ローゼ', -138], ['sina', '席納之牆', 'Wall Sina', 'ウォール・シーナ', -146]]) {
+    const g = labelBox(labelLayer, tr(C(zh, en, ja)), 'r', 'wall-tag');
     g.setAttribute('data-wall', id);
     pin(g, World.at(World.R[id], deg), -4, -8, { min: 0.62 });
   }
@@ -752,10 +828,11 @@ function renderDynamic() {
   for (const { gr, at } of sceneEffects) gr.style.opacity = S.p >= at ? '1' : '0';
   refreshSteps();
 }
+const LANG_TAG = { zh: 'zh-Hant', en: 'en', ja: 'ja' };
 function updateLang() {
-  document.documentElement.lang = S.lang === 'zh' ? 'zh-Hant' : 'en';
+  document.documentElement.lang = LANG_TAG[S.lang];
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = TXT[S.lang][el.dataset.i18n];
-  $('#langBtn').textContent = S.lang === 'zh' ? 'ENGLISH' : '繁體中文';
+  for (const b of document.querySelectorAll('#langSwitch [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang));
   paintEvent();
   buildFilters();
   renderPopToggle();
@@ -933,8 +1010,10 @@ $('#sceneSlider').oninput = (ev) => {
   renderDynamic();
 };
 $('#speedSel').onchange = (ev) => (S.speed = Number(ev.target.value));
-$('#langBtn').onclick = () => {
-  S.lang = S.lang === 'zh' ? 'en' : 'zh';
+$('#langSwitch').onclick = (ev) => {
+  const b = ev.target.closest('[data-lang]');
+  if (!b || b.dataset.lang === S.lang) return;
+  S.lang = b.dataset.lang;
   updateLang();
 };
 // ---- Zoom and pan: mouse wheel, the zoom slider and buttons, drag, and two-finger pinch ----

@@ -18,18 +18,18 @@
 
   // The twelve districts: each bulges outward from its Wall at a compass point.
   const DISTRICTS = [
-    { id: 'mariaN', wall: 'maria', dir: 'n', zh: '瑪利亞北區', en: 'Maria north district', minor: true },
-    { id: 'holst', wall: 'maria', dir: 'e', zh: '霍爾斯特（推測）', en: 'Holst (unconfirmed)', minor: true },
-    { id: 'shig', wall: 'maria', dir: 's', zh: '希干希納', en: 'Shiganshina' },
-    { id: 'quinta', wall: 'maria', dir: 'w', zh: '昆塔（推測）', en: 'Quinta (unconfirmed)', minor: true },
-    { id: 'utopia', wall: 'rose', dir: 'n', zh: '烏托邦', en: 'Utopia', minor: true },
-    { id: 'karanes', wall: 'rose', dir: 'e', zh: '卡拉涅斯', en: 'Karanes' },
-    { id: 'trost', wall: 'rose', dir: 's', zh: '托洛斯特', en: 'Trost' },
-    { id: 'klorva', wall: 'rose', dir: 'w', zh: '克羅爾巴', en: 'Klorva', minor: true },
-    { id: 'orvud', wall: 'sina', dir: 'n', zh: '奧爾福德', en: 'Orvud' },
-    { id: 'stohess', wall: 'sina', dir: 'e', zh: '史托黑斯', en: 'Stohess' },
-    { id: 'ehrmich', wall: 'sina', dir: 's', zh: '艾爾米哈', en: 'Ehrmich', minor: true },
-    { id: 'yarckel', wall: 'sina', dir: 'w', zh: '亞爾克爾', en: 'Yarckel', minor: true },
+    { id: 'mariaN', wall: 'maria', dir: 'n', zh: '瑪利亞北區', en: 'Maria north district', ja: 'マリア北の区', minor: true },
+    { id: 'holst', wall: 'maria', dir: 'e', zh: '霍爾斯特（推測）', en: 'Holst (unconfirmed)', ja: 'ホルスト区（推定）', minor: true },
+    { id: 'shig', wall: 'maria', dir: 's', zh: '希干希納', en: 'Shiganshina', ja: 'シガンシナ区' },
+    { id: 'quinta', wall: 'maria', dir: 'w', zh: '昆塔（推測）', en: 'Quinta (unconfirmed)', ja: 'クィンタ区（推定）', minor: true },
+    { id: 'utopia', wall: 'rose', dir: 'n', zh: '烏托邦', en: 'Utopia', ja: 'ユトピア区', minor: true },
+    { id: 'karanes', wall: 'rose', dir: 'e', zh: '卡拉涅斯', en: 'Karanes', ja: 'カラネス区' },
+    { id: 'trost', wall: 'rose', dir: 's', zh: '托洛斯特', en: 'Trost', ja: 'トロスト区' },
+    { id: 'klorva', wall: 'rose', dir: 'w', zh: '克羅爾巴', en: 'Klorva', ja: 'クロルバ区', minor: true },
+    { id: 'orvud', wall: 'sina', dir: 'n', zh: '奧爾福德', en: 'Orvud', ja: 'オルブド区' },
+    { id: 'stohess', wall: 'sina', dir: 'e', zh: '史托黑斯', en: 'Stohess', ja: 'ストヘス区' },
+    { id: 'ehrmich', wall: 'sina', dir: 's', zh: '艾爾米哈', en: 'Ehrmich', ja: 'エルミハ区', minor: true },
+    { id: 'yarckel', wall: 'sina', dir: 'w', zh: '亞爾克爾', en: 'Yarckel', ja: 'ヤルケル区', minor: true },
   ].map((d) => {
     const deg = DEG[d.dir], r = R[d.wall], dr = DR[d.wall];
     return { ...d, deg, base: at(r, deg), r: dr, centre: at(r + dr * 0.45, deg), inner: at(r, deg), outer: at(r + dr, deg), beyond: at(r + dr + 16, deg), within: at(r - 16, deg) };

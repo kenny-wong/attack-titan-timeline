@@ -1,12 +1,12 @@
 # Attack Titan Timeline
 
-An interactive, bilingual (Traditional Chinese / English) timeline of who crossed the three Walls in *Attack on Titan*, and how. It shows 28 events from 743 to 857 on an illustrated map of Paradis Island:
+An interactive timeline in three languages (Traditional Chinese, English and Japanese) of who crossed the three Walls in *Attack on Titan*, and how. It shows 28 events from 743 to 857 on an illustrated map of Paradis Island:
 
 - playback with a camera that follows the action, or zoom and pan yourself (mouse wheel, slider, drag, pinch);
 - animated routes for every character, with unconfirmed routes marked as such;
 - live Walls: gates break, are sealed, and the Walls fall in the Rumbling;
 - a simulated crowd: about 300 Pure Titans that gather where people live, civilians who retreat behind the Walls and resettle, Survey Corps riders, wall cannons and the Wall Titans;
-- day and night (Titans stand still in the dark, except under the moon at Utgard), the evacuation boats of 845, the 846 "reclamation" of Wall Maria, the signal flares of the long-range scouting formation, cloud shadows, rain and snow in the north;
+- day and night (Titans stand still in the dark, except under the moon at Utgard), the evacuation boats of 845, the 846 "reclamation" of Wall Maria, the signal flares of the long-range scouting formation, cloud shadows and snow in the north;
 - a picture for every event: a scene from the story or manga-style panels of the characters involved.
 
 **Live site:** https://kenny-wong.github.io/attack-titan-timeline/

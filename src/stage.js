@@ -236,11 +236,10 @@
       const vg = ctx.createRadialGradient(vw / 2, vh / 2, Math.min(vw, vh) * 0.45, vw / 2, vh / 2, Math.max(vw, vh) * 0.78);
       vg.addColorStop(0, 'rgba(60,40,14,0)'); vg.addColorStop(1, 'rgba(60,40,14,.26)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, vw, vh);
     }
-    // ---- Weather: drifting cloud shadows, two rain clouds, snow over the northern mountains ----
+    // ---- Weather: drifting cloud shadows and snow over the northern mountains ----
     const wr = (() => { let s = 20261117; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); })();
-    const clouds = Array.from({ length: Q.clouds }, (_, i) => ({ x: wr() * World.W, y: 80 + wr() * (World.H - 160), r: 70 + wr() * 90, v: 5 + wr() * 7, rain: i < 2 }));
+    const clouds = Array.from({ length: Q.clouds }, () => ({ x: wr() * World.W, y: 80 + wr() * (World.H - 160), r: 70 + wr() * 90, v: 5 + wr() * 7 }));
     const flakes = Array.from({ length: Q.snow }, () => ({ x: 120 + wr() * 760, y: 120 + wr() * 420, v: 9 + wr() * 9, ph: wr() * 6.3 }));
-    const drops = Array.from({ length: 34 }, () => [wr() * 2 - 1, wr() * 2 - 1, wr()]);
     let shade = null;
     function weather(view, sc) {
       const s = view.s, dt = sc.reduced ? 0 : sc.dt, hw = vw / 2, hh = vh / 2;
@@ -249,13 +248,7 @@
         c.x += c.v * dt; if (c.x - c.r > World.W + 60) { c.x = -c.r - 40; c.y = 80 + ((c.y * 7.3) % (World.H - 160)); }
         const sx = (c.x - view.x) * s + hw, sy = (c.y - view.y) * s + hh, rr = c.r * s;
         if (sx + rr < 0 || sy + rr < 0 || sx - rr > vw || sy - rr > vh) continue;
-        ctx.globalAlpha = c.rain ? 0.34 : 0.16; ctx.drawImage(shade, sx - rr, sy - rr * 0.7, rr * 2, rr * 1.4);
-        if (c.rain && !sc.reduced) { // rain falling under the cloud
-          ctx.globalAlpha = 0.5; ctx.strokeStyle = '#cfe3f2'; ctx.lineWidth = Math.max(1, Math.min(1.6, s * 0.7)); ctx.beginPath();
-          const len = Math.max(5, Math.min(12, 6 * s));
-          for (const [dx, dy, ph] of drops) { const f = (sc.t * 1.6 + ph) % 1, x = sx + dx * rr * 0.72 - f * len * 0.5, y = sy + dy * rr * 0.42 + f * len * 2.2; ctx.moveTo(x, y); ctx.lineTo(x - len * 0.32, y + len); }
-          ctx.stroke();
-        }
+        ctx.globalAlpha = 0.16; ctx.drawImage(shade, sx - rr, sy - rr * 0.7, rr * 2, rr * 1.4);
       }
       // snow: only over the northern mountains
       ctx.globalAlpha = 0.85; ctx.fillStyle = '#ffffff';

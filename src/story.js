@@ -4,7 +4,7 @@
    compass points, the Titans' landing coast in the south, Ragako and Utgard in the south-west
    of Wall Rose, the Reiss chapel near Orvud in the north).
    The text of each event is in story-text.js. */
-const C = (zh, en) => ({ zh, en });
+const C = (zh, en, ja) => ({ zh, en, ja }); // a text in Traditional Chinese, English and Japanese
 const P = (() => {
   const { at, district: D, coastAt } = World;
   return {
@@ -45,39 +45,39 @@ function actorPortrait(who) {
 let castPortraitPhase = -1;
 const teamActors = new Set(['pure', 'civ', 'garrison', 'scouts', 'marley', 'walltitans', 'alliance', 'volunteers']);
 const cast = {
-  karl: C('卡爾·弗利茲', 'Karl Fritz'),
-  grisha: C('古利夏', 'Grisha'),
-  keith: C('基斯', 'Keith Shadis'),
-  kruger: C('庫爾迦', 'Eren Kruger'),
-  reiner: C('萊納', 'Reiner'),
-  bert: C('貝爾托特', 'Bertholdt'),
-  annie: C('亞妮', 'Annie'),
-  marcel: C('馬賽', 'Marcel'),
-  ymir: C('尤彌爾', 'Ymir'),
-  eren: C('艾連', 'Eren'),
-  armin: C('阿爾敏', 'Armin'),
-  mikasa: C('米卡莎', 'Mikasa'),
-  fried: C('芙莉妲', 'Frieda Reiss'),
-  pure: C('純潔巨人', 'Pure Titans'),
-  civ: C('難民', 'Refugees'),
-  garrison: C('駐紮兵團', 'Garrison'),
-  scouts: C('調查兵團', 'Survey Corps'),
-  zeke: C('吉克', 'Zeke'),
-  pieck: C('皮克', 'Pieck'),
-  historia: C('希斯特莉亞', 'Historia'),
-  rod: C('羅德·雷斯', 'Rod Reiss'),
-  levi: C('里維', 'Levi'),
-  erwin: C('艾爾文', 'Erwin'),
-  yelena: C('耶蓮娜', 'Yelena'),
-  ony: C('歐良果彭', 'Onyankopon'),
-  marley: C('馬萊軍', 'Marleyan forces'),
-  porco: C('波爾柯', 'Porco'),
-  gabi: C('賈碧', 'Gabi'),
-  falco: C('法爾可', 'Falco'),
-  walltitans: C('城牆巨人', 'Wall Titans'),
-  alliance: C('聯盟', 'Alliance'),
-  volunteers: C('義勇兵', 'Volunteers'),
-  arminE: C('阿爾敏／超大型巨人', 'Armin / Colossal Titan'),
+  karl: C('卡爾·弗利茲', 'Karl Fritz', 'カール・フリッツ'),
+  grisha: C('古利夏', 'Grisha', 'グリシャ'),
+  keith: C('基斯', 'Keith Shadis', 'キース・シャーディス'),
+  kruger: C('庫爾迦', 'Eren Kruger', 'エレン・クルーガー'),
+  reiner: C('萊納', 'Reiner', 'ライナー'),
+  bert: C('貝爾托特', 'Bertholdt', 'ベルトルト'),
+  annie: C('亞妮', 'Annie', 'アニ'),
+  marcel: C('馬賽', 'Marcel', 'マルセル'),
+  ymir: C('尤彌爾', 'Ymir', 'ユミル'),
+  eren: C('艾連', 'Eren', 'エレン'),
+  armin: C('阿爾敏', 'Armin', 'アルミン'),
+  mikasa: C('米卡莎', 'Mikasa', 'ミカサ'),
+  fried: C('芙莉妲', 'Frieda Reiss', 'フリーダ・レイス'),
+  pure: C('純潔巨人', 'Pure Titans', '無垢の巨人'),
+  civ: C('難民', 'Refugees', '避難民'),
+  garrison: C('駐紮兵團', 'Garrison', '駐屯兵団'),
+  scouts: C('調查兵團', 'Survey Corps', '調査兵団'),
+  zeke: C('吉克', 'Zeke', 'ジーク'),
+  pieck: C('皮克', 'Pieck', 'ピーク'),
+  historia: C('希斯特莉亞', 'Historia', 'ヒストリア'),
+  rod: C('羅德·雷斯', 'Rod Reiss', 'ロッド・レイス'),
+  levi: C('里維', 'Levi', 'リヴァイ'),
+  erwin: C('艾爾文', 'Erwin', 'エルヴィン'),
+  yelena: C('耶蓮娜', 'Yelena', 'イェレナ'),
+  ony: C('歐良果彭', 'Onyankopon', 'オニャンコポン'),
+  marley: C('馬萊軍', 'Marleyan forces', 'マーレ軍'),
+  porco: C('波爾柯', 'Porco', 'ポルコ'),
+  gabi: C('賈碧', 'Gabi', 'ガビ'),
+  falco: C('法爾可', 'Falco', 'ファルコ'),
+  walltitans: C('城牆巨人', 'Wall Titans', '壁の巨人'),
+  alliance: C('聯盟', 'Alliance', '連合'),
+  volunteers: C('義勇兵', 'Volunteers', '義勇兵'),
+  arminE: C('阿爾敏／超大型巨人', 'Armin / Colossal Titan', 'アルミン／超大型巨人'),
 };
 // A route: who moves, how it is drawn (attack / defense / covert / repair / neutral), the path
 // (place names or [x, y]), when within the scene (0..1) and whether the story leaves it unconfirmed.
@@ -111,8 +111,8 @@ const SCENES = (() => {
         r('pure', 'attack', ['shigO', 'shigI', 'between'], 0.48, 1),
       ],
       marks: [
-        { point: 'shigO', kind: 'breach', at: 0.35, label: C('外城門', 'Outer gate') },
-        { point: 'shigI', kind: 'breach', at: 0.67, label: C('內城門', 'Inner gate') },
+        { point: 'shigO', kind: 'breach', at: 0.35, label: C('外城門', 'Outer gate', '外門') },
+        { point: 'shigI', kind: 'breach', at: 0.67, label: C('內城門', 'Inner gate', '内門') },
       ],
     },
     refugees: {
@@ -146,11 +146,11 @@ const SCENES = (() => {
     },
     'trost-attack': {
       routes: [r('bert', 'attack', ['between', 'trostO'], 0, 0.39), r('pure', 'attack', ['between', 'trostO', 'trost'], 0.3, 0.92), r('garrison', 'defense', ['roseLand', 'trostI', 'trost'], 0.12, 0.85)],
-      marks: [{ point: 'trostO', kind: 'breach', at: 0.4, label: C('托洛斯特外門', 'Trost outer gate') }],
+      marks: [{ point: 'trostO', kind: 'breach', at: 0.4, label: C('托洛斯特外門', 'Trost outer gate', 'トロスト区外門') }],
     },
     'trost-seal': {
       routes: [r('eren', 'repair', ['roseLand', 'trostI', 'trost', 'trostO'], 0.05, 0.75), { ...r('garrison', 'defense', ['roseLand', 'trostI', 'trost'], 0, 0.73), offset: [24, 0] }],
-      marks: [{ point: 'trostO', kind: 'repair', at: 0.76, label: C('巨石封門', 'Boulder seal') }],
+      marks: [{ point: 'trostO', kind: 'repair', at: 0.76, label: C('巨石封門', 'Boulder seal', '大岩で封鎖') }],
     },
     'annie-mp': { routes: [r('annie', 'covert', ['cadetCamp', 'ehrmich', at(86, 42), 'stohess'], 0, 0.94, true)], marks: [{ point: 'stohess', kind: 'infiltrate' }] },
     'female-forest': {
@@ -195,8 +195,8 @@ const SCENES = (() => {
         r('pieck', 'covert', ['zekeN', at(246, 112), at(300, 118)], 0.84, 1, true),
       ],
       marks: [
-        { point: 'shigO', kind: 'repair', at: 0.36, label: C('外城門硬質化', 'Outer gate hardened') },
-        { point: 'shigI', kind: 'repair', at: 0.55, label: C('內城門被獸之巨人擲石堵住', 'Inner gate blocked by the Beast Titan’s boulder') },
+        { point: 'shigO', kind: 'repair', at: 0.36, label: C('外城門硬質化', 'Outer gate hardened', '外門を硬質化') },
+        { point: 'shigI', kind: 'repair', at: 0.55, label: C('內城門被獸之巨人擲石堵住', 'Inner gate blocked by the Beast Titan’s boulder', '内門は獣の巨人の投石で塞がる') },
       ],
     },
     sea: { routes: [r('scouts', 'defense', ['shigI', 'shigO', 'outer', [528, 1140], 'krugerWall', 'shore'], 0, 0.93)], marks: [{ point: 'shore', kind: 'reveal' }] },

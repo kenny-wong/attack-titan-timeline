@@ -1841,6 +1841,7 @@ canvas.pop-key {
 
 /* ==== 2.1 theme: stone walls, ember red and regiment emblems ==== */
 :root {
+  --hero: url(assets/theme/hero.svg);
   --ember: #c8412f;
   --ember-hi: #e2674a;
   --moss: #2f4a3b;
@@ -1891,7 +1892,7 @@ body {
   right: 268px;
   width: 640px;
   z-index: -2;
-  background: url(assets/theme/hero.svg) right top / auto 196% no-repeat;
+  background: var(--hero) right top / auto 196% no-repeat;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
 }
@@ -2386,23 +2387,6 @@ body {
     background-position: 84% 0;
   }
 }
-/* the longer English title wraps on narrower desktops */
-@media (min-width: 1121px) and (max-width: 1500px) {
-  :lang(en) .masthead .hero h1 {
-    white-space: normal;
-    line-height: 1.12;
-    text-wrap: balance;
-    font-size: 22px;
-  }
-  :lang(en) .epigraph {
-    display: none;
-  }
-}
-@media (min-width: 1121px) {
-  :lang(en) .masthead::before {
-    right: 320px; /* the English buttons are wider */
-  }
-}
 /* the map is dragged, never selected */
 .map-panel .map-viewport,
 .map-panel .map-head,
@@ -2418,4 +2402,67 @@ body {
 }
 .map-viewport.panning {
   cursor: grabbing;
+}
+
+/* ==== 2.2: three languages ==== */
+.lang-switch {
+  display: inline-flex;
+  border: 1px solid #3c4c50;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #18232ad9;
+  flex: none;
+}
+.lang-switch .lang-btn {
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 8px 11px;
+  background: none;
+  color: #b9c6c2;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.lang-switch .lang-btn + .lang-btn {
+  border-left: 1px solid #3c4c50;
+}
+.lang-switch .lang-btn:hover {
+  background: #2a3940;
+}
+.lang-switch .lang-btn[aria-pressed='true'] {
+  background: linear-gradient(#e2c382, #b99357);
+  color: #1b1407;
+}
+:root:lang(ja) {
+  --display: 'Noto Serif JP', 'Yu Mincho', 'YuMincho', 'Hiragino Mincho ProN', 'MS PMincho', serif;
+}
+:lang(ja) body {
+  font-family: 'Yu Gothic UI', 'Hiragino Sans', 'Meiryo', system-ui, sans-serif;
+}
+/* On desktop the banner picture belongs to the title cell, so it always ends just before the year plate, whatever the language */
+@media (min-width: 1121px) {
+  .masthead::before {
+    display: none;
+  }
+  .masthead .hero > div:first-child {
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .masthead .hero > div:first-child::after {
+    content: '';
+    position: absolute;
+    top: -11px;
+    bottom: -11px;
+    right: -16px;
+    width: 640px;
+    max-width: calc(100% + 16px);
+    z-index: -1;
+    pointer-events: none;
+    background: var(--hero) right top / auto 196% no-repeat;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 38%, #000 94%, transparent);
+  }
 }
