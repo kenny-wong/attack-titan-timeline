@@ -68,7 +68,7 @@
     return { tree, conifer, giant, hill, peak: peak(false), snowPeak: peak(true) };
   }
 
-  function icon(g, kind) {
+  function icon(g, kind, pl) {
     const wallc = '#d9d1ba', roof = '#8c5038', dark = 'rgba(45,38,30,.75)';
     g.lineWidth = 0.35; g.strokeStyle = dark; g.lineJoin = 'round';
     const box = (x, y, w, h, f) => { g.fillStyle = f; g.fillRect(x, y, w, h); g.strokeRect(x, y, w, h); };
@@ -93,6 +93,24 @@
       g.strokeStyle = dark; g.lineWidth = 0.35;
       for (const x of [-6.5, 0.6]) { box(x, -5.2, 5, 3.6, wallc); tri([[x - 0.6, -5.2], [x + 2.5, -7.6], [x + 5.6, -5.2]], roof); }
       for (const [x, y] of [[-7.5, 8], [8, 6.5]]) { poly(g, [[x - 3, y], [x + 3, y], [x + 2, y + 1.6], [x - 2, y + 1.6]], '#7a5a3c'); g.stroke(); poly(g, [[x, y - 4.4], [x + 2.4, y - 0.6], [x, y - 0.6]], '#efe7d2'); g.stroke(); }
+    } else if (kind === 'town') {
+      // a new town: more houses, and a chimney for the new industry
+      ell(g, 0, 0.6, 9.5, 2, 'rgba(30,40,24,.28)');
+      for (const [x, k, rf] of [[-6.2, 0.95, roof], [-2.6, 1.3, '#5f6f7c'], [1.6, 1.05, roof], [5.2, 1.2, roof]]) { box(x - 1.5 * k, -2.4 * k, 3 * k, 2.4 * k, wallc); tri([[x - 2 * k, -2.4 * k], [x, -4.4 * k], [x + 2 * k, -2.4 * k]], rf); }
+      box(7.6, -7, 1.2, 7, '#9a8f84');
+      g.fillStyle = 'rgba(244,244,238,.8)'; g.beginPath(); g.arc(8.6, -8.4, 1.3, 0, 6.3); g.arc(10, -9.9, 1, 0, 6.3); g.fill();
+    } else if (kind === 'port') {
+      // warehouses and a crane on the shore, a pier and a steamer towards the sea (pl.sea points out to sea)
+      const sx = pl && pl.sea ? pl.sea[0] : 0, sy = pl && pl.sea ? pl.sea[1] : 1;
+      g.strokeStyle = '#6d5335'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(sx * 1.5, sy * 1.5); g.lineTo(sx * 11, sy * 11); g.stroke();
+      g.strokeStyle = dark; g.lineWidth = 0.35;
+      const bx = -sx * 5, by = -sy * 5;
+      for (const dx of [-3.4, 2.2]) { box(bx + dx - 2.4, by - 3.4, 4.8, 3.4, wallc); tri([[bx + dx - 3, by - 3.4], [bx + dx, by - 5.8], [bx + dx + 3, by - 3.4]], '#5f6f7c'); }
+      g.strokeStyle = '#3d3a36'; g.lineWidth = 0.6; g.beginPath(); g.moveTo(sx * 3, sy * 3); g.lineTo(sx * 3, sy * 3 - 6); g.lineTo(sx * 3 + 3.6, sy * 3 - 4.6); g.stroke();
+      g.strokeStyle = dark; g.lineWidth = 0.35;
+      const hx = sx * 13.5, hy = sy * 13.5;
+      poly(g, [[hx - 3.6, hy - 0.6], [hx + 3.6, hy - 0.6], [hx + 2.5, hy + 1.3], [hx - 2.5, hy + 1.3]], '#4d5b66'); g.stroke();
+      box(hx - 1.2, hy - 2.3, 2.2, 1.7, '#e3dcc6'); box(hx + 0.1, hy - 3.6, 0.8, 1.3, roof);
     } else if (kind === 'seawall') {
       ell(g, 0, 1.2, 21, 1.6, 'rgba(30,40,24,.26)');
       const gr = g.createLinearGradient(0, -5, 0, 0); gr.addColorStop(0, '#e6dfc9'); gr.addColorStop(1, '#a9a28c');

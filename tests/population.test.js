@@ -239,3 +239,15 @@ test('the crawling Titan drags itself from the south coast towards the Walls and
   assert.strictEqual(k.titan.total, 300);
   assert.strictEqual(k.titan.ragakoFixed || 0, 0);
 });
+
+test('after 857 more people are born and they settle the whole island, the land beyond the old Walls included', () => {
+  const before = pop.counts(T('ambassadors', 0.9)), after = pop.counts(T('rebuild', 1));
+  assert.ok(after.civ.total > before.civ.total * 1.5, 'people: ' + before.civ.total + ' -> ' + after.civ.total);
+  assert.ok((after.civ.outside || 0) >= (before.civ.outside || 0) + 40, 'beyond the old Walls: ' + (before.civ.outside || 0) + ' -> ' + after.civ.outside);
+  const settlers = pop.agents.filter((a) => a.settler);
+  for (const a of settlers) assert.strictEqual(pop.stateAt(a, T('ambassadors', 0.9), 0, {}).vis, 0); // nobody is born early
+  // they spread widely: in all four quarters of the island
+  const q = [0, 0, 0, 0];
+  for (const a of settlers.filter((x) => x.area0 === 'outside')) q[(a.home0[0] > World.C[0] ? 1 : 0) + (a.home0[1] > World.C[1] ? 2 : 0)]++;
+  for (const n of q) assert.ok(n >= 5, 'quarters: ' + q.join(' '));
+});

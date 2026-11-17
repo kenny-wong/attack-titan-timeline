@@ -314,7 +314,7 @@ const FACTION = {
 // panels of the event's main characters.
 const SCENE_ART = {
   founding: ['wall-sunset', '50% 30%'], marcel: ['ymir-titan', '70% 40%'], 'maria-fall': ['pure-titans', '50% 22%'], refugees: ['refugee-boats', '50% 45%'],
-  reclamation: ['refugee-boats', '40% 78%'], cadets: ['survey-corps', '50% 30%'], 'trost-seal': ['wall-sunset', '50% 62%'], rumbling: ['rumbling', '50% 35%'], alliance: ['alliance', '50% 55%'],
+  reclamation: ['refugee-boats', '40% 78%'], cadets: ['survey-corps', '50% 30%'], 'trost-seal': ['wall-sunset', '50% 62%'], rumbling: ['rumbling', '50% 35%'], alliance: ['alliance', '50% 55%'], rebuild: ['wall-sunset', '50% 70%'],
 };
 function renderArt(ev) {
   const el = $('#storyArt');
@@ -364,7 +364,11 @@ const PHONE = innerWidth < 760;
 const QUALITY = PHONE || (navigator.deviceMemory && navigator.deviceMemory <= 2) ? 'low' : 'high'; // phones get a lighter map and sprites
 const TERRAIN = Terrain.build(TERRAIN_GRID, World);
 TERRAIN.places.find((p) => p.id === 'harbor').sinceT = events.findIndex((e) => e.id === 'overseas'); // the harbour is built after 851
-const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
+// What is built later: railway lines grow between two moments of the story; new places appear at theirs.
+const storyT = ([id, p]) => events.findIndex((e) => e.id === id) + p;
+TERRAIN.rails = GROWTH.rails.map((rl) => ({ id: rl.id, geo: RouteGeo.build(rl.path, 1), T0: storyT(rl.from), T1: storyT(rl.to) }));
+for (const g of GROWTH.places) TERRAIN.places.push({ id: g.id, kind: g.kind, p: g.p, sea: g.sea, sinceT: storyT(g.at) });
+const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), settle: GROWTH.places.map((g) => g.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
 const STAGE = Stage.create($('#stage'), World, TERRAIN, POP, QUALITY);
 const MAX_SCALE = QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
@@ -1048,7 +1052,7 @@ function renderDayChip(light) {
   el.className = 'day-chip ' + key;
 }
 // Short scenes play faster than the rest (multiplies the chosen speed).
-const EVENT_PACE = { founding: 2.5, grisha: 2, rumbling: 0.6 }; // the Rumbling plays slower: there is a lot to watch
+const EVENT_PACE = { founding: 2.5, grisha: 2, rumbling: 0.6, rebuild: 0.6 }; // the Rumbling plays slower: there is a lot to watch
 $('#playBtn').addEventListener('click', () => {
   if (!S.playing && S.p >= 1) {
     const at = visible.indexOf(S.idx);

@@ -1,4 +1,4 @@
-/* Story text for the 28 events in Traditional Chinese, English and Japanese: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
+/* Story text for the 29 events in Traditional Chinese, English and Japanese: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
    The movement on the map (routes and marks) is in story.js. Scene labels are original editorial summaries, not dialogue. */
 const EVENT_TEXT = [
   {
@@ -2078,6 +2078,56 @@ const EVENT_TEXT = [
           zh: '和平使節',
           en: 'Peace envoy',
           ja: '和平大使',
+        },
+      ],
+    ],
+    delta: {},
+  },
+  {
+    id: 'rebuild',
+    year: '857+',
+    category: 'finale',
+    wall: 'outside',
+    place: 'mitras',
+    title: {
+      zh: '857年之後：帕拉迪島越過舊牆界線發展',
+      en: 'After 857: Paradis grows beyond the old Wall lines',
+      ja: '857年以降：かつての壁を越えて広がるパラディ島',
+    },
+    description: {
+      zh: '城牆同巨人都已消失。人口增長，居民離開舊牆界線，沿住鐵路同海岸建立新市鎮；新港口同鐵路將全島連接起來。',
+      en: 'The Walls and the Titans are gone. The population grows and people settle beyond the old Wall lines, in new towns along the railway and the coast. New ports and railway lines link the whole island.',
+      ja: '壁も巨人もなくなった。人口が増え、人々はかつての壁の外へ移り住み、鉄道や海岸沿いに新しい町を築く。新しい港と鉄道が島全体を結ぶ。',
+    },
+    outcome: {
+      zh: '再冇人需要越牆。呢一段係示意：原作只係約略交代島上其後嘅發展。',
+      en: 'Nobody has a Wall left to cross. This part is schematic: the story only hints at how the island grew afterwards.',
+      ja: 'もう越えるべき壁はない。この部分は概略であり、原作はその後の島の発展をわずかに描くだけである。',
+    },
+    beats: [
+      {
+        zh: '鐵路向四方延伸',
+        en: 'The railway spreads in every direction',
+        ja: '鉄道が四方へ延びる',
+      },
+      {
+        zh: '新港口同市鎮落成',
+        en: 'New ports and towns are built',
+        ja: '新しい港と町ができる',
+      },
+      {
+        zh: '居民遍佈全島',
+        en: 'People settle all over the island',
+        ja: '人々が島じゅうに広がる',
+      },
+    ],
+    characters: [
+      [
+        'civ',
+        {
+          zh: '定居全島',
+          en: 'Settle the whole island',
+          ja: '島じゅうに定住',
         },
       ],
     ],

@@ -309,7 +309,47 @@ const SCENES = (() => {
     },
     alliance: { routes: [r('alliance', 'defense', ['trostI', 'shigI', 'outer', 'harbor', 'harborSea'], 0, 1, true)], marks: [{ point: 'harbor', kind: 'defend' }] },
     ambassadors: { routes: [r('alliance', 'neutral', ['sea', 'harborSea', 'harbor'], 0, 0.95, true)], marks: [{ point: 'harbor', kind: 'reveal' }] },
+    rebuild: { routes: [], marks: [], frame: 'island' }, // what is built is in GROWTH below; the people are in population.js
   };
+})();
+// ---- What Paradis builds: railway lines and new places ----
+// Each has the event and scene progress at which it is begun and finished. The first line, from the harbour to Shiganshina,
+// is the one laid with the Volunteers before the war (851-854). Everything else belongs to the closing event and is schematic:
+// the story only hints at how the island grew afterwards.
+const GROWTH = (() => {
+  const { at, coastAt, district: D } = World;
+  const thru = (id, outward) => { const d = D(id), pts = [d.inner, d.centre, d.outer]; return outward ? pts : pts.reverse(); }; // a line through a district town
+  const port = (deg) => coastAt(deg, -5), seaward = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
+  const N2 = at(440, -90);
+  const rails = [
+    { id: 'harbour', from: ['overseas', 0.15], to: ['overseas', 0.9], path: [P.harbor, at(330, 100), P.outer, P.shigO] },
+    { id: 'south', from: ['rebuild', 0.02], to: ['rebuild', 0.26], path: [...thru('shig', false), ...thru('trost', false), ...thru('ehrmich', false), World.C] },
+    { id: 'north', from: ['rebuild', 0.1], to: ['rebuild', 0.5], path: [World.C, ...thru('orvud', true), ...thru('utopia', true), ...thru('mariaN', true), at(330, -90), N2, port(-90)] },
+    { id: 'east', from: ['rebuild', 0.14], to: ['rebuild', 0.46], path: [World.C, ...thru('stohess', true), ...thru('karanes', true), ...thru('holst', true), port(0)] },
+    { id: 'west', from: ['rebuild', 0.18], to: ['rebuild', 0.5], path: [World.C, ...thru('yarckel', true), ...thru('klorva', true), ...thru('quinta', true), port(180)] },
+    { id: 'south-east', from: ['rebuild', 0.36], to: ['rebuild', 0.74], path: [P.outer, at(305, 76), at(330, 62), at(430, 58), port(56)] },
+    { id: 'south-west', from: ['rebuild', 0.44], to: ['rebuild', 0.8], path: [P.outer, at(300, 112), at(320, 135), at(318, 158), D('quinta').outer] },
+    { id: 'north-east', from: ['rebuild', 0.5], to: ['rebuild', 0.86], path: [D('holst').outer, at(295, -20), at(318, -46), at(372, -72), N2] },
+    { id: 'north-west', from: ['rebuild', 0.54], to: ['rebuild', 0.9], path: [D('quinta').outer, at(300, -160), at(330, -132), at(400, -112), N2] },
+  ];
+  const places = [
+    { id: 'villageE', kind: 'village', p: at(215, -35), at: ['rebuild', 0.16] },
+    { id: 'villageSW', kind: 'village', p: at(215, 152), at: ['rebuild', 0.22] },
+    { id: 'villageW', kind: 'village', p: at(214, -150), at: ['rebuild', 0.28] },
+    { id: 'villageSE', kind: 'village', p: at(215, 24), at: ['rebuild', 0.34] },
+    { id: 'townN', kind: 'town', p: at(330, -90), at: ['rebuild', 0.38] },
+    { id: 'townN2', kind: 'town', p: N2, at: ['rebuild', 0.46] },
+    { id: 'portE', kind: 'port', p: port(0), sea: seaward(0), at: ['rebuild', 0.47] },
+    { id: 'portW', kind: 'port', p: port(180), sea: seaward(180), at: ['rebuild', 0.51] },
+    { id: 'portN', kind: 'port', p: port(-90), sea: seaward(-90), at: ['rebuild', 0.52] },
+    { id: 'townSE', kind: 'town', p: at(330, 62), at: ['rebuild', 0.56] },
+    { id: 'townSW', kind: 'town', p: at(320, 135), at: ['rebuild', 0.64] },
+    { id: 'townSE2', kind: 'town', p: at(430, 58), at: ['rebuild', 0.68] },
+    { id: 'townNE', kind: 'town', p: at(318, -46), at: ['rebuild', 0.72] },
+    { id: 'portSE', kind: 'port', p: port(56), sea: seaward(56), at: ['rebuild', 0.76] },
+    { id: 'townNW', kind: 'town', p: at(330, -132), at: ['rebuild', 0.8] },
+  ];
+  return { rails, places };
 })();
 // Time of day within an event: [progress, light] pairs, 1 = day and 0 = night. Events not listed are in daylight.
 // Titans do not move at night - except under the moon at Utgard, the anomaly the soldiers noticed.

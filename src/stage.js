@@ -213,7 +213,8 @@
         }
       }
       // places that appear during the story (the harbour)
-      for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { ctx.save(); ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(s, s); global.MapPainter.icon(ctx, pl.kind); ctx.restore(); }
+      for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { const k = pl.sinceT % 1 ? Math.min(1, (sc.T - pl.sinceT) / 0.03) : 1, grow = s * (0.35 + 0.65 * k * (2 - k)); ctx.save(); ctx.globalAlpha = k; ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(grow, grow); global.MapPainter.icon(ctx, pl.kind, pl); ctx.restore(); } // new buildings grow into place
+      drawRails(view, sc);
       if (sc.crowd) drawCrawlTrail(view, sc);
       drawTrample(view, sc.T);
       drawWalls(view, sc.walls, sc.T, sc.t);
@@ -264,10 +265,48 @@
       }
       ctx.globalAlpha = 1;
     }
+    // ---- Railways: each line is laid during the story, and a train runs on it once it is finished ----
+    const railDone = new Map();
+    function drawRails(view, sc) {
+      const rails = terrain.rails;
+      if (!rails) return;
+      const s = view.s, RG = global.RouteGeo, bed = Math.max(2, Math.min(7, 1.9 * s));
+      for (let i = 0; i < rails.length; i++) {
+        const rl = rails[i];
+        if (sc.T <= rl.T0) continue;
+        const f = Math.min(1, (sc.T - rl.T0) / (rl.T1 - rl.T0));
+        let path = f >= 1 ? railDone.get(rl) : null;
+        if (!path) { path = new Path2D(f >= 1 ? rl.geo.d : RG.slice(rl.geo.tab, f)); if (f >= 1) railDone.set(rl, path); }
+        ctx.save();
+        ctx.translate(vw / 2 - view.x * s, vh / 2 - view.y * s); ctx.scale(s, s);
+        ctx.lineCap = 'butt'; ctx.lineJoin = 'round';
+        ctx.strokeStyle = 'rgba(38,32,27,.9)'; ctx.lineWidth = bed / s; ctx.stroke(path); // the track bed
+        ctx.strokeStyle = '#efe8d4'; ctx.lineWidth = (bed * 0.46) / s; ctx.setLineDash([(bed * 1.25) / s, (bed * 1.25) / s]); ctx.stroke(path); ctx.setLineDash([]); // the sleepers, as on a map
+        ctx.restore();
+        if (f < 1) { // the railhead, where the building is going on
+          const q = RG.at(rl.geo.tab, f), x = (q.x - view.x) * s + vw / 2, y = (q.y - view.y) * s + vh / 2;
+          ctx.fillStyle = 'rgba(255,214,120,.9)'; ctx.beginPath(); ctx.arc(x, y, bed * 0.9, 0, 6.3); ctx.fill();
+          ctx.fillStyle = 'rgba(230,224,208,' + (0.35 + 0.25 * Math.sin(sc.t * 5)) + ')'; ctx.beginPath(); ctx.arc(x, y - bed, bed * 1.5, 0, 6.3); ctx.fill();
+          continue;
+        }
+        if (sc.reduced) continue;
+        // a train shuttling along the finished line
+        const L = rl.geo.total, w = (((sc.t * 46) / L + i * 0.37) % 2 + 2) % 2, u = w < 1 ? w : 2 - w, dir = w < 1 ? 1 : -1;
+        const len = Math.max(4.6 * s, 5.5), wid = Math.max(1.9 * s, 2.4);
+        for (let k = 2; k >= 0; k--) {
+          const q = RG.at(rl.geo.tab, Math.max(0, Math.min(1, u - (dir * k * (len / s + 0.6)) / L)));
+          ctx.save(); ctx.translate((q.x - view.x) * s + vw / 2, (q.y - view.y) * s + vh / 2); ctx.rotate(q.angle);
+          ctx.fillStyle = k === 0 ? '#26221f' : '#8c2f24'; ctx.fillRect(-len / 2, -wid / 2, len, wid);
+          if (k === 0) { ctx.fillStyle = '#d7b46a'; ctx.fillRect(dir > 0 ? len / 2 - len * 0.22 : -len / 2, -wid / 2, len * 0.22, wid); }
+          ctx.restore();
+        }
+      }
+    }
     // ---- The Rumbling: rows of Wall Titans in the Walls, the great circle they form, and the ground it tramples ----
     const RB = pop.rumble, RAD = Math.PI / 180, RWALLS = ['maria', 'rose', 'sina'];
     const GAP_R = R.maria + 36, GAP_HALF = 11.5; // until the circle is past the outermost districts it has a gap at each compass point: nobody walks through the towns
     let landPath = null;
+    const healT = pop.T('rebuild', 0);
     // Heads standing shoulder to shoulder: a dotted stroke along the current path.
     function headRow(hw, alpha) {
       const gap = hw * 1.22;
@@ -289,7 +328,7 @@
       ctx.beginPath(); ctx.arc(C[0], C[1], rho, 0, 6.2832); ctx.arc(C[0], C[1], R.sina, 0, 6.2832); ctx.clip('evenodd'); // between Wall Sina and the front
       ctx.beginPath(); ctx.rect(0, 0, World.W, World.H);
       for (const z of RB.zones) { ctx.moveTo(z.c[0] + z.r + 2, z.c[1]); ctx.arc(z.c[0], z.c[1], z.r + 2, 0, 6.2832); } // the towns and villages stay untouched
-      ctx.fillStyle = 'rgba(86,62,36,.24)'; ctx.fill('evenodd');
+      ctx.fillStyle = 'rgba(86,62,36,' + (0.24 * Math.max(0, Math.min(1, 1 - (T - healT) / 0.5))).toFixed(3) + ')'; ctx.fill('evenodd'); // it heals in the years after 857
       ctx.restore();
     }
     // The Walls turn out to be rows of Titans; as the front reaches each Wall its row steps off and joins the great circle.

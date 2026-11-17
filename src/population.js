@@ -229,6 +229,17 @@
     move(civD.shig, ['ambassadors', 0.1], ['ambassadors', 0.6], 'shig', { spread: 0.3, straight: true });
     move(back.filter((a) => a.area0 === 'maria').slice(0, Math.round(nc * 0.06)), ['ambassadors', 0.3], ['ambassadors', 1], 'outside', { spread: 0.5, straight: true, near: SHIG.beyond, radius: 80 }); // the Walls are gone
 
+    // After 857: more people are born, and they settle the whole island, the land beyond the old Wall lines included.
+    {
+      const settle = opts.settle || [];
+      const settlePull = (p) => { let w = 0.1; for (const c of settle) w += 0.75 * Math.exp(-dist(p, c) / 42); return Math.min(1, w); }; // likelier near the new towns and ports
+      const born = [...add('civ', Math.round(nc * 0.5), 'outside', { hidden: true, weight: settlePull }), ...add('civ', Math.round(nc * 0.2), 'maria', { hidden: true }), ...add('civ', Math.round(nc * 0.1), 'rose', { hidden: true })];
+      born.forEach((a) => (a.settler = true));
+      fade(born, ['rebuild', 0.1], ['rebuild', 0.96], 1, { spread: 0.9 });
+      const n0 = Math.round(nc * 0.09);
+      move(civRose.slice(n0, n0 + Math.round(nc * 0.06)), ['rebuild', 0.15], ['rebuild', 0.9], 'outside', { straight: true, weight: settlePull, spread: 0.7 });
+    }
+
     // ---- The Rumbling ----
     // Every Wall, and the half-round wall of every district, is a row of Wall Titans standing shoulder to shoulder.
     // They take the shortest way out: straight outward. Only a Titan whose straight way would run through a town or a

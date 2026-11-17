@@ -10,8 +10,8 @@ const region = (p) => World.regionOf(pt(p));
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const labelKeys = read('src/app.js').match(/const labels = \{([\s\S]*?)\n\};/)[1].match(/^\s+(\w+): C\(/gm).map((s) => s.trim().split(':')[0]);
 
-test('there are 28 events and every route and mark point exists', () => {
-  assert.strictEqual(E.length, 28);
+test('there are 29 events and every route and mark point exists', () => {
+  assert.strictEqual(E.length, 29);
   for (const e of E) {
     for (const r of e.routes) for (const p of r.path) assert.ok(pt(p) && isFinite(pt(p)[0]), `${e.id}: unknown point ${p}`);
     for (const m of e.marks) assert.ok(pt(m.point), `${e.id}: unknown mark point ${m.point}`);
@@ -205,4 +205,30 @@ test('key scenes belong to their events, have a caption and pictures, and show a
   const fall = c.KEY_SCENES['maria-fall'], marks = ev('maria-fall').marks;
   assert.strictEqual(fall[0].at, marks.find((m) => m.point === 'shigO').at);
   assert.strictEqual(fall[1].at, marks.find((m) => m.point === 'shigI').at);
+});
+
+test('after 857: railways stay on land, ports sit on the coast, and nothing new is built before its time', () => {
+  const G = c.GROWTH, Tof = ([id, p]) => E.findIndex((e) => e.id === id) + p;
+  assert.strictEqual(E.at(-1).id, 'rebuild');
+  assert.strictEqual(E.at(-1).frame, 'island');
+  for (const rl of G.rails) {
+    const geo = c.RouteGeo.build(rl.path, 1);
+    for (let i = 0; i <= 120; i++) { const q = c.RouteGeo.at(geo.tab, i / 120); assert.ok(World.onLand([q.x, q.y]), rl.id + ': the line runs into the sea'); }
+    assert.ok(Tof(rl.to) > Tof(rl.from));
+  }
+  // only the harbour line, laid with the Volunteers, is older than the closing event
+  assert.deepStrictEqual(G.rails.filter((rl) => rl.from[0] !== 'rebuild').map((rl) => rl.id).join(), 'harbour');
+  assert.strictEqual(G.rails[0].from[0], 'overseas');
+  const ids = new Set();
+  for (const g of G.places) {
+    assert.ok(!ids.has(g.id)); ids.add(g.id);
+    assert.strictEqual(g.at[0], 'rebuild', g.id + ' is built too early');
+    assert.ok(World.onLand(g.p), g.id + ' is in the sea');
+    if (g.kind === 'port') { assert.ok(World.coastDist(g.p) < 8, g.id + ' is not on the coast'); assert.ok(!World.onLand([g.p[0] + g.sea[0] * 16, g.p[1] + g.sea[1] * 16]), g.id + ': its pier does not reach the sea'); }
+    else assert.ok(World.coastDist(g.p) > 12, g.id + ' is too close to the shore');
+    for (const d of World.DISTRICTS) assert.ok(Math.hypot(g.p[0] - d.base[0], g.p[1] - d.base[1]) > d.r + 8, g.id + ' sits on ' + d.id);
+    // a new place stands on a railway line, or will: within reach of one
+    if (g.kind !== 'village') assert.ok(G.rails.some((rl) => rl.path.some((p) => Math.hypot(p[0] - g.p[0], p[1] - g.p[1]) < 1)), g.id + ' has no railway');
+  }
+  assert.ok(G.places.filter((g) => g.kind === 'port').length >= 3);
 });

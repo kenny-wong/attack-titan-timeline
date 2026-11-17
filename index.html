@@ -2987,7 +2987,7 @@ body {
 <div class="site">
   <div class="masthead">
   <header class="topbar">
-    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v2.7.0</span></div></div></div>
+    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v2.8.0</span></div></div></div>
     <div class="top-actions"><span class="spoiler" data-i18n="spoiler">全劇劇透</span><div class="lang-switch" id="langSwitch" role="group" aria-label="Language"><button type="button" class="lang-btn" data-lang="zh" lang="zh-Hant" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false">EN</button><button type="button" class="lang-btn" data-lang="ja" lang="ja" aria-pressed="false">日本語</button></div></div>
   </header>
   <div class="hero"><div><div class="eyebrow" data-i18n="kicker">三道城牆 · 114 年入侵及防衛史</div><h1 data-i18n="hero">進擊之巨人</h1><div class="epigraph" data-i18n="epigraph">那一天，人類想起了被巨人支配的恐懼。</div><p data-i18n="subtitle">拖動年份與事件進度，親眼睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重要路線。</p></div><div class="year-plate"><small data-i18n="year">故事年份</small><strong id="heroYear">743</strong></div></div>
@@ -2998,12 +2998,12 @@ body {
         <div class="map-head"><div><strong data-i18n="mapTitle">帕拉迪島 · 三道城牆</strong><div class="map-sub" data-i18n="mapHint">按地圖地標以選擇地區 · 進攻位置按劇情示意</div></div><div class="map-toolbar"><button type="button" class="pop-toggle" id="popToggle" aria-pressed="true">人群動態：開</button><button class="icon-btn" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><input type="range" class="zoom-slider" id="zoomSlider" min="0" max="100" value="0" aria-label="Zoom"/><button class="icon-btn" id="zoomIn" aria-label="Zoom in" title="Zoom in">＋</button><button type="button" class="pop-toggle auto-cam" id="zoomReset" aria-pressed="true">自動鏡頭：開</button></div></div>
         <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="dayChip" class="day-chip"></span><span id="mapInfo" data-i18n="schematic" aria-live="polite">非精確測繪地圖，虛線為示意</span><div class="cutin" id="cutin" hidden aria-hidden="true"></div></div>
         <div class="map-caption"><div class="map-legend"><span class="key"><i class="line" style="border-color:var(--red)"></i><span data-i18n="attack">進攻</span></span><span class="key"><i class="line" style="border-color:var(--blue)"></i><span data-i18n="defense">防守</span></span><span class="key"><i class="line dashed" style="border-color:var(--gold)"></i><span data-i18n="covert">潛入／未確定路線</span></span><span class="key"><i class="line" style="border-color:var(--green)"></i><span data-i18n="repair">修復</span></span><span class="key"><canvas class="pop-key" data-sprite="titan1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popTitans">純潔巨人</span></span><span class="key"><canvas class="pop-key" data-sprite="civ1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popCivilians">平民</span></span></div></div>
-        <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="6">6×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="27" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 28</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
+        <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="6">6×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="28" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 29</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
       </section>
       
     </div>
     <aside class="right">
-      <section class="panel story-card"><div class="story-art" id="storyArt"></div><div class="story-head"><div class="chapter"><span id="chapterTag">CHAPTER 01 / 28</span><span class="count" id="categoryBadge">REVEAL</span></div><h2 id="storyTitle"></h2><div class="meta" id="storyMeta"></div></div><div class="story-body"><div class="section-h" data-i18n="what">發生甚麼事</div><p id="storyDesc" class="story-text"></p><div id="storyOutcome" class="outcome"></div><div class="subsection" style="margin-top:19px"><span data-i18n="sequence">逐步事件 / 動畫</span><span style="color:#a2b3ab;font-size:10px" id="beatCount"></span></div><ol class="steps" id="stepList"></ol></div></section>
+      <section class="panel story-card"><div class="story-art" id="storyArt"></div><div class="story-head"><div class="chapter"><span id="chapterTag">CHAPTER 01 / 29</span><span class="count" id="categoryBadge">REVEAL</span></div><h2 id="storyTitle"></h2><div class="meta" id="storyMeta"></div></div><div class="story-body"><div class="section-h" data-i18n="what">發生甚麼事</div><p id="storyDesc" class="story-text"></p><div id="storyOutcome" class="outcome"></div><div class="subsection" style="margin-top:19px"><span data-i18n="sequence">逐步事件 / 動畫</span><span style="color:#a2b3ab;font-size:10px" id="beatCount"></span></div><ol class="steps" id="stepList"></ol></div></section>
       <section class="panel timeline-panel">
         <div class="timeline-top"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-key"/></svg><h2 data-i18n="timeline">CHRONOLOGY · 事件年表</h2></div>
         
@@ -3013,7 +3013,7 @@ body {
       </section>
       <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.7.0</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v2.8.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -3349,7 +3349,7 @@ const marcelMissionPortrait="data:image/webp;base64,UklGRmwtAABXRUJQVlA4IGAtAADQ
 
 </script>
 <script data-src="src/story-text.js">
-/* Story text for the 28 events in Traditional Chinese, English and Japanese: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
+/* Story text for the 29 events in Traditional Chinese, English and Japanese: titles, descriptions, outcomes, step texts, cast roles and the wall/gate state after each event.
    The movement on the map (routes and marks) is in story.js. Scene labels are original editorial summaries, not dialogue. */
 const EVENT_TEXT = [
   {
@@ -5434,6 +5434,56 @@ const EVENT_TEXT = [
     ],
     delta: {},
   },
+  {
+    id: 'rebuild',
+    year: '857+',
+    category: 'finale',
+    wall: 'outside',
+    place: 'mitras',
+    title: {
+      zh: '857年之後：帕拉迪島越過舊牆界線發展',
+      en: 'After 857: Paradis grows beyond the old Wall lines',
+      ja: '857年以降：かつての壁を越えて広がるパラディ島',
+    },
+    description: {
+      zh: '城牆同巨人都已消失。人口增長，居民離開舊牆界線，沿住鐵路同海岸建立新市鎮；新港口同鐵路將全島連接起來。',
+      en: 'The Walls and the Titans are gone. The population grows and people settle beyond the old Wall lines, in new towns along the railway and the coast. New ports and railway lines link the whole island.',
+      ja: '壁も巨人もなくなった。人口が増え、人々はかつての壁の外へ移り住み、鉄道や海岸沿いに新しい町を築く。新しい港と鉄道が島全体を結ぶ。',
+    },
+    outcome: {
+      zh: '再冇人需要越牆。呢一段係示意：原作只係約略交代島上其後嘅發展。',
+      en: 'Nobody has a Wall left to cross. This part is schematic: the story only hints at how the island grew afterwards.',
+      ja: 'もう越えるべき壁はない。この部分は概略であり、原作はその後の島の発展をわずかに描くだけである。',
+    },
+    beats: [
+      {
+        zh: '鐵路向四方延伸',
+        en: 'The railway spreads in every direction',
+        ja: '鉄道が四方へ延びる',
+      },
+      {
+        zh: '新港口同市鎮落成',
+        en: 'New ports and towns are built',
+        ja: '新しい港と町ができる',
+      },
+      {
+        zh: '居民遍佈全島',
+        en: 'People settle all over the island',
+        ja: '人々が島じゅうに広がる',
+      },
+    ],
+    characters: [
+      [
+        'civ',
+        {
+          zh: '定居全島',
+          en: 'Settle the whole island',
+          ja: '島じゅうに定住',
+        },
+      ],
+    ],
+    delta: {},
+  },
 ];
 
 </script>
@@ -5749,7 +5799,47 @@ const SCENES = (() => {
     },
     alliance: { routes: [r('alliance', 'defense', ['trostI', 'shigI', 'outer', 'harbor', 'harborSea'], 0, 1, true)], marks: [{ point: 'harbor', kind: 'defend' }] },
     ambassadors: { routes: [r('alliance', 'neutral', ['sea', 'harborSea', 'harbor'], 0, 0.95, true)], marks: [{ point: 'harbor', kind: 'reveal' }] },
+    rebuild: { routes: [], marks: [], frame: 'island' }, // what is built is in GROWTH below; the people are in population.js
   };
+})();
+// ---- What Paradis builds: railway lines and new places ----
+// Each has the event and scene progress at which it is begun and finished. The first line, from the harbour to Shiganshina,
+// is the one laid with the Volunteers before the war (851-854). Everything else belongs to the closing event and is schematic:
+// the story only hints at how the island grew afterwards.
+const GROWTH = (() => {
+  const { at, coastAt, district: D } = World;
+  const thru = (id, outward) => { const d = D(id), pts = [d.inner, d.centre, d.outer]; return outward ? pts : pts.reverse(); }; // a line through a district town
+  const port = (deg) => coastAt(deg, -5), seaward = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
+  const N2 = at(440, -90);
+  const rails = [
+    { id: 'harbour', from: ['overseas', 0.15], to: ['overseas', 0.9], path: [P.harbor, at(330, 100), P.outer, P.shigO] },
+    { id: 'south', from: ['rebuild', 0.02], to: ['rebuild', 0.26], path: [...thru('shig', false), ...thru('trost', false), ...thru('ehrmich', false), World.C] },
+    { id: 'north', from: ['rebuild', 0.1], to: ['rebuild', 0.5], path: [World.C, ...thru('orvud', true), ...thru('utopia', true), ...thru('mariaN', true), at(330, -90), N2, port(-90)] },
+    { id: 'east', from: ['rebuild', 0.14], to: ['rebuild', 0.46], path: [World.C, ...thru('stohess', true), ...thru('karanes', true), ...thru('holst', true), port(0)] },
+    { id: 'west', from: ['rebuild', 0.18], to: ['rebuild', 0.5], path: [World.C, ...thru('yarckel', true), ...thru('klorva', true), ...thru('quinta', true), port(180)] },
+    { id: 'south-east', from: ['rebuild', 0.36], to: ['rebuild', 0.74], path: [P.outer, at(305, 76), at(330, 62), at(430, 58), port(56)] },
+    { id: 'south-west', from: ['rebuild', 0.44], to: ['rebuild', 0.8], path: [P.outer, at(300, 112), at(320, 135), at(318, 158), D('quinta').outer] },
+    { id: 'north-east', from: ['rebuild', 0.5], to: ['rebuild', 0.86], path: [D('holst').outer, at(295, -20), at(318, -46), at(372, -72), N2] },
+    { id: 'north-west', from: ['rebuild', 0.54], to: ['rebuild', 0.9], path: [D('quinta').outer, at(300, -160), at(330, -132), at(400, -112), N2] },
+  ];
+  const places = [
+    { id: 'villageE', kind: 'village', p: at(215, -35), at: ['rebuild', 0.16] },
+    { id: 'villageSW', kind: 'village', p: at(215, 152), at: ['rebuild', 0.22] },
+    { id: 'villageW', kind: 'village', p: at(214, -150), at: ['rebuild', 0.28] },
+    { id: 'villageSE', kind: 'village', p: at(215, 24), at: ['rebuild', 0.34] },
+    { id: 'townN', kind: 'town', p: at(330, -90), at: ['rebuild', 0.38] },
+    { id: 'townN2', kind: 'town', p: N2, at: ['rebuild', 0.46] },
+    { id: 'portE', kind: 'port', p: port(0), sea: seaward(0), at: ['rebuild', 0.47] },
+    { id: 'portW', kind: 'port', p: port(180), sea: seaward(180), at: ['rebuild', 0.51] },
+    { id: 'portN', kind: 'port', p: port(-90), sea: seaward(-90), at: ['rebuild', 0.52] },
+    { id: 'townSE', kind: 'town', p: at(330, 62), at: ['rebuild', 0.56] },
+    { id: 'townSW', kind: 'town', p: at(320, 135), at: ['rebuild', 0.64] },
+    { id: 'townSE2', kind: 'town', p: at(430, 58), at: ['rebuild', 0.68] },
+    { id: 'townNE', kind: 'town', p: at(318, -46), at: ['rebuild', 0.72] },
+    { id: 'portSE', kind: 'port', p: port(56), sea: seaward(56), at: ['rebuild', 0.76] },
+    { id: 'townNW', kind: 'town', p: at(330, -132), at: ['rebuild', 0.8] },
+  ];
+  return { rails, places };
 })();
 // Time of day within an event: [progress, light] pairs, 1 = day and 0 = night. Events not listed are in daylight.
 // Titans do not move at night - except under the moon at Utgard, the anomaly the soldiers noticed.
@@ -6007,6 +6097,17 @@ function lightAt(idx, p) {
     move(civD.shig, ['zeke-scream', 0.3], ['zeke-scream', 0.75], 'maria', { flee: true, spread: 0.3 });
     move(civD.shig, ['ambassadors', 0.1], ['ambassadors', 0.6], 'shig', { spread: 0.3, straight: true });
     move(back.filter((a) => a.area0 === 'maria').slice(0, Math.round(nc * 0.06)), ['ambassadors', 0.3], ['ambassadors', 1], 'outside', { spread: 0.5, straight: true, near: SHIG.beyond, radius: 80 }); // the Walls are gone
+
+    // After 857: more people are born, and they settle the whole island, the land beyond the old Wall lines included.
+    {
+      const settle = opts.settle || [];
+      const settlePull = (p) => { let w = 0.1; for (const c of settle) w += 0.75 * Math.exp(-dist(p, c) / 42); return Math.min(1, w); }; // likelier near the new towns and ports
+      const born = [...add('civ', Math.round(nc * 0.5), 'outside', { hidden: true, weight: settlePull }), ...add('civ', Math.round(nc * 0.2), 'maria', { hidden: true }), ...add('civ', Math.round(nc * 0.1), 'rose', { hidden: true })];
+      born.forEach((a) => (a.settler = true));
+      fade(born, ['rebuild', 0.1], ['rebuild', 0.96], 1, { spread: 0.9 });
+      const n0 = Math.round(nc * 0.09);
+      move(civRose.slice(n0, n0 + Math.round(nc * 0.06)), ['rebuild', 0.15], ['rebuild', 0.9], 'outside', { straight: true, weight: settlePull, spread: 0.7 });
+    }
 
     // ---- The Rumbling ----
     // Every Wall, and the half-round wall of every district, is a row of Wall Titans standing shoulder to shoulder.
@@ -6663,7 +6764,7 @@ function lightAt(idx, p) {
     return { tree, conifer, giant, hill, peak: peak(false), snowPeak: peak(true) };
   }
 
-  function icon(g, kind) {
+  function icon(g, kind, pl) {
     const wallc = '#d9d1ba', roof = '#8c5038', dark = 'rgba(45,38,30,.75)';
     g.lineWidth = 0.35; g.strokeStyle = dark; g.lineJoin = 'round';
     const box = (x, y, w, h, f) => { g.fillStyle = f; g.fillRect(x, y, w, h); g.strokeRect(x, y, w, h); };
@@ -6688,6 +6789,24 @@ function lightAt(idx, p) {
       g.strokeStyle = dark; g.lineWidth = 0.35;
       for (const x of [-6.5, 0.6]) { box(x, -5.2, 5, 3.6, wallc); tri([[x - 0.6, -5.2], [x + 2.5, -7.6], [x + 5.6, -5.2]], roof); }
       for (const [x, y] of [[-7.5, 8], [8, 6.5]]) { poly(g, [[x - 3, y], [x + 3, y], [x + 2, y + 1.6], [x - 2, y + 1.6]], '#7a5a3c'); g.stroke(); poly(g, [[x, y - 4.4], [x + 2.4, y - 0.6], [x, y - 0.6]], '#efe7d2'); g.stroke(); }
+    } else if (kind === 'town') {
+      // a new town: more houses, and a chimney for the new industry
+      ell(g, 0, 0.6, 9.5, 2, 'rgba(30,40,24,.28)');
+      for (const [x, k, rf] of [[-6.2, 0.95, roof], [-2.6, 1.3, '#5f6f7c'], [1.6, 1.05, roof], [5.2, 1.2, roof]]) { box(x - 1.5 * k, -2.4 * k, 3 * k, 2.4 * k, wallc); tri([[x - 2 * k, -2.4 * k], [x, -4.4 * k], [x + 2 * k, -2.4 * k]], rf); }
+      box(7.6, -7, 1.2, 7, '#9a8f84');
+      g.fillStyle = 'rgba(244,244,238,.8)'; g.beginPath(); g.arc(8.6, -8.4, 1.3, 0, 6.3); g.arc(10, -9.9, 1, 0, 6.3); g.fill();
+    } else if (kind === 'port') {
+      // warehouses and a crane on the shore, a pier and a steamer towards the sea (pl.sea points out to sea)
+      const sx = pl && pl.sea ? pl.sea[0] : 0, sy = pl && pl.sea ? pl.sea[1] : 1;
+      g.strokeStyle = '#6d5335'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(sx * 1.5, sy * 1.5); g.lineTo(sx * 11, sy * 11); g.stroke();
+      g.strokeStyle = dark; g.lineWidth = 0.35;
+      const bx = -sx * 5, by = -sy * 5;
+      for (const dx of [-3.4, 2.2]) { box(bx + dx - 2.4, by - 3.4, 4.8, 3.4, wallc); tri([[bx + dx - 3, by - 3.4], [bx + dx, by - 5.8], [bx + dx + 3, by - 3.4]], '#5f6f7c'); }
+      g.strokeStyle = '#3d3a36'; g.lineWidth = 0.6; g.beginPath(); g.moveTo(sx * 3, sy * 3); g.lineTo(sx * 3, sy * 3 - 6); g.lineTo(sx * 3 + 3.6, sy * 3 - 4.6); g.stroke();
+      g.strokeStyle = dark; g.lineWidth = 0.35;
+      const hx = sx * 13.5, hy = sy * 13.5;
+      poly(g, [[hx - 3.6, hy - 0.6], [hx + 3.6, hy - 0.6], [hx + 2.5, hy + 1.3], [hx - 2.5, hy + 1.3]], '#4d5b66'); g.stroke();
+      box(hx - 1.2, hy - 2.3, 2.2, 1.7, '#e3dcc6'); box(hx + 0.1, hy - 3.6, 0.8, 1.3, roof);
     } else if (kind === 'seawall') {
       ell(g, 0, 1.2, 21, 1.6, 'rgba(30,40,24,.26)');
       const gr = g.createLinearGradient(0, -5, 0, 0); gr.addColorStop(0, '#e6dfc9'); gr.addColorStop(1, '#a9a28c');
@@ -6991,7 +7110,8 @@ function lightAt(idx, p) {
         }
       }
       // places that appear during the story (the harbour)
-      for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { ctx.save(); ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(s, s); global.MapPainter.icon(ctx, pl.kind); ctx.restore(); }
+      for (const pl of terrain.places) if (pl.sinceT !== undefined && sc.T >= pl.sinceT) { const k = pl.sinceT % 1 ? Math.min(1, (sc.T - pl.sinceT) / 0.03) : 1, grow = s * (0.35 + 0.65 * k * (2 - k)); ctx.save(); ctx.globalAlpha = k; ctx.translate((pl.p[0] - view.x) * s + vw / 2, (pl.p[1] - view.y) * s + vh / 2); ctx.scale(grow, grow); global.MapPainter.icon(ctx, pl.kind, pl); ctx.restore(); } // new buildings grow into place
+      drawRails(view, sc);
       if (sc.crowd) drawCrawlTrail(view, sc);
       drawTrample(view, sc.T);
       drawWalls(view, sc.walls, sc.T, sc.t);
@@ -7042,10 +7162,48 @@ function lightAt(idx, p) {
       }
       ctx.globalAlpha = 1;
     }
+    // ---- Railways: each line is laid during the story, and a train runs on it once it is finished ----
+    const railDone = new Map();
+    function drawRails(view, sc) {
+      const rails = terrain.rails;
+      if (!rails) return;
+      const s = view.s, RG = global.RouteGeo, bed = Math.max(2, Math.min(7, 1.9 * s));
+      for (let i = 0; i < rails.length; i++) {
+        const rl = rails[i];
+        if (sc.T <= rl.T0) continue;
+        const f = Math.min(1, (sc.T - rl.T0) / (rl.T1 - rl.T0));
+        let path = f >= 1 ? railDone.get(rl) : null;
+        if (!path) { path = new Path2D(f >= 1 ? rl.geo.d : RG.slice(rl.geo.tab, f)); if (f >= 1) railDone.set(rl, path); }
+        ctx.save();
+        ctx.translate(vw / 2 - view.x * s, vh / 2 - view.y * s); ctx.scale(s, s);
+        ctx.lineCap = 'butt'; ctx.lineJoin = 'round';
+        ctx.strokeStyle = 'rgba(38,32,27,.9)'; ctx.lineWidth = bed / s; ctx.stroke(path); // the track bed
+        ctx.strokeStyle = '#efe8d4'; ctx.lineWidth = (bed * 0.46) / s; ctx.setLineDash([(bed * 1.25) / s, (bed * 1.25) / s]); ctx.stroke(path); ctx.setLineDash([]); // the sleepers, as on a map
+        ctx.restore();
+        if (f < 1) { // the railhead, where the building is going on
+          const q = RG.at(rl.geo.tab, f), x = (q.x - view.x) * s + vw / 2, y = (q.y - view.y) * s + vh / 2;
+          ctx.fillStyle = 'rgba(255,214,120,.9)'; ctx.beginPath(); ctx.arc(x, y, bed * 0.9, 0, 6.3); ctx.fill();
+          ctx.fillStyle = 'rgba(230,224,208,' + (0.35 + 0.25 * Math.sin(sc.t * 5)) + ')'; ctx.beginPath(); ctx.arc(x, y - bed, bed * 1.5, 0, 6.3); ctx.fill();
+          continue;
+        }
+        if (sc.reduced) continue;
+        // a train shuttling along the finished line
+        const L = rl.geo.total, w = (((sc.t * 46) / L + i * 0.37) % 2 + 2) % 2, u = w < 1 ? w : 2 - w, dir = w < 1 ? 1 : -1;
+        const len = Math.max(4.6 * s, 5.5), wid = Math.max(1.9 * s, 2.4);
+        for (let k = 2; k >= 0; k--) {
+          const q = RG.at(rl.geo.tab, Math.max(0, Math.min(1, u - (dir * k * (len / s + 0.6)) / L)));
+          ctx.save(); ctx.translate((q.x - view.x) * s + vw / 2, (q.y - view.y) * s + vh / 2); ctx.rotate(q.angle);
+          ctx.fillStyle = k === 0 ? '#26221f' : '#8c2f24'; ctx.fillRect(-len / 2, -wid / 2, len, wid);
+          if (k === 0) { ctx.fillStyle = '#d7b46a'; ctx.fillRect(dir > 0 ? len / 2 - len * 0.22 : -len / 2, -wid / 2, len * 0.22, wid); }
+          ctx.restore();
+        }
+      }
+    }
     // ---- The Rumbling: rows of Wall Titans in the Walls, the great circle they form, and the ground it tramples ----
     const RB = pop.rumble, RAD = Math.PI / 180, RWALLS = ['maria', 'rose', 'sina'];
     const GAP_R = R.maria + 36, GAP_HALF = 11.5; // until the circle is past the outermost districts it has a gap at each compass point: nobody walks through the towns
     let landPath = null;
+    const healT = pop.T('rebuild', 0);
     // Heads standing shoulder to shoulder: a dotted stroke along the current path.
     function headRow(hw, alpha) {
       const gap = hw * 1.22;
@@ -7067,7 +7225,7 @@ function lightAt(idx, p) {
       ctx.beginPath(); ctx.arc(C[0], C[1], rho, 0, 6.2832); ctx.arc(C[0], C[1], R.sina, 0, 6.2832); ctx.clip('evenodd'); // between Wall Sina and the front
       ctx.beginPath(); ctx.rect(0, 0, World.W, World.H);
       for (const z of RB.zones) { ctx.moveTo(z.c[0] + z.r + 2, z.c[1]); ctx.arc(z.c[0], z.c[1], z.r + 2, 0, 6.2832); } // the towns and villages stay untouched
-      ctx.fillStyle = 'rgba(86,62,36,.24)'; ctx.fill('evenodd');
+      ctx.fillStyle = 'rgba(86,62,36,' + (0.24 * Math.max(0, Math.min(1, 1 - (T - healT) / 0.5))).toFixed(3) + ')'; ctx.fill('evenodd'); // it heals in the years after 857
       ctx.restore();
     }
     // The Walls turn out to be rows of Titans; as the front reaches each Wall its row steps off and joins the great circle.
@@ -7471,7 +7629,7 @@ const FACTION = {
 // panels of the event's main characters.
 const SCENE_ART = {
   founding: ['wall-sunset', '50% 30%'], marcel: ['ymir-titan', '70% 40%'], 'maria-fall': ['pure-titans', '50% 22%'], refugees: ['refugee-boats', '50% 45%'],
-  reclamation: ['refugee-boats', '40% 78%'], cadets: ['survey-corps', '50% 30%'], 'trost-seal': ['wall-sunset', '50% 62%'], rumbling: ['rumbling', '50% 35%'], alliance: ['alliance', '50% 55%'],
+  reclamation: ['refugee-boats', '40% 78%'], cadets: ['survey-corps', '50% 30%'], 'trost-seal': ['wall-sunset', '50% 62%'], rumbling: ['rumbling', '50% 35%'], alliance: ['alliance', '50% 55%'], rebuild: ['wall-sunset', '50% 70%'],
 };
 function renderArt(ev) {
   const el = $('#storyArt');
@@ -7521,7 +7679,11 @@ const PHONE = innerWidth < 760;
 const QUALITY = PHONE || (navigator.deviceMemory && navigator.deviceMemory <= 2) ? 'low' : 'high'; // phones get a lighter map and sprites
 const TERRAIN = Terrain.build(TERRAIN_GRID, World);
 TERRAIN.places.find((p) => p.id === 'harbor').sinceT = events.findIndex((e) => e.id === 'overseas'); // the harbour is built after 851
-const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
+// What is built later: railway lines grow between two moments of the story; new places appear at theirs.
+const storyT = ([id, p]) => events.findIndex((e) => e.id === id) + p;
+TERRAIN.rails = GROWTH.rails.map((rl) => ({ id: rl.id, geo: RouteGeo.build(rl.path, 1), T0: storyT(rl.from), T1: storyT(rl.to) }));
+for (const g of GROWTH.places) TERRAIN.places.push({ id: g.id, kind: g.kind, p: g.p, sea: g.sea, sinceT: storyT(g.at) });
+const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), settle: GROWTH.places.map((g) => g.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
 const STAGE = Stage.create($('#stage'), World, TERRAIN, POP, QUALITY);
 const MAX_SCALE = QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
@@ -8205,7 +8367,7 @@ function renderDayChip(light) {
   el.className = 'day-chip ' + key;
 }
 // Short scenes play faster than the rest (multiplies the chosen speed).
-const EVENT_PACE = { founding: 2.5, grisha: 2, rumbling: 0.6 }; // the Rumbling plays slower: there is a lot to watch
+const EVENT_PACE = { founding: 2.5, grisha: 2, rumbling: 0.6, rebuild: 0.6 }; // the Rumbling plays slower: there is a lot to watch
 $('#playBtn').addEventListener('click', () => {
   if (!S.playing && S.p >= 1) {
     const at = visible.indexOf(S.idx);
