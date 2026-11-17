@@ -1,6 +1,6 @@
 {
   "name": "attack-titan-timeline",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "private": true,
   "description": "Interactive bilingual timeline of who crossed the three Walls in Attack on Titan.",
   "scripts": {
