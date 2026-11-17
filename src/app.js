@@ -22,7 +22,6 @@ const TXT = {
     defense: '防守',
     covert: '潛入／未確定路線',
     repair: '修復',
-    schematic: '非精確測繪地圖，虛線為示意',
     timeline: 'CHRONOLOGY · 事件年表',
     play: '播放',
     pause: '暫停',
@@ -57,6 +56,10 @@ const TXT = {
     allWalls: '三道城牆',
     clickloc: '按地標聚焦相關事件',
     noRoute: '此事件重點係城牆狀態／情報，冇確定嘅移動路線',
+    mmTitan: '巨人',
+    mmCiv: '平民',
+    mmScout: '士兵',
+    mmCast: '角色',
     popTitans: '純潔巨人',
     popCivilians: '平民',
     popOn: '人群動態：開',
@@ -103,7 +106,6 @@ const TXT = {
     defense: 'Defense',
     covert: 'Undercover / uncertain path',
     repair: 'Recovery',
-    schematic: 'Illustrative map: dashed paths are approximations',
     timeline: 'CHRONOLOGY · ALL EVENTS',
     play: 'Play',
     pause: 'Pause',
@@ -138,6 +140,10 @@ const TXT = {
     allWalls: 'All three Walls',
     clickloc: 'Click a district to jump to related events',
     noRoute: 'This event concerns a reveal or wall status; no confirmed crossing route',
+    mmTitan: 'Titans',
+    mmCiv: 'Civilians',
+    mmScout: 'Soldiers',
+    mmCast: 'Characters',
     popTitans: 'Pure Titans',
     popCivilians: 'Civilians',
     popOn: 'Crowds: on',
@@ -184,7 +190,6 @@ const TXT = {
     defense: '防衛',
     covert: '潜入／未確定の経路',
     repair: '修復',
-    schematic: '概略図：破線はおおよその経路',
     timeline: 'CHRONOLOGY · 出来事年表',
     play: '再生',
     pause: '一時停止',
@@ -219,6 +224,10 @@ const TXT = {
     allWalls: '三つの壁すべて',
     clickloc: '区を選ぶと関連する出来事へ',
     noRoute: 'この出来事は正体の判明や壁の状態に関するもので、確認された越境経路はない',
+    mmTitan: '巨人',
+    mmCiv: '住民',
+    mmScout: '兵士',
+    mmCast: '人物',
     popTitans: '無垢の巨人',
     popCivilians: '住民',
     popOn: '群衆表示：オン',
@@ -531,7 +540,7 @@ function paintEvent() {
     const cards = $('#eventCards');
     cards.scrollTo({ left: tile.offsetLeft - (cards.clientWidth - tile.offsetWidth) / 2, behavior: 'auto' });
   }
-  $('#mapInfo').textContent = ev.id === 'female-forest' ? t.flareInfo : ev.id === 'rumbling' ? t.rumbleInfo : t.schematic;
+  setMapInfo(ev.id === 'female-forest' ? t.flareInfo : ev.id === 'rumbling' ? t.rumbleInfo : ''); // a note only where the event needs one
   renderSteps();
   renderWallStatus();
   renderCast();
@@ -598,12 +607,18 @@ function renderPopStatus(force) {
     el.appendChild(row);
   }
 }
+// The note over the map: shown only when there is something to say.
+function setMapInfo(text) {
+  const el = $('#mapInfo');
+  el.textContent = text || '';
+  el.hidden = !text;
+}
 // Tapping the lying Ragako Titan shows a short tag beside it and the full note in the map caption.
 let lyingTag = null, lyingTagTimer = 0;
 function showLyingTag(hit) {
   const t = TXT[S.lang];
   const crawl = !!hit.agent.crawl; // the crawling Titan has its own note
-  $('#mapInfo').textContent = crawl ? t.popCrawlInfo : t.popLyingInfo;
+  setMapInfo(crawl ? t.popCrawlInfo : t.popLyingInfo);
   if (lyingTag) lyingTag.el.remove();
   const g = labelBox($('#pins') || $('#mapSvg'), crawl ? t.popCrawlTag : t.popLyingTag, 'l', 'point-label');
   lyingTag = { el: g, p: [hit.x, hit.y], dx: 22, dy: -6 };
@@ -800,7 +815,7 @@ function chooseLocation(key, wall) {
   filterEvents();
   const i = visible.find((i) => events[i].place === key);
   if (i !== undefined) selectEvent(i);
-  $('#mapInfo').textContent = tr(labels[key]) + ' · ' + TXT[S.lang].clickloc;
+  setMapInfo(tr(labels[key]) + ' · ' + TXT[S.lang].clickloc);
 }
 function renderDynamic() {
   const st = wallState(S.idx);
@@ -870,6 +885,7 @@ function updateLang() {
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = TXT[S.lang][el.dataset.i18n];
   for (const b of document.querySelectorAll('#langSwitch [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang));
   renderAutoBtn();
+  renderMiniKey();
   paintEvent();
   buildFilters();
   renderPopToggle();
@@ -930,6 +946,88 @@ function userView(v) {
 function fitView() {
   if (CAM.auto) CAM.retarget = true;
 }
+// ---- Mini map: the whole island in the corner, with a coloured dot for everything that moves ----
+const MINI = { el: $('#miniMap'), cv: $('#miniCanvas'), tick: 0, drag: false, every: QUALITY === 'low' ? 10 : 6 };
+const MINI_COL = { titan: '#ff9b6b', wallTitan: '#ff4d4d', civ: '#7fd0ff', rider: '#8de5ba', boat: '#ffffff', cast: '#ffd24a' };
+const MINI_STILL = { reduced: true }; // dots do not need the wandering
+function renderMiniKey() {
+  const t = TXT[S.lang];
+  $('#miniKey').innerHTML = [['titan', t.mmTitan], ['civ', t.mmCiv], ['rider', t.mmScout], ['cast', t.mmCast]].map(([k, label]) => '<span><i style="background:' + MINI_COL[k] + '"></i>' + label + '</span>').join('');
+}
+function drawMini(T) {
+  const cv = MINI.cv, w = cv.clientWidth, h = cv.clientHeight;
+  if (!w) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const g = cv.getContext('2d'), k = cv.width / World.W, C0 = World.C;
+  g.clearRect(0, 0, cv.width, cv.height);
+  // the island
+  g.beginPath();
+  World.coast.forEach((p, i) => (i ? g.lineTo(p[0] * k, p[1] * k) : g.moveTo(p[0] * k, p[1] * k)));
+  g.closePath();
+  g.fillStyle = '#4a6a44'; g.fill();
+  g.strokeStyle = '#a9cdd2'; g.lineWidth = 0.8 * dpr; g.stroke();
+  // the railways laid so far
+  g.strokeStyle = 'rgba(24,20,18,.85)'; g.lineWidth = 0.9 * dpr;
+  for (const rl of TERRAIN.rails) {
+    if (T <= rl.T0) continue;
+    const f = Math.min(1, (T - rl.T0) / (rl.T1 - rl.T0));
+    g.beginPath();
+    for (let i = 0; i <= 14; i++) { const q = RouteGeo.at(rl.geo.tab, (f * i) / 14); if (i) g.lineTo(q.x * k, q.y * k); else g.moveTo(q.x * k, q.y * k); }
+    g.stroke();
+  }
+  // the three Walls: standing, lost or fallen
+  const st = wallState(S.idx);
+  g.lineWidth = dpr;
+  for (const name of ['maria', 'rose', 'sina']) {
+    const fallen = st.w[name] === 'collapsed';
+    g.strokeStyle = fallen ? 'rgba(236,229,207,.3)' : st.w[name] === 'lost' ? '#ff8a4a' : st.w[name] === 'breached' ? '#ffc169' : '#f1ead6';
+    g.setLineDash(fallen ? [2 * dpr, 3 * dpr] : []);
+    g.beginPath(); g.arc(C0[0] * k, C0[1] * k, World.R[name] * k, 0, 6.2832); g.stroke();
+  }
+  g.setLineDash([]);
+  // everything that moves: people first, Titans on top
+  if (S.pop) {
+    for (const pass of [0, 1]) {
+      for (const a of POP.agents) {
+        const big = a.kind === 'titan' || a.kind === 'wallTitan';
+        if (big !== (pass === 1) || T < a.t0 || T > a.t1) continue;
+        const s = POP.stateAt(a, T, 0, MINI_STILL);
+        if (s.vis < 0.3) continue;
+        const r = (big ? 1.2 : 1) * dpr;
+        g.fillStyle = MINI_COL[a.kind] || '#fff';
+        g.fillRect(s.x * k - r, s.y * k - r, r * 2, r * 2);
+      }
+    }
+  }
+  // the characters on their routes
+  for (const en of sceneRoutes) {
+    const R = en.R, f = (S.p - R.start) / Math.max(0.001, R.end - R.start);
+    if (f < 0 || (R.hideAt !== undefined && S.p >= R.hideAt) || R.who === 'pure' || R.who === 'civ') continue;
+    const q = RouteGeo.at(en.geo.tab, RouteGeo.ease(Math.max(0, Math.min(1, f))));
+    g.beginPath(); g.arc(q.x * k, q.y * k, 2.6 * dpr, 0, 6.2832);
+    g.fillStyle = MINI_COL.cast; g.fill();
+    g.strokeStyle = '#201a10'; g.lineWidth = 0.8 * dpr; g.stroke();
+  }
+  // the part of the map that is on screen
+  const v = CAM.view;
+  g.strokeStyle = '#ffffff'; g.lineWidth = 1.2 * dpr;
+  g.strokeRect((v.x - CAM.vw / 2 / v.s) * k, (v.y - CAM.vh / 2 / v.s) * k, (CAM.vw / v.s) * k, (CAM.vh / v.s) * k);
+}
+// Click or drag on the mini map to look there.
+function miniGo(ev) {
+  const r = MINI.cv.getBoundingClientRect();
+  userView({ x: ((ev.clientX - r.left) / r.width) * World.W, y: ((ev.clientY - r.top) / r.height) * World.H, s: CAM.view.s });
+}
+MINI.el.addEventListener('pointerdown', (ev) => {
+  ev.stopPropagation(); // not a drag of the big map
+  MINI.drag = true;
+  MINI.el.setPointerCapture(ev.pointerId);
+  miniGo(ev);
+});
+MINI.el.addEventListener('pointermove', (ev) => MINI.drag && miniGo(ev));
+for (const type of ['pointerup', 'pointercancel']) MINI.el.addEventListener(type, () => (MINI.drag = false));
+renderMiniKey();
 // ---- Key scenes: a cut-in card in the middle of the map, only while the story plays with the auto camera on ----
 const CUT = { el: $('#cutin'), active: null, until: 0, out: false, seen: -1 };
 const cutSrc = (pic) => (pic.startsWith('titan:') ? 'assets/scenes/titans/' : 'assets/scenes/') + pic.split(':')[1] + '.webp';
@@ -1023,6 +1121,7 @@ function animate(t) {
   const light = lightAt(S.idx, S.p), awake = events[S.idx].nightActive ? 1 : Math.max(0, Math.min(1, (light - 0.2) / 0.4)); // Titans stop at night, except at Utgard
   renderDayChip(light);
   STAGE.draw(CAM.view, { T: S.idx + S.p, t: t / 1000, dt, walls: wallState(S.idx), crowd: S.pop, reduced: REDUCED, light, awake, flares: flaresNow() });
+  if (MINI.tick++ % MINI.every === 0) drawMini(S.idx + S.p);
   requestAnimationFrame(animate);
 }
 // Signal flares of the long-range scouting formation (57th expedition): fired at set moments of the scene.

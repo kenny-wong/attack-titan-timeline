@@ -52,3 +52,10 @@ test('the language switch offers the three languages', () => {
   const html = read('src/index.template.html');
   for (const l of LANGS) assert.ok(html.includes(`data-lang="${l}"`), 'no button for ' + l);
 });
+
+test('the page has a mini map, and the illustrative-map note is gone', () => {
+  const html = read('src/index.template.html');
+  assert.ok(html.includes('id="miniMap"') && html.includes('id="miniCanvas"'));
+  assert.ok(!/data-i18n="schematic"/.test(html));
+  assert.ok(!/^\s+schematic:/m.test(app), 'the note text is still in the interface text');
+});
