@@ -80,3 +80,11 @@ test('the 845 Warriors land on the south-west coast and head east without doubli
   const u = [a1[0] - a0[0], a1[1] - a0[1]], v = [b1[0] - b0[0], b1[1] - b0[1]];
   assert.ok(u[0] * v[0] + u[1] * v[1] > 0, 'the onward route should not reverse the arrival direction');
 });
+
+test('the Fall of Maria starts where the 845 landing scene leaves the Warriors: at Shiganshina outer gate', () => {
+  for (const who of ['annie', 'bert', 'reiner']) {
+    const first = ev('maria-fall').routes.find((r) => r.who === who);
+    assert.strictEqual(first.path[0], 'outer', `${who} should start in front of the gate`);
+  }
+  assert.strictEqual(ev('marcel').routes.filter((r) => r.who === 'reiner').at(-1).path.at(-1), 'outer');
+});

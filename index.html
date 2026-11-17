@@ -128,7 +128,7 @@
       </section>
       <section class="panel status-panel"><div class="status-top"><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.2.1</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v1.2.2</span></div></div>
     </aside>
   </div>
 </div>
@@ -190,7 +190,7 @@ const events=[
   C('瑪利亞領土失守，居民向羅塞撤退。注意係城門被破壞，而唔係整個環狀牆身完全崩毀。','Maria territory is lost and residents retreat to Rose. The gates were breached; the entire circular Wall did not collapse.'),
   [C('亞妮引導純潔巨人','Annie draws Pure Titans towards the district'),C('貝爾托特破壞外城門','Bertholdt breaches the outer gate'),C('萊納撞破內城門','Reiner smashes the inner gate'),C('居民撤往羅塞之牆','Residents flee towards Wall Rose')],
   [['annie',C('女巨人：引導巨人','Female Titan: draws Titans')],['bert',C('超大型巨人：外城門','Colossal Titan: outer gate')],['reiner',C('鎧之巨人：內城門','Armored Titan: inner gate')],['pure',C('由缺口湧入','Enter through broken gates')],['civ',C('撤退','Evacuate')]],
-  [{...r('annie','attack',['shore','shigO'],0,.25),offset:[-17,6]},{...r('bert','attack',['outer','shigO'],.08,.34),offset:[17,7]},r('reiner','attack',['outer','shigO','shigI'],.26,.66),r('pure','attack',['shigO','shigI','between'],.48,1)],
+  [{...r('annie','attack',['outer',[226,490]],0,.22),offset:[-6,4]},r('pure','attack',[[150,488],[205,487],'outer'],.06,.44),{...r('bert','attack',['outer','shigO'],.08,.34),offset:[17,7]},r('reiner','attack',['outer','shigO','shigI'],.26,.66),r('pure','attack',['shigO','shigI','between'],.48,1)],
   [{point:'shigO',kind:'breach',at:.35,label:C('外城門','Outer gate')},{point:'shigI',kind:'breach',at:.67,label:C('內城門','Inner gate')}],
   {walls:{maria:'lost'},gates:{shigO:'broken',shigI:'broken'}}),
  e('refugees','845','infiltrate','rose','trost',C('戰士混入難民，進入羅塞','Warriors enter Rose disguised as refugees'),
