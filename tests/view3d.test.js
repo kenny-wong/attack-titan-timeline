@@ -49,6 +49,26 @@ test('view3d: hold keeps the ground you took hold of under the pointer (drag and
   assert.ok(near(b[0], 300, 0.01) && near(b[1], 400, 0.01), 'after zooming');
 });
 
+test('view3d: the view from straight above (bird-eye) looks straight down like a map, and dragging stays exact', () => {
+  const vw = 1000, vh = 800, view = { x: 500, y: 770, s: 2 };
+  V.cfg.bird = 1;
+  try {
+    const P = V.pose(view, vw, vh);
+    assert.ok(P.pitch > (85 * Math.PI) / 180 && P.pitch < Math.PI / 2, 'nearly overhead, never exactly (the camera needs an up direction)');
+    const n = V.project(P, 500, 670, 0), s = V.project(P, 500, 870, 0), e = V.project(P, 600, 770, 0);
+    assert.ok(Math.abs(n[0] - 500) < 0.01 && n[1] < 400 && s[1] > 400, 'north is up');
+    assert.ok(Math.abs(n[2] - s[2]) / s[2] < 0.08, 'near and far are drawn at almost one scale: ' + n[2].toFixed(3) + ' / ' + s[2].toFixed(3));
+    assert.ok(Math.abs((e[0] - 500) - 200) < 2 && Math.abs((s[1] - n[1]) - 400) < 6, 'a unit is the same length across and up the screen');
+    const tall = V.project(P, 500, 770, 17);
+    assert.ok(Math.abs(tall[1] - 400) < 2, 'a Wall hides almost nothing behind it');
+    const g = V.ground(P, 320, 610), back = V.project(P, g[0], g[1], 0);
+    assert.ok(Math.abs(back[0] - 320) < 1e-6 && Math.abs(back[1] - 610) < 1e-6);
+    const held = V.hold(view, vw, vh, [430, 900], 700, 200), q = V.project(V.pose(held, vw, vh), 430, 900, 0);
+    assert.ok(Math.abs(q[0] - 700) < 1e-6 && Math.abs(q[1] - 200) < 1e-6);
+  } finally { V.cfg.bird = 0; }
+  assert.ok(V.pose(view, vw, vh).pitch < (62 * Math.PI) / 180, 'and the tilted view is back');
+});
+
 test('view3d: a framed box is wholly on screen', () => {
   for (const box of [{ x0: 300, y0: 600, x1: 700, y1: 1000 }, { x0: 480, y0: 900, x1: 520, y1: 1300 }, { x0: 0, y0: 0, x1: 1100, y1: 1560 }]) {
     const pad = 40, s = V.fit(box, VW, VH, pad), P = V.pose({ x: (box.x0 + box.x1) / 2, y: (box.y0 + box.y1) / 2, s }, VW, VH);

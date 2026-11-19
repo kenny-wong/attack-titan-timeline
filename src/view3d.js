@@ -7,19 +7,20 @@
 (function (global) {
   'use strict';
   const RAD = Math.PI / 180;
-  const cfg = { fov: 30, pitchFar: 58, pitchNear: 34, sFar: 0.7, sNear: 4.2 };
+  const cfg = { fov: 30, pitchFar: 58, pitchNear: 34, sFar: 0.7, sNear: 4.2, bird: 0, pitchBird: 88 }; // bird: 0..1, how far the camera has swung up to look straight down like a map
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   // Camera pitch (radians below the horizon) for a scale: eased between the far and the near pitch, evenly per zoom step.
   function pitch(s) {
     const f = clamp(Math.log(s / cfg.sFar) / Math.log(cfg.sNear / cfg.sFar), 0, 1), e = f * f * (3 - 2 * f);
-    return (cfg.pitchFar + (cfg.pitchNear - cfg.pitchFar) * e) * RAD;
+    const p = cfg.pitchFar + (cfg.pitchNear - cfg.pitchFar) * e;
+    return (p + (cfg.pitchBird - p) * clamp(cfg.bird, 0, 1)) * RAD;
   }
   // Everything needed to project with a view: where the camera is and how it is turned.
   // yaw turns the camera round that point: 0 looks north, a positive yaw turns the picture clockwise.
   function pose(view, vw, vh, yaw = 0) {
     const ph = pitch(view.s), k = vh / (2 * Math.tan((cfg.fov / 2) * RAD)), d = k / view.s, sin = Math.sin(ph), cos = Math.cos(ph), cy = Math.cos(yaw), sy = Math.sin(yaw);
-    return { x: view.x, y: view.y, s: view.s, vw, vh, pitch: ph, sin, cos, k, d, yaw, cy, sy, cam: [view.x + d * cos * sy, d * sin, view.y + d * cos * cy], fov: cfg.fov };
+    return { x: view.x, y: view.y, s: view.s, vw, vh, pitch: ph, sin, cos, k, d, yaw, cy, sy, cam: [view.x + d * cos * sy, d * sin, view.y + d * cos * cy], fov: cfg.fov, bird: cfg.bird };
   }
   // World point (x, y, height h) -> [screen x, screen y, pixels per world unit at that depth]. The third value is <= 0 behind the camera.
   function project(P, x, y, h = 0, out = [0, 0, 0]) {

@@ -2937,6 +2937,37 @@ body {
 .map-viewport.is-3d #mapSvg {
   background: radial-gradient(ellipse at 50% 46%, transparent 52%, rgba(24, 30, 26, 0.3) 100%);
 }
+/* the bird's-eye switch: the 3D camera looks straight down, like a map */
+.bird-btn {
+  display: none;
+  position: absolute;
+  left: 12px;
+  top: 128px;
+  z-index: 6;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f4e3bd;
+  background: #0d1a20d9;
+  border: 1px solid #c9a45c99;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.map-viewport.is-3d .bird-btn {
+  display: block;
+}
+.bird-btn:hover,
+.bird-btn:focus-visible {
+  border-color: #f2d596;
+  background: #18282fd9;
+}
+.bird-btn[aria-pressed='true'] {
+  color: #14202a;
+  background: #d9b96f;
+  border-color: #f2d596;
+}
 /* the compass: shows which way is north when the map has been turned; click to face north again */
 .compass {
   display: none;

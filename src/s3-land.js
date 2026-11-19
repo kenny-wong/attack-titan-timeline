@@ -118,6 +118,8 @@
       const items = (layouts[pl.kind] || layouts.village)(pl), entry = { pl, items, wreck: pl.sinceT === undefined && outside(pl.p) };
       (pl.sinceT !== undefined || entry.wreck ? live : fixed).push(entry);
     }
+    // Ragako: the Titan that cannot move lies on the roof of a house, which has given way under it.
+    for (const a of pop.agents) if (a.roof) fixed.push({ pl: { p: a.home0 }, items: [['villageHut', 0, 0, a.roof.yaw, ctx.roof.k, ctx.roof.ky]] });
     // District towns: houses in rings inside each half-round wall, leaving the main street free.
     const townHouses = [];
     for (const d of DISTRICTS) {
@@ -157,7 +159,7 @@
     still.end();
     built.begin();
     for (const h of townHouses) pushProp(built, h[0], h[1], h[2], h[3], h[4], 0.92 + rnd() * 0.16);
-    for (const e of fixed) for (const [name, dx, dz, yaw, k] of e.items) pushProp(built, name, e.pl.p[0] + dx, e.pl.p[1] + dz, yaw, k);
+    for (const e of fixed) for (const [name, dx, dz, yaw, k, ky] of e.items) pushProp(built, name, e.pl.p[0] + dx, e.pl.p[1] + dz, yaw, k, ky ? 0.86 : 1, ky);
     built.end();
     scene.add(still.group, built.group);
     // Flattened forest: keep the standing trees' matrices and colours, and squash from them.

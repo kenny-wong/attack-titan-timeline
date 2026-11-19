@@ -2945,6 +2945,37 @@ body {
 .map-viewport.is-3d #mapSvg {
   background: radial-gradient(ellipse at 50% 46%, transparent 52%, rgba(24, 30, 26, 0.3) 100%);
 }
+/* the bird's-eye switch: the 3D camera looks straight down, like a map */
+.bird-btn {
+  display: none;
+  position: absolute;
+  left: 12px;
+  top: 128px;
+  z-index: 6;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f4e3bd;
+  background: #0d1a20d9;
+  border: 1px solid #c9a45c99;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.map-viewport.is-3d .bird-btn {
+  display: block;
+}
+.bird-btn:hover,
+.bird-btn:focus-visible {
+  border-color: #f2d596;
+  background: #18282fd9;
+}
+.bird-btn[aria-pressed='true'] {
+  color: #14202a;
+  background: #d9b96f;
+  border-color: #f2d596;
+}
 /* the compass: shows which way is north when the map has been turned; click to face north again */
 .compass {
   display: none;
@@ -3101,7 +3132,7 @@ body {
 <div class="site">
   <div class="masthead">
   <header class="topbar">
-    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v3.1.2</span></div></div></div>
+    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v3.2.0</span></div></div></div>
     <div class="top-actions"><span class="spoiler" data-i18n="spoiler">全劇劇透</span><div class="lang-switch" id="langSwitch" role="group" aria-label="Language"><button type="button" class="lang-btn" data-lang="zh" lang="zh-Hant" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false">EN</button><button type="button" class="lang-btn" data-lang="ja" lang="ja" aria-pressed="false">日本語</button></div></div>
   </header>
   <div class="hero"><div><div class="eyebrow" data-i18n="kicker">三道城牆 · 114 年入侵及防衛史</div><h1 data-i18n="hero">進擊之巨人</h1><div class="epigraph" data-i18n="epigraph">那一天，人類想起了被巨人支配的恐懼。</div><p data-i18n="subtitle">拖動年份與事件進度，親眼睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重要路線。</p></div><div class="year-plate"><small data-i18n="year">故事年份</small><strong id="heroYear">743</strong></div></div>
@@ -3110,7 +3141,7 @@ body {
     <div class="left">
       <section class="panel map-panel">
         <div class="map-head"><div><strong data-i18n="mapTitle">帕拉迪島 · 三道城牆</strong><div class="map-sub" data-i18n="mapHint">按地圖地標以選擇地區 · 進攻位置按劇情示意</div></div><div class="map-toolbar"><button type="button" class="pop-toggle" id="popToggle" aria-pressed="true">人群動態：開</button><button class="icon-btn" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><input type="range" class="zoom-slider" id="zoomSlider" min="0" max="100" value="0" aria-label="Zoom"/><button class="icon-btn" id="zoomIn" aria-label="Zoom in" title="Zoom in">＋</button><button type="button" class="pop-toggle auto-cam" id="zoomReset" aria-pressed="true">自動鏡頭：開</button></div></div>
-        <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="dayChip" class="day-chip"></span><button type="button" id="compass" class="compass" data-i18n-title="compass"><svg viewBox="-12 -12 24 24" aria-hidden="true"><g id="compassNeedle"><path d="M0 -9 L3.4 0 H-3.4 Z" class="n"/><path d="M0 9 L3.4 0 H-3.4 Z" class="s"/></g></svg></button><span id="mapInfo" aria-live="polite" hidden></span><div class="minimap" id="miniMap" aria-hidden="true"><canvas id="miniCanvas" width="150" height="213"></canvas><div class="mini-key" id="miniKey"></div></div><div class="cutin" id="cutin" hidden aria-hidden="true"></div></div>
+        <div class="map-viewport"><canvas id="stage" aria-hidden="true"></canvas><svg id="mapSvg" role="img" aria-label="Animated map of events in Attack on Titan"></svg><span id="dayChip" class="day-chip"></span><button type="button" id="birdBtn" class="bird-btn" data-i18n="birdBtn" data-i18n-title="bird" aria-pressed="false">鳥瞰</button><button type="button" id="compass" class="compass" data-i18n-title="compass"><svg viewBox="-12 -12 24 24" aria-hidden="true"><g id="compassNeedle"><path d="M0 -9 L3.4 0 H-3.4 Z" class="n"/><path d="M0 9 L3.4 0 H-3.4 Z" class="s"/></g></svg></button><span id="mapInfo" aria-live="polite" hidden></span><div class="minimap" id="miniMap" aria-hidden="true"><canvas id="miniCanvas" width="150" height="213"></canvas><div class="mini-key" id="miniKey"></div></div><div class="cutin" id="cutin" hidden aria-hidden="true"></div></div>
         <div class="map-caption"><div class="map-legend"><span class="key"><i class="line" style="border-color:var(--red)"></i><span data-i18n="attack">進攻</span></span><span class="key"><i class="line" style="border-color:var(--blue)"></i><span data-i18n="defense">防守</span></span><span class="key"><i class="line dashed" style="border-color:var(--gold)"></i><span data-i18n="covert">潛入／未確定路線</span></span><span class="key"><i class="line" style="border-color:var(--green)"></i><span data-i18n="repair">修復</span></span><span class="key"><canvas class="pop-key" data-sprite="titan1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popTitans">純潔巨人</span></span><span class="key"><canvas class="pop-key" data-sprite="civ1" width="30" height="34" aria-hidden="true"></canvas><span data-i18n="popCivilians">平民</span></span></div></div>
         <div class="transport-bar"><div class="tb-row"><div class="play-btns"><button class="transport" id="prevBtn" title="Previous event" aria-label="Previous event">⏮</button><button class="transport primary" id="playBtn" aria-label="Play or pause">▶ <span data-i18n="play">播放</span></button><button class="transport" id="nextBtn" title="Next event" aria-label="Next event">⏭</button><select class="speed" id="speedSel" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="6">6×</option></select></div><div class="tb-rail"><input id="eventSlider" class="rail" type="range" min="0" max="28" value="0" aria-label="Choose event"/><div class="progress-row"><span id="rangeStart">743</span><span id="eventCount">1 / 29</span><span id="rangeEnd">857</span></div></div></div><div class="scene-row"><span data-i18n="scene">本事件進度</span><input id="sceneSlider" type="range" min="0" max="100" value="0" aria-label="Scrub current event animation"/><span id="scenePct">0%</span><div class="beat-indicator" id="beatText"></div></div></div>
       </section>
@@ -3127,7 +3158,7 @@ body {
       </section>
       <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v3.1.2</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v3.2.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -7810,19 +7841,20 @@ void main() {
 (function (global) {
   'use strict';
   const RAD = Math.PI / 180;
-  const cfg = { fov: 30, pitchFar: 58, pitchNear: 34, sFar: 0.7, sNear: 4.2 };
+  const cfg = { fov: 30, pitchFar: 58, pitchNear: 34, sFar: 0.7, sNear: 4.2, bird: 0, pitchBird: 88 }; // bird: 0..1, how far the camera has swung up to look straight down like a map
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   // Camera pitch (radians below the horizon) for a scale: eased between the far and the near pitch, evenly per zoom step.
   function pitch(s) {
     const f = clamp(Math.log(s / cfg.sFar) / Math.log(cfg.sNear / cfg.sFar), 0, 1), e = f * f * (3 - 2 * f);
-    return (cfg.pitchFar + (cfg.pitchNear - cfg.pitchFar) * e) * RAD;
+    const p = cfg.pitchFar + (cfg.pitchNear - cfg.pitchFar) * e;
+    return (p + (cfg.pitchBird - p) * clamp(cfg.bird, 0, 1)) * RAD;
   }
   // Everything needed to project with a view: where the camera is and how it is turned.
   // yaw turns the camera round that point: 0 looks north, a positive yaw turns the picture clockwise.
   function pose(view, vw, vh, yaw = 0) {
     const ph = pitch(view.s), k = vh / (2 * Math.tan((cfg.fov / 2) * RAD)), d = k / view.s, sin = Math.sin(ph), cos = Math.cos(ph), cy = Math.cos(yaw), sy = Math.sin(yaw);
-    return { x: view.x, y: view.y, s: view.s, vw, vh, pitch: ph, sin, cos, k, d, yaw, cy, sy, cam: [view.x + d * cos * sy, d * sin, view.y + d * cos * cy], fov: cfg.fov };
+    return { x: view.x, y: view.y, s: view.s, vw, vh, pitch: ph, sin, cos, k, d, yaw, cy, sy, cam: [view.x + d * cos * sy, d * sin, view.y + d * cos * cy], fov: cfg.fov, bird: cfg.bird };
   }
   // World point (x, y, height h) -> [screen x, screen y, pixels per world unit at that depth]. The third value is <= 0 behind the camera.
   function project(P, x, y, h = 0, out = [0, 0, 0]) {
@@ -10679,7 +10711,7 @@ function lightAt(idx, p) {
     // 850: Ragako. Villagers become Titans inside Wall Rose; all but one walk to Utgard and die there.
     const rag = add('titan', 22, 'ragako', { hidden: true });
     fade(rag, ['ragako', 0.34], ['ragako', 0.56], 1, { spread: 0.4 });
-    Object.assign(rag[0], { still: true, lying: true, home0: at(161.5, 111.8) }); // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
+    Object.assign(rag[0], { still: true, lying: true, home0: at(164, 113.4), roof: { yaw: 0.6 } }); // it lies on the roof of a house it has crushed, at the edge of the village away from Wall Rose // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
     const ragGo = rag.slice(1);
     move(ragGo, ['ragako', 0.62], ['ragako', 1], 'utgard', { spread: 0.4 });
     kill(ragGo.slice(0, 17), ['utgard', 0.5], ['utgard', 0.96]);
@@ -12389,6 +12421,8 @@ function lightAt(idx, p) {
       const items = (layouts[pl.kind] || layouts.village)(pl), entry = { pl, items, wreck: pl.sinceT === undefined && outside(pl.p) };
       (pl.sinceT !== undefined || entry.wreck ? live : fixed).push(entry);
     }
+    // Ragako: the Titan that cannot move lies on the roof of a house, which has given way under it.
+    for (const a of pop.agents) if (a.roof) fixed.push({ pl: { p: a.home0 }, items: [['villageHut', 0, 0, a.roof.yaw, ctx.roof.k, ctx.roof.ky]] });
     // District towns: houses in rings inside each half-round wall, leaving the main street free.
     const townHouses = [];
     for (const d of DISTRICTS) {
@@ -12428,7 +12462,7 @@ function lightAt(idx, p) {
     still.end();
     built.begin();
     for (const h of townHouses) pushProp(built, h[0], h[1], h[2], h[3], h[4], 0.92 + rnd() * 0.16);
-    for (const e of fixed) for (const [name, dx, dz, yaw, k] of e.items) pushProp(built, name, e.pl.p[0] + dx, e.pl.p[1] + dz, yaw, k);
+    for (const e of fixed) for (const [name, dx, dz, yaw, k, ky] of e.items) pushProp(built, name, e.pl.p[0] + dx, e.pl.p[1] + dz, yaw, k, ky ? 0.86 : 1, ky);
     built.end();
     scene.add(still.group, built.group);
     // Flattened forest: keep the standing trees' matrices and colours, and squash from them.
@@ -13082,6 +13116,7 @@ function lightAt(idx, p) {
       batch.push('box', fm, 0, cx, cy - 0.21 * sy, cz + 0.4 * sz, 0.62 * sx, 0.15 * sy, 0.16 * sz, FACE.mouth[0], FACE.mouth[1], FACE.mouth[2]);
       batch.push('box', fm, 0, cx, cy - 0.21 * sy, cz + 0.42 * sz, 0.54 * sx, 0.07 * sy, 0.15 * sz, FACE.teeth[0], FACE.teeth[1], FACE.teeth[2]);
     }
+    const roofLift = props.villageHut.height * props.villageHut.unit * ctx.roof.ky * 0.8; // the top of the crushed house, a little sunk in
     const idleT = (rig, t, a) => (t + a.phase * 3) / ((rig.clips.idle && rig.clips.idle.period) || 4);
 
     function frame(sc, P, wallInfo) {
@@ -13126,7 +13161,7 @@ function lightAt(idx, p) {
         d.speed += ((dt > 0 ? moved / dt : 0) - d.speed) * Math.min(1, dt * 6);
         const walking = d.speed > 0.35 && !o.reduced;
         // facing: the way it walks; a reaching Titan faces its prey; a Wall Titan in its Wall faces outwards
-        let want = d.yaw;
+        let want = a.roof ? a.roof.yaw : d.yaw;
         if (a.rumble && !(s.marching && moved > 0.004)) want = Math.atan2(Math.cos(a.rumble.th0 * RAD), Math.sin(a.rumble.th0 * RAD));
         else if (a.crawl) { const q = a.crawl.at(Tl + 0.01), q0 = a.crawl.at(Tl); if (Math.hypot(q[0] - q0[0], q[1] - q0[1]) > 1e-5) want = Math.atan2(q[0] - q0[0], q[1] - q0[1]); }
         else if (s.eat && look) want = Math.atan2(look.x - x, look.y - y);
@@ -13137,7 +13172,7 @@ function lightAt(idx, p) {
         d.w += ((walking ? 1 : 0) - d.w) * Math.min(1, dt * 7);
         d.reach += ((reaching && !walking ? 1 : 0) - d.reach) * Math.min(1, dt * 3);
         // on screen?
-        const gy = a.kind === 'boat' ? Math.max(0.2, hAt(x, y)) : a.kind === 'wallTitan' ? wade(x, y) : hAt(x, y);
+        const gy = (a.kind === 'boat' ? Math.max(0.2, hAt(x, y)) : a.kind === 'wallTitan' ? wade(x, y) : hAt(x, y)) + (a.roof ? roofLift : 0); // the Ragako Titan lies on a roof
         d.h = gy;
         V.project(P, x, y, gy, pr);
         const big = a.kind === 'wallTitan' ? 30 : 16;
@@ -13323,7 +13358,7 @@ function lightAt(idx, p) {
       r.unit = size / (axis === 'z' ? hi[2] - lo[2] : r.height);
     }
     const flatAt = World.at(World.R.maria, 45);
-    const ctx = { T, scene, renderer, World, terrain, relief, pop, Q, D, U, rigs, props, geos: S3.unitGeometries(Q.detail), geosSmall: S3.unitGeometries('tiny'), geosBuild: S3.unitGeometries('build'), wallH: WALL_H, wallT: WALL_T, wallBase: relief.land(flatAt[0], flatAt[1]) - 0.05, gateW: 5, gateH: 7.6, wallTitanSink: 10 * (WALL_H / 50), crowdOn: true, shadowsOn: Q.shadow > 0 };
+    const ctx = { T, scene, renderer, World, terrain, relief, pop, Q, D, U, rigs, props, geos: S3.unitGeometries(Q.detail), geosSmall: S3.unitGeometries('tiny'), geosBuild: S3.unitGeometries('build'), wallH: WALL_H, wallT: WALL_T, wallBase: relief.land(flatAt[0], flatAt[1]) - 0.05, gateW: 5, gateH: 7.6, wallTitanSink: 10 * (WALL_H / 50), roof: { k: 1.3, ky: 0.6 }, crowdOn: true, shadowsOn: Q.shadow > 0 };
 
     // ---- light ----
     const L = D.light, dayC = { sun: S3.col(L.day.sun), sky: S3.col(L.day.sky), ground: S3.col(L.day.ground), fog: S3.col(L.day.fog) }, nightC = { sun: S3.col(L.night.sun), sky: S3.col(L.night.sky), ground: S3.col(L.night.ground), fog: S3.col(L.night.fog) };
@@ -13352,7 +13387,7 @@ function lightAt(idx, p) {
       // day and night
       sun.color.copy(nightC.sun).lerp(dayC.sun, day); sun.intensity = (L.night.sunIntensity + (L.day.sunIntensity - L.night.sunIntensity) * day) * GAIN;
       hemi.color.copy(nightC.sky).lerp(dayC.sky, day); hemi.groundColor.copy(nightC.ground).lerp(dayC.ground, day); hemi.intensity = (L.night.hemiIntensity + (L.day.hemiIntensity - L.night.hemiIntensity) * day) * GAIN * 1.15;
-      scene.fog.color.copy(nightC.fog).lerp(dayC.fog, day); scene.fog.near = P.d * 1.15; scene.fog.far = P.d * 4.2;
+      scene.fog.color.copy(nightC.fog).lerp(dayC.fog, day); scene.fog.near = Math.max(150, P.d * 1.15); scene.fog.far = Math.max(620, P.d * 4.2); // zoomed right in, the haze keeps its distance
       renderer.setClearColor(scene.fog.color);
       sunDir.copy(nightDir).lerp(dayDir, day).normalize();
       sun.target.position.set(view.x, 0, view.y); sun.position.copy(sun.target.position).addScaledVector(sunDir, 2200);
@@ -13419,6 +13454,8 @@ const TXT = {
     mapHint: '滾輪或雙指縮放 · 拖動地圖 · 播放時鏡頭自動跟隨',
     mapHint3d: '滾輪或雙指縮放 · 拖動地圖 · 右鍵拖動或雙指扭轉可轉動視角 · 播放時鏡頭自動跟隨',
     compass: '指北針：按一下面向北方（右鍵拖動或雙指扭轉可轉動地圖）',
+    birdBtn: '鳥瞰',
+    bird: '鳥瞰：鏡頭由正上方向下望，好似睇地圖；再按一下返回斜望',
     attack: '進攻',
     defense: '防守',
     covert: '潛入／未確定路線',
@@ -13506,6 +13543,8 @@ const TXT = {
     mapHint: 'Scroll or pinch to zoom · drag to pan · the camera follows during playback',
     mapHint3d: 'Scroll or pinch to zoom · drag to pan · right-drag or twist with two fingers to turn · the camera follows during playback',
     compass: 'Compass: click to face north (right-drag or twist with two fingers to turn the map)',
+    birdBtn: 'Bird’s eye',
+    bird: 'Bird’s-eye view: look straight down, like a map; click again for the tilted view',
     attack: 'Attack',
     defense: 'Defense',
     covert: 'Undercover / uncertain path',
@@ -13595,6 +13634,8 @@ const TXT = {
     mapHint: 'ホイールやピンチで拡大縮小 · ドラッグで移動 · 再生中はカメラが自動で追う',
     mapHint3d: 'ホイールやピンチで拡大縮小 · ドラッグで移動 · 右ドラッグや2本指のひねりで回転 · 再生中はカメラが自動で追う',
     compass: 'コンパス：クリックで北向きに戻す（右ドラッグや2本指のひねりで地図を回転）',
+    birdBtn: '俯瞰',
+    bird: '俯瞰：地図のように真上から見下ろす。もう一度押すと斜めの視点に戻る',
     attack: '侵攻',
     defense: '防衛',
     covert: '潜入／未確定の経路',
@@ -13902,7 +13943,7 @@ const IS3D = !!STAGE.is3d;
 const PROJ = IS3D ? View3D : View3D.flat; // how world points reach the screen: through the tilted camera, or straight down
 const groundH = IS3D ? RELIEF.land : () => 0;
 $('.map-viewport').classList.toggle('is-3d', IS3D);
-const MAX_SCALE = IS3D ? (QUALITY === 'low' ? 5 : 9) : QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
+const MAX_SCALE = IS3D ? (QUALITY === 'low' ? 11 : 22) : QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit (3D: a person stands about 70 px tall on a computer)
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
 const FEED_MAX = PHONE ? 3.2 : 4.8; // ... except to show people being caught by Titans
 // view = what is shown now; target = where the camera is easing to; auto = the camera follows the story.
@@ -13918,12 +13959,20 @@ const CAM = {
   pose: null,
   yaw: 0,
   yawTo: null,
-}; // yaw: the 3D camera turned away from north (radians)
+  bird: 0,
+}; // yaw: the 3D camera turned away from north (radians); bird: 1 = looking straight down like a map
 // The camera's pose for the current view (worked out once per change of view).
 const pose = () => {
   const v = CAM.view,
     q = CAM.pose;
-  return q && q.x === v.x && q.y === v.y && q.s === v.s && q.vw === CAM.vw && q.vh === CAM.vh && (q.yaw || 0) === CAM.yaw
+  return q &&
+    q.x === v.x &&
+    q.y === v.y &&
+    q.s === v.s &&
+    q.vw === CAM.vw &&
+    q.vh === CAM.vh &&
+    (q.yaw || 0) === CAM.yaw &&
+    (q.bird || 0) === (IS3D ? View3D.cfg.bird : 0)
     ? q
     : (CAM.pose = PROJ.pose(v, CAM.vw, CAM.vh, CAM.yaw));
 };
@@ -14881,6 +14930,12 @@ function animate(t) {
     if (n.done) CAM.target = null;
     CAM.moved = true;
   }
+  if (IS3D && View3D.cfg.bird !== CAM.bird) {
+    // the camera swings up to the bird's-eye view, or back down
+    const b = View3D.cfg.bird + (CAM.bird - View3D.cfg.bird) * Math.min(1, dt * 5);
+    View3D.cfg.bird = REDUCED || Math.abs(CAM.bird - b) < 0.004 ? CAM.bird : b;
+    CAM.moved = true;
+  }
   if (CAM.yaw && (CAM.auto || CAM.yawTo !== null)) {
     // the story's camera looks north: ease back to it
     CAM.yaw = REDUCED || Math.abs(CAM.yaw) < 0.004 ? 0 : CAM.yaw * Math.exp(-dt * 4);
@@ -15053,6 +15108,20 @@ $('#zoomReset').onclick = () => {
   if (CAM.auto) CAM.target = null; // switching off leaves the view where it is
   setAuto(!CAM.auto);
 };
+// Bird's-eye view: the 3D camera looks straight down, like a map. Remembered on this device.
+function setBird(on, now) {
+  CAM.bird = on ? 1 : 0;
+  if (now) View3D.cfg.bird = CAM.bird;
+  $('#birdBtn').setAttribute('aria-pressed', String(!!on));
+  CAM.moved = true;
+  try {
+    localStorage.setItem('aot-walls:bird:v1', on ? 'on' : 'off');
+  } catch (e) {}
+}
+$('#birdBtn').onclick = () => setBird(!CAM.bird);
+try {
+  if (IS3D && localStorage.getItem('aot-walls:bird:v1') === 'on') setBird(true, true);
+} catch (e) {}
 $('#compass').onclick = () => {
   CAM.yawTo = 0;
   CAM.moved = true;

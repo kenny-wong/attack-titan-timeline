@@ -47,7 +47,7 @@
       r.unit = size / (axis === 'z' ? hi[2] - lo[2] : r.height);
     }
     const flatAt = World.at(World.R.maria, 45);
-    const ctx = { T, scene, renderer, World, terrain, relief, pop, Q, D, U, rigs, props, geos: S3.unitGeometries(Q.detail), geosSmall: S3.unitGeometries('tiny'), geosBuild: S3.unitGeometries('build'), wallH: WALL_H, wallT: WALL_T, wallBase: relief.land(flatAt[0], flatAt[1]) - 0.05, gateW: 5, gateH: 7.6, wallTitanSink: 10 * (WALL_H / 50), crowdOn: true, shadowsOn: Q.shadow > 0 };
+    const ctx = { T, scene, renderer, World, terrain, relief, pop, Q, D, U, rigs, props, geos: S3.unitGeometries(Q.detail), geosSmall: S3.unitGeometries('tiny'), geosBuild: S3.unitGeometries('build'), wallH: WALL_H, wallT: WALL_T, wallBase: relief.land(flatAt[0], flatAt[1]) - 0.05, gateW: 5, gateH: 7.6, wallTitanSink: 10 * (WALL_H / 50), roof: { k: 1.3, ky: 0.6 }, crowdOn: true, shadowsOn: Q.shadow > 0 };
 
     // ---- light ----
     const L = D.light, dayC = { sun: S3.col(L.day.sun), sky: S3.col(L.day.sky), ground: S3.col(L.day.ground), fog: S3.col(L.day.fog) }, nightC = { sun: S3.col(L.night.sun), sky: S3.col(L.night.sky), ground: S3.col(L.night.ground), fog: S3.col(L.night.fog) };
@@ -76,7 +76,7 @@
       // day and night
       sun.color.copy(nightC.sun).lerp(dayC.sun, day); sun.intensity = (L.night.sunIntensity + (L.day.sunIntensity - L.night.sunIntensity) * day) * GAIN;
       hemi.color.copy(nightC.sky).lerp(dayC.sky, day); hemi.groundColor.copy(nightC.ground).lerp(dayC.ground, day); hemi.intensity = (L.night.hemiIntensity + (L.day.hemiIntensity - L.night.hemiIntensity) * day) * GAIN * 1.15;
-      scene.fog.color.copy(nightC.fog).lerp(dayC.fog, day); scene.fog.near = P.d * 1.15; scene.fog.far = P.d * 4.2;
+      scene.fog.color.copy(nightC.fog).lerp(dayC.fog, day); scene.fog.near = Math.max(150, P.d * 1.15); scene.fog.far = Math.max(620, P.d * 4.2); // zoomed right in, the haze keeps its distance
       renderer.setClearColor(scene.fog.color);
       sunDir.copy(nightDir).lerp(dayDir, day).normalize();
       sun.target.position.set(view.x, 0, view.y); sun.position.copy(sun.target.position).addScaledVector(sunDir, 2200);

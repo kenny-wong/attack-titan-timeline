@@ -20,6 +20,8 @@ const TXT = {
     mapHint: '滾輪或雙指縮放 · 拖動地圖 · 播放時鏡頭自動跟隨',
     mapHint3d: '滾輪或雙指縮放 · 拖動地圖 · 右鍵拖動或雙指扭轉可轉動視角 · 播放時鏡頭自動跟隨',
     compass: '指北針：按一下面向北方（右鍵拖動或雙指扭轉可轉動地圖）',
+    birdBtn: '鳥瞰',
+    bird: '鳥瞰：鏡頭由正上方向下望，好似睇地圖；再按一下返回斜望',
     attack: '進攻',
     defense: '防守',
     covert: '潛入／未確定路線',
@@ -107,6 +109,8 @@ const TXT = {
     mapHint: 'Scroll or pinch to zoom · drag to pan · the camera follows during playback',
     mapHint3d: 'Scroll or pinch to zoom · drag to pan · right-drag or twist with two fingers to turn · the camera follows during playback',
     compass: 'Compass: click to face north (right-drag or twist with two fingers to turn the map)',
+    birdBtn: 'Bird’s eye',
+    bird: 'Bird’s-eye view: look straight down, like a map; click again for the tilted view',
     attack: 'Attack',
     defense: 'Defense',
     covert: 'Undercover / uncertain path',
@@ -196,6 +200,8 @@ const TXT = {
     mapHint: 'ホイールやピンチで拡大縮小 · ドラッグで移動 · 再生中はカメラが自動で追う',
     mapHint3d: 'ホイールやピンチで拡大縮小 · ドラッグで移動 · 右ドラッグや2本指のひねりで回転 · 再生中はカメラが自動で追う',
     compass: 'コンパス：クリックで北向きに戻す（右ドラッグや2本指のひねりで地図を回転）',
+    birdBtn: '俯瞰',
+    bird: '俯瞰：地図のように真上から見下ろす。もう一度押すと斜めの視点に戻る',
     attack: '侵攻',
     defense: '防衛',
     covert: '潜入／未確定の経路',
@@ -503,7 +509,7 @@ const IS3D = !!STAGE.is3d;
 const PROJ = IS3D ? View3D : View3D.flat; // how world points reach the screen: through the tilted camera, or straight down
 const groundH = IS3D ? RELIEF.land : () => 0;
 $('.map-viewport').classList.toggle('is-3d', IS3D);
-const MAX_SCALE = IS3D ? (QUALITY === 'low' ? 5 : 9) : QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
+const MAX_SCALE = IS3D ? (QUALITY === 'low' ? 11 : 22) : QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit (3D: a person stands about 70 px tall on a computer)
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
 const FEED_MAX = PHONE ? 3.2 : 4.8; // ... except to show people being caught by Titans
 // view = what is shown now; target = where the camera is easing to; auto = the camera follows the story.
@@ -519,12 +525,20 @@ const CAM = {
   pose: null,
   yaw: 0,
   yawTo: null,
-}; // yaw: the 3D camera turned away from north (radians)
+  bird: 0,
+}; // yaw: the 3D camera turned away from north (radians); bird: 1 = looking straight down like a map
 // The camera's pose for the current view (worked out once per change of view).
 const pose = () => {
   const v = CAM.view,
     q = CAM.pose;
-  return q && q.x === v.x && q.y === v.y && q.s === v.s && q.vw === CAM.vw && q.vh === CAM.vh && (q.yaw || 0) === CAM.yaw
+  return q &&
+    q.x === v.x &&
+    q.y === v.y &&
+    q.s === v.s &&
+    q.vw === CAM.vw &&
+    q.vh === CAM.vh &&
+    (q.yaw || 0) === CAM.yaw &&
+    (q.bird || 0) === (IS3D ? View3D.cfg.bird : 0)
     ? q
     : (CAM.pose = PROJ.pose(v, CAM.vw, CAM.vh, CAM.yaw));
 };
@@ -1482,6 +1496,12 @@ function animate(t) {
     if (n.done) CAM.target = null;
     CAM.moved = true;
   }
+  if (IS3D && View3D.cfg.bird !== CAM.bird) {
+    // the camera swings up to the bird's-eye view, or back down
+    const b = View3D.cfg.bird + (CAM.bird - View3D.cfg.bird) * Math.min(1, dt * 5);
+    View3D.cfg.bird = REDUCED || Math.abs(CAM.bird - b) < 0.004 ? CAM.bird : b;
+    CAM.moved = true;
+  }
   if (CAM.yaw && (CAM.auto || CAM.yawTo !== null)) {
     // the story's camera looks north: ease back to it
     CAM.yaw = REDUCED || Math.abs(CAM.yaw) < 0.004 ? 0 : CAM.yaw * Math.exp(-dt * 4);
@@ -1654,6 +1674,20 @@ $('#zoomReset').onclick = () => {
   if (CAM.auto) CAM.target = null; // switching off leaves the view where it is
   setAuto(!CAM.auto);
 };
+// Bird's-eye view: the 3D camera looks straight down, like a map. Remembered on this device.
+function setBird(on, now) {
+  CAM.bird = on ? 1 : 0;
+  if (now) View3D.cfg.bird = CAM.bird;
+  $('#birdBtn').setAttribute('aria-pressed', String(!!on));
+  CAM.moved = true;
+  try {
+    localStorage.setItem('aot-walls:bird:v1', on ? 'on' : 'off');
+  } catch (e) {}
+}
+$('#birdBtn').onclick = () => setBird(!CAM.bird);
+try {
+  if (IS3D && localStorage.getItem('aot-walls:bird:v1') === 'on') setBird(true, true);
+} catch (e) {}
 $('#compass').onclick = () => {
   CAM.yawTo = 0;
   CAM.moved = true;

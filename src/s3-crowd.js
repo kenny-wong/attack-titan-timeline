@@ -177,6 +177,7 @@
       batch.push('box', fm, 0, cx, cy - 0.21 * sy, cz + 0.4 * sz, 0.62 * sx, 0.15 * sy, 0.16 * sz, FACE.mouth[0], FACE.mouth[1], FACE.mouth[2]);
       batch.push('box', fm, 0, cx, cy - 0.21 * sy, cz + 0.42 * sz, 0.54 * sx, 0.07 * sy, 0.15 * sz, FACE.teeth[0], FACE.teeth[1], FACE.teeth[2]);
     }
+    const roofLift = props.villageHut.height * props.villageHut.unit * ctx.roof.ky * 0.8; // the top of the crushed house, a little sunk in
     const idleT = (rig, t, a) => (t + a.phase * 3) / ((rig.clips.idle && rig.clips.idle.period) || 4);
 
     function frame(sc, P, wallInfo) {
@@ -221,7 +222,7 @@
         d.speed += ((dt > 0 ? moved / dt : 0) - d.speed) * Math.min(1, dt * 6);
         const walking = d.speed > 0.35 && !o.reduced;
         // facing: the way it walks; a reaching Titan faces its prey; a Wall Titan in its Wall faces outwards
-        let want = d.yaw;
+        let want = a.roof ? a.roof.yaw : d.yaw;
         if (a.rumble && !(s.marching && moved > 0.004)) want = Math.atan2(Math.cos(a.rumble.th0 * RAD), Math.sin(a.rumble.th0 * RAD));
         else if (a.crawl) { const q = a.crawl.at(Tl + 0.01), q0 = a.crawl.at(Tl); if (Math.hypot(q[0] - q0[0], q[1] - q0[1]) > 1e-5) want = Math.atan2(q[0] - q0[0], q[1] - q0[1]); }
         else if (s.eat && look) want = Math.atan2(look.x - x, look.y - y);
@@ -232,7 +233,7 @@
         d.w += ((walking ? 1 : 0) - d.w) * Math.min(1, dt * 7);
         d.reach += ((reaching && !walking ? 1 : 0) - d.reach) * Math.min(1, dt * 3);
         // on screen?
-        const gy = a.kind === 'boat' ? Math.max(0.2, hAt(x, y)) : a.kind === 'wallTitan' ? wade(x, y) : hAt(x, y);
+        const gy = (a.kind === 'boat' ? Math.max(0.2, hAt(x, y)) : a.kind === 'wallTitan' ? wade(x, y) : hAt(x, y)) + (a.roof ? roofLift : 0); // the Ragako Titan lies on a roof
         d.h = gy;
         V.project(P, x, y, gy, pr);
         const big = a.kind === 'wallTitan' ? 30 : 16;
