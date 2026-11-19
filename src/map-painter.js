@@ -119,13 +119,15 @@
     }
   }
 
-  function paint(ppu, terrain, World) {
-    const { W, H, C, R, coast, DISTRICTS } = World, r = rng(9911);
+  // opt.ground (the 3D stage): only what lies flat is painted - sea, land colours, fields, rivers and paving - and the
+  // rock and snow follow the real heights (opt.relief); trees, hills, peaks and buildings are solid things there.
+  function paint(ppu, terrain, World, opt = {}) {
+    const { W, H, C, R, coast, DISTRICTS } = World, r = rng(9911), ground = !!opt.ground;
     const cv = mk(W * ppu, H * ppu), ctx = cv.getContext('2d');
     ctx.scale(ppu, ppu);
-    // Parchment
-    ctx.fillStyle = PAL.paper; ctx.fillRect(0, 0, W, H);
-    for (let i = 0; i < 150; i++) {
+    // Parchment (or, under the 3D sea, the deep sea floor)
+    ctx.fillStyle = ground ? opt.seabed || '#2f5f78' : PAL.paper; ctx.fillRect(0, 0, W, H);
+    for (let i = 0; i < (ground ? 0 : 150); i++) {
       const rr = 60 + r() * 150, x = rr + r() * (W - rr * 2), y = rr + r() * (H - rr * 2), g = ctx.createRadialGradient(x, y, 0, x, y, rr), hi = r() < 0.5;
       g.addColorStop(0, hi ? 'rgba(232,206,150,.16)' : 'rgba(150,112,58,.13)'); g.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = g; ctx.fillRect(x - rr, y - rr, rr * 2, rr * 2);
@@ -146,7 +148,7 @@
       // one pixel per terrain cell, scaled up smoothly: a soft blend with no visible grid
       const gw = terrain.cols, gh = terrain.rows, small = mk(gw, gh), sg = small.getContext('2d'), img = sg.createImageData(gw, gh), d = img.data;
       const rgb = (hex) => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
-      const cols = Object.fromEntries(Object.entries(PAL.cell).map(([k, v]) => [k, rgb(v)]));
+      const cols = Object.fromEntries(Object.entries({ ...PAL.cell, ...(opt.cell || {}) }).map(([k, v]) => [k, rgb(v)]));
       for (const c of terrain.cells) { const o = (c.j * gw + c.i) * 4, col = cols[c.c] || cols.plain, v = 0.94 + r() * 0.12; d[o] = col[0] * v; d[o + 1] = col[1] * v; d[o + 2] = col[2] * v; d[o + 3] = 255; }
       for (let pass = 0; pass < 3; pass++) { // spread land colours into the sea cells so the coast keeps its colour
         const src = new Uint8ClampedArray(d);
@@ -162,7 +164,7 @@
     for (let i = 0; i < 520; i++) {
       const a = r() * Math.PI * 2, d = Math.sqrt(r()) * (R.rose - 8), x = C[0] + Math.cos(a) * d, y = C[1] + Math.sin(a) * d;
       ctx.save(); ctx.translate(x, y); ctx.rotate((r() - 0.5) * 1.2);
-      ctx.globalAlpha = 0.2 + r() * 0.16; ctx.fillStyle = ['#d3dd74', '#a5c048', '#dccf78', '#c0d262'][Math.floor(r() * 4)];
+      ctx.globalAlpha = 0.2 + r() * 0.16; ctx.fillStyle = (opt.farmland || ['#d3dd74', '#a5c048', '#dccf78', '#c0d262'])[Math.floor(r() * 4)];
       ctx.fillRect(-3.5, -2.2, 5 + r() * 4, 3 + r() * 2.4); ctx.restore();
     }
     ctx.globalAlpha = 1;
@@ -172,14 +174,24 @@
     ctx.globalAlpha = 1;
     for (const rv of riverPaths) { ctx.strokeStyle = PAL.river; ctx.lineWidth = rv.w; ctx.stroke(rv.p); }
     const lk = terrain.lake; ell(ctx, lk.c[0], lk.c[1], lk.rx + 0.7, lk.ry + 0.7, PAL.riverEdge); ell(ctx, lk.c[0], lk.c[1], lk.rx, lk.ry, PAL.river); ell(ctx, lk.c[0] - 4, lk.c[1] - 3, lk.rx * 0.45, lk.ry * 0.35, 'rgba(255,255,255,.35)');
+    if (ground && opt.relief) rockAndSnow(ctx, opt.relief, W, H, opt);
     // District towns: pale paving with little roofs
     for (const d of DISTRICTS) {
       const a = (d.deg * Math.PI) / 180;
-      ctx.beginPath(); ctx.arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a + Math.PI / 2); ctx.closePath(); ctx.fillStyle = '#d3c9a4'; ctx.fill();
+      ctx.beginPath(); ctx.arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a + Math.PI / 2); ctx.closePath(); ctx.fillStyle = (ground && opt.paving) || '#d3c9a4'; ctx.fill();
+      if (ground) { ctx.strokeStyle = 'rgba(90,80,60,.35)'; ctx.lineWidth = 0.5; for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.arc(d.base[0], d.base[1], (d.r * k) / 4, a - Math.PI / 2, a + Math.PI / 2); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(d.inner[0], d.inner[1]); ctx.lineTo(d.outer[0], d.outer[1]); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(120,104,76,.6)'; ctx.stroke(); continue; } // streets; the houses are solid
       for (let i = 0; i < 26; i++) {
         const t = a + (r() - 0.5) * Math.PI * 0.92, dd = 2.5 + r() * (d.r - 5), x = d.base[0] + Math.cos(t) * dd, y = d.base[1] + Math.sin(t) * dd;
         ctx.fillStyle = r() < 0.5 ? '#9c6a4a' : '#b98a5e'; ctx.fillRect(x - 1.1, y - 0.9, 2.2, 1.8);
       }
+    }
+    if (ground) { // the capital's paving, soft shade under the woods, then the beach line; everything else stands up in 3D
+      ell(ctx, C[0], C[1], 21, 21, (opt.paving) || '#d3c9a4');
+      ctx.fillStyle = 'rgba(28,58,30,.2)';
+      for (const t of terrain.trees) { ctx.beginPath(); ctx.ellipse(t.x, t.y, 3.4 * t.s * (t.g ? 1.5 : 1), 3 * t.s * (t.g ? 1.5 : 1), 0, 0, 6.3); ctx.fill(); }
+      ctx.restore();
+      coastPath(ctx, coast); ctx.strokeStyle = PAL.coast; ctx.lineWidth = 2.2; ctx.stroke();
+      return cv;
     }
     // Trees, hills and peaks, back to front
     const st = stamps(ppu), items = [];
@@ -193,6 +205,20 @@
     coastPath(ctx, coast); ctx.strokeStyle = PAL.coast; ctx.lineWidth = 1.5; ctx.stroke(); ctx.strokeStyle = 'rgba(70,84,60,.5)'; ctx.lineWidth = 0.45; ctx.stroke();
     for (const pl of terrain.places) { if (pl.sinceT !== undefined) continue; ctx.save(); ctx.translate(pl.p[0], pl.p[1]); icon(ctx, pl.kind); ctx.restore(); } // places built later are drawn live by the stage
     return cv;
+  }
+  // Bare rock on the high ground and snow above the snow line (lower in the far north), from the height grid.
+  function rockAndSnow(ctx, relief, W, H, opt) {
+    const { cols, rows, data, step } = relief, small = mk(cols, rows), g = small.getContext('2d'), img = g.createImageData(cols, rows), d = img.data;
+    const rgb = (hex) => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+    const rock = rgb(opt.rock || '#8f8a72'), snow = rgb(opt.snow || '#f1f4f4'), sm = (a, b, v) => { const t = Math.max(0, Math.min(1, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const o = j * cols + i, h = data[o], line = 21 + Math.max(0, (j * step - 300) / 14); // the snow line climbs towards the south
+      const kr = sm(7.5, 15, h) * 0.9, ks = sm(line, line + 6, h);
+      d[o * 4] = rock[0] + (snow[0] - rock[0]) * ks; d[o * 4 + 1] = rock[1] + (snow[1] - rock[1]) * ks; d[o * 4 + 2] = rock[2] + (snow[2] - rock[2]) * ks; d[o * 4 + 3] = 255 * Math.max(kr, ks);
+    }
+    g.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(small, -step / 2, -step / 2, cols * step, rows * step);
   }
   global.MapPainter = { paint, icon, PAL };
 })(window);

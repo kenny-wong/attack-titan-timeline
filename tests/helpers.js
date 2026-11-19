@@ -8,7 +8,7 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 function load({ population = false, counts } = {}) {
   const ctx = {};
   vm.createContext(ctx);
-  for (const f of ['src/route-geometry.js', 'src/world.js', 'src/terrain.js', 'src/camera.js']) vm.runInContext(read(f), ctx);
+  for (const f of ['src/route-geometry.js', 'src/world.js', 'src/terrain.js', 'src/relief.js', 'src/camera.js', 'src/view3d.js', 'src/rig.js']) vm.runInContext(read(f), ctx);
   ctx.World.init(JSON.parse(read('src/world-coast.json')));
   vm.runInContext(read('src/story-text.js') + read('src/story.js') + ';globalThis.events=events;globalThis.P=P;globalThis.lightAt=lightAt;globalThis.cast=cast;globalThis.TITAN_FORM=TITAN_FORM;globalThis.titanFormAt=titanFormAt;globalThis.KEY_SCENES=KEY_SCENES;globalThis.GROWTH=GROWTH;', ctx);
   if (population) {

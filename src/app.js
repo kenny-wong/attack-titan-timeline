@@ -18,6 +18,8 @@ const TXT = {
     year: '故事年份',
     mapTitle: '帕拉迪島 · 三道城牆',
     mapHint: '滾輪或雙指縮放 · 拖動地圖 · 播放時鏡頭自動跟隨',
+    mapHint3d: '滾輪或雙指縮放 · 拖動地圖 · 右鍵拖動或雙指扭轉可轉動視角 · 播放時鏡頭自動跟隨',
+    compass: '指北針：按一下面向北方（右鍵拖動或雙指扭轉可轉動地圖）',
     attack: '進攻',
     defense: '防守',
     covert: '潛入／未確定路線',
@@ -33,7 +35,7 @@ const TXT = {
     cast: '參與角色與互動',
     castHint: '按角色可以突出佢喺地圖上嘅移動路線',
     notes:
-      '註：地圖為原創示意插圖，島嶼輪廓、城區位置及地形參考同好繪製嘅地圖重新繪畫，並非官方測繪。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。',
+      '註：地圖為原創示意插圖，島嶼輪廓、城區位置及地形參考同好繪製嘅地圖重新繪畫，並非官方測繪。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。立體地圖入面，城牆、巨人同人物嘅高度都經過放大，方便睇得清楚，並非按真實比例。',
     sources: '劇情核對：',
     location: '地點',
     phase: '階段',
@@ -86,7 +88,8 @@ const TXT = {
     popWallNow: '肩並肩企滿三道城牆同各城區圍牆；直線向外走，合成一個大圓圈推向海外',
     rumbleInfo: '地鳴（模擬）：城牆巨人以最短路線直接向外走，只會繞開牆內嘅城區同村落；出牆後肩並肩合成一個大圓圈，踏平牆外嘅樹林同建築，向海外推進',
     popCrawlTag: '爬行嘅巨人',
-    popCrawlInfo: '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞，冇殺佢；佢繼續爬行，直到地鳴嘅巨人圓圈到達。',
+    popCrawlInfo:
+      '爬行嘅巨人：手腳太細，行唔到路，只能夠拖住身體由南岸爬向城牆，多年嚟喺地上留低一條長長嘅痕跡。851年調查兵團前往海邊途中發現佢，艾連認出佢係被送去「樂園」嘅同胞，冇殺佢；佢繼續爬行，直到地鳴嘅巨人圓圈到達。',
     camOn: '自動鏡頭：開',
     camOff: '自動鏡頭：關',
     popLyingTag: '拉加哥村的巨人（無法行動）',
@@ -102,6 +105,8 @@ const TXT = {
     year: 'STORY YEAR',
     mapTitle: 'PARADIS · THREE WALLS',
     mapHint: 'Scroll or pinch to zoom · drag to pan · the camera follows during playback',
+    mapHint3d: 'Scroll or pinch to zoom · drag to pan · right-drag or twist with two fingers to turn · the camera follows during playback',
+    compass: 'Compass: click to face north (right-drag or twist with two fingers to turn the map)',
     attack: 'Attack',
     defense: 'Defense',
     covert: 'Undercover / uncertain path',
@@ -117,7 +122,7 @@ const TXT = {
     cast: 'CHARACTERS & INTERACTIONS',
     castHint: 'Click a character to highlight their movement route',
     notes:
-      'Note: the map is an original illustration; the island outline, district positions and terrain are redrawn after fan-made reference maps and are not an official survey. Routes are schematic rather than GPS-accurate; unconfirmed entry paths are indicated with dashed lines. These are original visual explanations, not official anime clips.',
+      'Note: the map is an original illustration; the island outline, district positions and terrain are redrawn after fan-made reference maps and are not an official survey. Routes are schematic rather than GPS-accurate; unconfirmed entry paths are indicated with dashed lines. These are original visual explanations, not official anime clips. On the 3D map the heights of the Walls, Titans and people are exaggerated so that they can be seen; they are not to scale.',
     sources: 'Story references:',
     location: 'Location',
     phase: 'Phase',
@@ -167,10 +172,13 @@ const TXT = {
     dayMoon: 'Moonlit night · Titans active (an anomaly)',
     flareInfo: 'Signal flares: red = Titan sighted · green = new heading · black = abnormal',
     popWall: 'Wall Titans',
-    popWallNow: 'shoulder to shoulder in all three Walls and every district wall; they walk straight out and form one great circle that sweeps out over the sea',
-    rumbleInfo: 'The Rumbling (simulated): the Wall Titans take the shortest way straight out, stepping aside only for the towns and villages inside the Walls; outside they close up into one great circle, shoulder to shoulder, flatten the forests and buildings there and sweep outward',
+    popWallNow:
+      'shoulder to shoulder in all three Walls and every district wall; they walk straight out and form one great circle that sweeps out over the sea',
+    rumbleInfo:
+      'The Rumbling (simulated): the Wall Titans take the shortest way straight out, stepping aside only for the towns and villages inside the Walls; outside they close up into one great circle, shoulder to shoulder, flatten the forests and buildings there and sweep outward',
     popCrawlTag: 'Crawling Titan',
-    popCrawlInfo: 'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”, and they leave it be. It crawls on until the great circle of the Rumbling reaches it.',
+    popCrawlInfo:
+      'The crawling Titan: its limbs are too small to walk, so it has dragged itself from the south coast towards the Walls for years, leaving a long track. The Scouts find it in 851 on their way to the sea; Eren recognises a compatriot who was sent to “paradise”, and they leave it be. It crawls on until the great circle of the Rumbling reaches it.',
     camOn: 'Auto camera: on',
     camOff: 'Auto camera: off',
     popLyingTag: 'Ragako Titan (cannot move)',
@@ -186,6 +194,8 @@ const TXT = {
     year: '物語の年',
     mapTitle: 'パラディ島 · 三つの壁',
     mapHint: 'ホイールやピンチで拡大縮小 · ドラッグで移動 · 再生中はカメラが自動で追う',
+    mapHint3d: 'ホイールやピンチで拡大縮小 · ドラッグで移動 · 右ドラッグや2本指のひねりで回転 · 再生中はカメラが自動で追う',
+    compass: 'コンパス：クリックで北向きに戻す（右ドラッグや2本指のひねりで地図を回転）',
     attack: '侵攻',
     defense: '防衛',
     covert: '潜入／未確定の経路',
@@ -201,7 +211,7 @@ const TXT = {
     cast: '登場人物と関わり',
     castHint: '人物を選ぶと地図上の移動経路を強調',
     notes:
-      '注：地図はオリジナルのイラストです。島の輪郭、各区の位置、地形はファン作成の参考地図をもとに描き直したもので、公式の測量図ではありません。経路は概念的なもので正確な位置ではなく、原作で描かれていない入口は破線で示しています。画面はオリジナルの説明用アニメーションで、公式アニメの映像ではありません。',
+      '注：地図はオリジナルのイラストです。島の輪郭、各区の位置、地形はファン作成の参考地図をもとに描き直したもので、公式の測量図ではありません。経路は概念的なもので正確な位置ではなく、原作で描かれていない入口は破線で示しています。画面はオリジナルの説明用アニメーションで、公式アニメの映像ではありません。3D地図では、壁・巨人・人物の高さを見やすいように誇張しており、実際の縮尺ではありません。',
     sources: '物語の参照元：',
     location: '場所',
     phase: '段階',
@@ -252,13 +262,16 @@ const TXT = {
     flareInfo: '信煙弾：赤＝巨人発見 · 緑＝進路変更 · 黒＝奇行種',
     popWall: '壁の巨人',
     popWallNow: '三つの壁と各区の壁に肩を並べて立ち、まっすぐ外へ歩いて一つの大きな円になり、海の向こうへ進む',
-    rumbleInfo: '地鳴らし（シミュレーション）：壁の巨人は最短の道をまっすぐ外へ進み、壁の中の町や村だけを避ける。壁の外では肩を並べて一つの大きな円になり、森や建物を踏みつぶして外へ押し進む',
+    rumbleInfo:
+      '地鳴らし（シミュレーション）：壁の巨人は最短の道をまっすぐ外へ進み、壁の中の町や村だけを避ける。壁の外では肩を並べて一つの大きな円になり、森や建物を踏みつぶして外へ押し進む',
     popCrawlTag: '這う巨人',
-    popCrawlInfo: '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づき、そのままにしておく。地鳴らしの巨人の円が届くまで這い続ける。',
+    popCrawlInfo:
+      '這う巨人：手足が小さすぎて歩けず、南の海岸から壁へ向かって何年も体を引きずり、長い跡を残してきた。851年、海へ向かう調査兵団が発見する。エレンは「楽園送り」にされた同胞だと気づき、そのままにしておく。地鳴らしの巨人の円が届くまで這い続ける。',
     camOn: '自動カメラ：オン',
     camOff: '自動カメラ：オフ',
     popLyingTag: 'ラガコ村の巨人（動けない）',
-    popLyingInfo: 'ラガコ村の巨人（動けない）：調査兵団が村で横たわっているのを発見した。手足が細すぎて歩けず、巨人の力が消えて人間に戻るまでそこに留まる。',
+    popLyingInfo:
+      'ラガコ村の巨人（動けない）：調査兵団が村で横たわっているのを発見した。手足が細すぎて歩けず、巨人の力が消えて人間に戻るまでそこに留まる。',
   },
 };
 const yearText = (y) => (S.lang === 'en' ? y.replace('約', 'c. ') : y); // '約832' is shared by Chinese and Japanese
@@ -287,8 +300,14 @@ const labels = {
 };
 // Labels drawn on the map: where they sit, and from which zoom level (screen px per world unit) they show.
 const MAP_LABELS = (() => {
-  const D = World.district, out = [];
-  const beside = (id, o = {}) => { const d = D(id); return d.dir === 's' || d.dir === 'n' ? { p: [d.base[0] + d.r, d.centre[1]], dx: 8, dy: 0, align: 'l', ...o } : { p: [d.centre[0], d.base[1] + d.r], dx: 0, dy: 13, align: 'c', ...o }; };
+  const D = World.district,
+    out = [];
+  const beside = (id, o = {}) => {
+    const d = D(id);
+    return d.dir === 's' || d.dir === 'n'
+      ? { p: [d.base[0] + d.r, d.centre[1]], dx: 8, dy: 0, align: 'l', ...o }
+      : { p: [d.centre[0], d.base[1] + d.r], dx: 0, dy: 13, align: 'c', ...o };
+  };
   out.push({ key: 'shig', text: labels.shig, min: 0.3, ...beside('shig') });
   for (const id of ['trost', 'stohess', 'karanes', 'orvud']) out.push({ key: id, text: labels[id], min: 0.62, ...beside(id) });
   out.push({ key: 'mitras', text: labels.mitras, p: World.C, dx: 0, dy: 17, align: 'c', min: 0.3 });
@@ -299,31 +318,100 @@ const MAP_LABELS = (() => {
   out.push({ key: 'forest', text: labels.forest, p: P.forest, dx: 0, dy: 26, align: 'c', min: 0.75, minor: true });
   out.push({ key: 'harbor', text: labels.harbor, p: P.harbor, dx: -12, dy: 2, align: 'r', min: 0.42, minor: true, since: 'overseas' });
   out.push({ key: 'krugerWall', text: labels.krugerWall, p: P.krugerWall, dx: 0, dy: 15, align: 'c', min: 0.42, minor: true });
-  out.push({ key: 'crawl', text: C('爬行巨人嘅痕跡', 'Crawling Titan’s path', '這う巨人の跡'), p: [P.crawlFrom[0] * 0.8 + P.crawlTo[0] * 0.2, P.crawlFrom[1] * 0.8 + P.crawlTo[1] * 0.2], dx: 16, dy: 4, align: 'l', min: 1.5, minor: true, since: 'grisha' });
-  out.push({ key: 'south', text: C('巨人聚集地', 'Titan country', '巨人の集まる地'), p: P.south, dx: 46, dy: 0, align: 'l', min: 0.42, max: 1.6, minor: true });
+  out.push({
+    key: 'crawl',
+    text: C('爬行巨人嘅痕跡', 'Crawling Titan’s path', '這う巨人の跡'),
+    p: [P.crawlFrom[0] * 0.8 + P.crawlTo[0] * 0.2, P.crawlFrom[1] * 0.8 + P.crawlTo[1] * 0.2],
+    dx: 16,
+    dy: 4,
+    align: 'l',
+    min: 1.5,
+    minor: true,
+    since: 'grisha',
+  });
+  out.push({
+    key: 'south',
+    text: C('巨人聚集地', 'Titan country', '巨人の集まる地'),
+    p: P.south,
+    dx: 46,
+    dy: 0,
+    align: 'l',
+    min: 0.42,
+    max: 1.6,
+    minor: true,
+  });
   return out;
 })();
 // Clickable places and the wall filter they select.
 const locations = [
-  ['shig', 'maria'], ['trost', 'rose'], ['stohess', 'sina'], ['karanes', 'rose'], ['orvud', 'sina'], ['mitras', 'sina'], ['ragako', 'rose'], ['utgard', 'rose'], ['forest', 'outside'],
-].map(([key, wall]) => { const d = World.district(key); return { key, wall, p: d ? d.centre : P[key], r: d ? d.r : key === 'forest' ? 22 : 13 }; });
+  ['shig', 'maria'],
+  ['trost', 'rose'],
+  ['stohess', 'sina'],
+  ['karanes', 'rose'],
+  ['orvud', 'sina'],
+  ['mitras', 'sina'],
+  ['ragako', 'rose'],
+  ['utgard', 'rose'],
+  ['forest', 'outside'],
+].map(([key, wall]) => {
+  const d = World.district(key);
+  return { key, wall, p: d ? d.centre : P[key], r: d ? d.r : key === 'forest' ? 22 : 13 };
+});
 const routeColors = { attack: '#ff8477', defense: '#6bc8f0', covert: '#ecc985', repair: '#8de5ba', neutral: '#e8e4d7' };
 const routeClass = { attack: 'attacking', defense: 'defending', covert: 'infiltrating', repair: 'repairing', neutral: 'neutral' };
 // Emblems (SVG symbols from assets/theme) used across the page.
-const icon = (id, cls) => `<svg class="${cls}" viewBox="0 0 ${id.startsWith('orn-') ? '32 32' : '64 64'}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const icon = (id, cls) =>
+  `<svg class="${cls}" viewBox="0 0 ${id.startsWith('orn-') ? '32 32' : '64 64'}" aria-hidden="true"><use href="#${id}"/></svg>`;
 const CAT_ICON = { attack: 'em-titan', infiltrate: 'orn-key', defend: 'em-garrison', reveal: 'em-royal', expedition: 'em-survey', finale: 'em-wall' };
 // Which emblem each character or group carries.
 const FACTION = {
-  eren: 'survey', mikasa: 'survey', armin: 'survey', arminE: 'survey', levi: 'survey', erwin: 'survey', keith: 'survey', scouts: 'survey', alliance: 'survey',
-  garrison: 'garrison', historia: 'royal', karl: 'royal', fried: 'royal', rod: 'royal',
-  reiner: 'marley', bert: 'marley', annie: 'marley', marcel: 'marley', zeke: 'marley', pieck: 'marley', porco: 'marley', gabi: 'marley', falco: 'marley', marley: 'marley', yelena: 'marley', ony: 'marley', volunteers: 'marley',
-  ymir: 'titan', pure: 'titan', walltitans: 'titan', grisha: 'titan', kruger: 'titan', civ: 'civil',
+  eren: 'survey',
+  mikasa: 'survey',
+  armin: 'survey',
+  arminE: 'survey',
+  levi: 'survey',
+  erwin: 'survey',
+  keith: 'survey',
+  scouts: 'survey',
+  alliance: 'survey',
+  garrison: 'garrison',
+  historia: 'royal',
+  karl: 'royal',
+  fried: 'royal',
+  rod: 'royal',
+  reiner: 'marley',
+  bert: 'marley',
+  annie: 'marley',
+  marcel: 'marley',
+  zeke: 'marley',
+  pieck: 'marley',
+  porco: 'marley',
+  gabi: 'marley',
+  falco: 'marley',
+  marley: 'marley',
+  yelena: 'marley',
+  ony: 'marley',
+  volunteers: 'marley',
+  ymir: 'titan',
+  pure: 'titan',
+  walltitans: 'titan',
+  grisha: 'titan',
+  kruger: 'titan',
+  civ: 'civil',
 };
 // The picture at the top of the story card: a scene picture where there is one, otherwise manga-style
 // panels of the event's main characters.
 const SCENE_ART = {
-  founding: ['wall-sunset', '50% 30%'], marcel: ['ymir-titan', '70% 40%'], 'maria-fall': ['pure-titans', '50% 22%'], refugees: ['refugee-boats', '50% 45%'],
-  reclamation: ['refugee-boats', '40% 78%'], cadets: ['survey-corps', '50% 30%'], 'trost-seal': ['wall-sunset', '50% 62%'], rumbling: ['rumbling', '50% 35%'], alliance: ['alliance', '50% 55%'], rebuild: ['wall-sunset', '50% 70%'],
+  founding: ['wall-sunset', '50% 30%'],
+  marcel: ['ymir-titan', '70% 40%'],
+  'maria-fall': ['pure-titans', '50% 22%'],
+  refugees: ['refugee-boats', '50% 45%'],
+  reclamation: ['refugee-boats', '40% 78%'],
+  cadets: ['survey-corps', '50% 30%'],
+  'trost-seal': ['wall-sunset', '50% 62%'],
+  rumbling: ['rumbling', '50% 35%'],
+  alliance: ['alliance', '50% 55%'],
+  rebuild: ['wall-sunset', '50% 70%'],
 };
 function renderArt(ev) {
   const el = $('#storyArt');
@@ -338,12 +426,19 @@ function renderArt(ev) {
     img.alt = '';
     img.decoding = 'async';
     img.style.objectPosition = scene[1];
-    img.onerror = () => { el.dataset.ev = ''; delete SCENE_ART[ev.id]; renderArt(ev); }; // no picture file (the page was copied on its own): fall back to the panels
+    img.onerror = () => {
+      el.dataset.ev = '';
+      delete SCENE_ART[ev.id];
+      renderArt(ev);
+    }; // no picture file (the page was copied on its own): fall back to the panels
     img.src = 'assets/scenes/' + scene[0] + '.webp';
     el.appendChild(img);
     return;
   }
-  const who = ev.characters.map((c) => c[0]).filter((w) => portraits[w]).slice(0, 4);
+  const who = ev.characters
+    .map((c) => c[0])
+    .filter((w) => portraits[w])
+    .slice(0, 4);
   const wrap = document.createElement('div');
   wrap.className = 'art-panels n' + who.length;
   for (const w of who) {
@@ -373,17 +468,105 @@ const PHONE = innerWidth < 760;
 const QUALITY = PHONE || (navigator.deviceMemory && navigator.deviceMemory <= 2) ? 'low' : 'high'; // phones get a lighter map and sprites
 const TERRAIN = Terrain.build(TERRAIN_GRID, World);
 TERRAIN.places.find((p) => p.id === 'harbor').sinceT = events.findIndex((e) => e.id === 'overseas'); // the harbour is built after 851
-const POP = Population.create(events, World, { points: P, protect: TERRAIN.places.map((pl) => pl.p), settle: GROWTH.places.map((g) => g.p), counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {} });
+const POP = Population.create(events, World, {
+  points: P,
+  protect: TERRAIN.places.map((pl) => pl.p),
+  settle: GROWTH.places.map((g) => g.p),
+  counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {},
+});
 // What is built later: railway lines grow between two moments of the story; new places appear at theirs.
 const storyT = ([id, p]) => events.findIndex((e) => e.id === id) + p;
-TERRAIN.rails = GROWTH.rails.map((rl) => ({ id: rl.id, geo: RouteGeo.build(rl.path, 1), T0: storyT(rl.from), T1: storyT(rl.to), wreck: storyT(rl.from) < POP.wallsFall })); // a line older than the Rumbling is wrecked by it
+TERRAIN.rails = GROWTH.rails.map((rl) => ({
+  id: rl.id,
+  geo: RouteGeo.build(rl.path, 1),
+  T0: storyT(rl.from),
+  T1: storyT(rl.to),
+  wreck: storyT(rl.from) < POP.wallsFall,
+})); // a line older than the Rumbling is wrecked by it
 for (const g of GROWTH.places) TERRAIN.places.push({ id: g.id, kind: g.kind, p: g.p, sea: g.sea, sinceT: storyT(g.at) });
-const STAGE = Stage.create($('#stage'), World, TERRAIN, POP, QUALITY);
-const MAX_SCALE = QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
+// The map is a 3D landscape where the browser has WebGL (stage3d.js); otherwise the flat painted map (stage.js).
+const RELIEF = Relief.build(TERRAIN, World, { step: 4 }); // the height of the ground everywhere
+let STAGE = null;
+try {
+  if (/[?&]flat(&|$)/.test(location.search)) throw new Error('flat map asked for'); // index.html?flat shows the flat map
+  STAGE = Stage3D.create($('#stage'), World, TERRAIN, POP, QUALITY, { relief: RELIEF, design: typeof DESIGN3D !== 'undefined' ? DESIGN3D : null });
+} catch (e) {
+  console.warn('3D map unavailable, showing the flat map', e);
+}
+if (!STAGE) {
+  const old = $('#stage'),
+    cv = old.cloneNode(false); // a canvas that was asked for WebGL cannot draw in 2D any more
+  old.replaceWith(cv);
+  STAGE = Stage.create(cv, World, TERRAIN, POP, QUALITY);
+}
+const IS3D = !!STAGE.is3d;
+const PROJ = IS3D ? View3D : View3D.flat; // how world points reach the screen: through the tilted camera, or straight down
+const groundH = IS3D ? RELIEF.land : () => 0;
+$('.map-viewport').classList.toggle('is-3d', IS3D);
+const MAX_SCALE = IS3D ? (QUALITY === 'low' ? 5 : 9) : QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
 // view = what is shown now; target = where the camera is easing to; auto = the camera follows the story.
-const CAM = { view: { x: World.W / 2, y: World.H / 2, s: 0.4 }, target: null, auto: true, retarget: true, vw: 1, vh: 1, moved: true, rate: 2.2 };
-const toScreen = (p) => [(p[0] - CAM.view.x) * CAM.view.s + CAM.vw / 2, (p[1] - CAM.view.y) * CAM.view.s + CAM.vh / 2];
+const CAM = {
+  view: { x: World.W / 2, y: World.H / 2, s: 0.4 },
+  target: null,
+  auto: true,
+  retarget: true,
+  vw: 1,
+  vh: 1,
+  moved: true,
+  rate: 2.2,
+  pose: null,
+  yaw: 0,
+  yawTo: null,
+}; // yaw: the 3D camera turned away from north (radians)
+// The camera's pose for the current view (worked out once per change of view).
+const pose = () => {
+  const v = CAM.view,
+    q = CAM.pose;
+  return q && q.x === v.x && q.y === v.y && q.s === v.s && q.vw === CAM.vw && q.vh === CAM.vh && (q.yaw || 0) === CAM.yaw
+    ? q
+    : (CAM.pose = PROJ.pose(v, CAM.vw, CAM.vh, CAM.yaw));
+};
+const PR = [0, 0, 0];
+// World point -> screen pixels (and the scale there), standing on the ground or `lift` units above it.
+const toScreen = (p, lift = 0) => {
+  PROJ.project(pose(), p[0], p[1], groundH(p[0], p[1]) + lift, PR);
+  return [PR[0], PR[1], PR[2]];
+};
+// Screen-space path through the points of a route's lookup table, up to fraction f of its length.
+function pathOn(tab, f) {
+  if (f <= 0) return '';
+  const target = Math.min(1, f) * tab.total,
+    pts = tab.pts,
+    L = tab.lens,
+    q = pose();
+  let d = '',
+    up = true,
+    i = 0;
+  const add = (x, y) => {
+    PROJ.project(q, x, y, groundH(x, y) + 0.4, PR);
+    if (PR[2] <= 0 || PR[1] > CAM.vh * 4) return (up = true); // behind the camera: lift the pen
+    d += (up ? 'M' : 'L') + PR[0].toFixed(1) + ' ' + PR[1].toFixed(1);
+    up = false;
+  };
+  for (; i < pts.length && L[i] <= target; i++) add(pts[i][0], pts[i][1]);
+  if (i < pts.length && f < 1) {
+    const e = RouteGeo.at(tab, f);
+    add(e.x, e.y);
+  }
+  return d;
+}
+function drawRoute(en, moved) {
+  if (moved) {
+    const d = pathOn(en.geo.tab, 1);
+    for (const el of en.plan) el.setAttribute('d', d);
+  }
+  if (moved || Math.abs(en.v - en.lastV) > 0.0004) {
+    const d = pathOn(en.geo.tab, en.v);
+    for (const el of en.trail) el.setAttribute('d', d);
+    en.lastV = en.v;
+  }
+}
 function wallState(idx, progress = S.p) {
   let w = { maria: 'intact', rose: 'intact', sina: 'intact' },
     g = { shigO: 'intact', shigI: 'intact', trostO: 'intact' };
@@ -576,25 +759,54 @@ function refreshSteps() {
 let popSig = '';
 function spriteIcon(cv) {
   // draws a figure from the sprite atlas into a small icon canvas (a plain dot until sprites exist)
-  const g = cv.getContext('2d'), name = cv.dataset.sprite, at = STAGE.atlas;
+  const g = cv.getContext('2d'),
+    name = cv.dataset.sprite,
+    at = STAGE.atlas;
   g.clearRect(0, 0, cv.width, cv.height);
   const f = at && at.frames[name] && at.frames[name].idle && at.frames[name].idle.f && at.frames[name].idle.f[0];
-  if (f) { const k = Math.min(cv.width / f.w, cv.height / f.h); g.drawImage(at.canvas, f.x, f.y, f.w, f.h, (cv.width - f.w * k) / 2, cv.height - f.h * k, f.w * k, f.h * k); }
-  else { g.fillStyle = name.startsWith('titan') ? '#e2b79b' : '#5d7c95'; g.beginPath(); g.arc(cv.width / 2, cv.height / 2, cv.width * 0.3, 0, 6.3); g.fill(); }
+  if (f) {
+    const k = Math.min(cv.width / f.w, cv.height / f.h);
+    g.drawImage(at.canvas, f.x, f.y, f.w, f.h, (cv.width - f.w * k) / 2, cv.height - f.h * k, f.w * k, f.h * k);
+  } else {
+    g.fillStyle = name.startsWith('titan') ? '#e2b79b' : '#5d7c95';
+    g.beginPath();
+    g.arc(cv.width / 2, cv.height / 2, cv.width * 0.3, 0, 6.3);
+    g.fill();
+  }
 }
 function renderPopStatus(force) {
   const el = $('#popStatus');
   if (!el) return;
-  const t = TXT[S.lang], k = POP.counts(S.idx + S.p), order = ['outside', 'shig', 'maria', 'trost', 'rose', 'ragakoFixed', 'sina'];
-  const fold = (o) => { const out = {}; for (const [z, n] of Object.entries(o)) { if (z === 'total') continue; const key = order.includes(z) ? z : 'districts'; out[key] = (out[key] || 0) + n; } return out; };
-  const tz = fold(k.titan), cz = fold(k.civ);
-  const titans = [...order, 'districts'].filter((z) => tz[z]).map((z) => t.popZones[z] + (z === 'ragakoFixed' ? '' : ' ' + tz[z])).join(t.popSep);
-  const civs = [...order, 'districts'].filter((z) => cz[z]).map((z) => t.popZones[z]).join(t.popSep);
+  const t = TXT[S.lang],
+    k = POP.counts(S.idx + S.p),
+    order = ['outside', 'shig', 'maria', 'trost', 'rose', 'ragakoFixed', 'sina'];
+  const fold = (o) => {
+    const out = {};
+    for (const [z, n] of Object.entries(o)) {
+      if (z === 'total') continue;
+      const key = order.includes(z) ? z : 'districts';
+      out[key] = (out[key] || 0) + n;
+    }
+    return out;
+  };
+  const tz = fold(k.titan),
+    cz = fold(k.civ);
+  const titans = [...order, 'districts']
+    .filter((z) => tz[z])
+    .map((z) => t.popZones[z] + (z === 'ragakoFixed' ? '' : ' ' + tz[z]))
+    .join(t.popSep);
+  const civs = [...order, 'districts']
+    .filter((z) => cz[z])
+    .map((z) => t.popZones[z])
+    .join(t.popSep);
   const sig = [S.lang, k.titan.total, titans, civs, k.wallTitan > 0, STAGE.hasSprites].join('|');
   if (sig === popSig && !force) return;
   popSig = sig;
   el.replaceChildren();
-  const rows = [['titan1', t.popTitans, k.titan.total ? t.popAbout + ' ' + k.titan.total : '', titans || t.popNone], ['civ1', t.popCivilians, '', civs]];
+  const rows = [
+    ['titan1', t.popTitans, k.titan.total ? t.popAbout + ' ' + k.titan.total : '', titans || t.popNone],
+    ['civ1', t.popCivilians, '', civs],
+  ];
   if (k.wallTitan > 0) rows.push(['wallTitan', t.popWall, '', t.popWallNow]);
   for (const [sprite, label, n, where] of rows) {
     const row = document.createElement('div');
@@ -614,7 +826,8 @@ function setMapInfo(text) {
   el.hidden = !text;
 }
 // Tapping the lying Ragako Titan shows a short tag beside it and the full note in the map caption.
-let lyingTag = null, lyingTagTimer = 0;
+let lyingTag = null,
+  lyingTagTimer = 0;
 function showLyingTag(hit) {
   const t = TXT[S.lang];
   const crawl = !!hit.agent.crawl; // the crawling Titan has its own note
@@ -624,7 +837,10 @@ function showLyingTag(hit) {
   lyingTag = { el: g, p: [hit.x, hit.y], dx: 22, dy: -6 };
   placePin(lyingTag);
   clearTimeout(lyingTagTimer);
-  lyingTagTimer = setTimeout(() => { if (lyingTag) lyingTag.el.remove(); lyingTag = null; }, 6000);
+  lyingTagTimer = setTimeout(() => {
+    if (lyingTag) lyingTag.el.remove();
+    lyingTag = null;
+  }, 6000);
 }
 function renderPopToggle() {
   const b = $('#popToggle');
@@ -693,27 +909,43 @@ function renderCast() {
 // pixels so they keep their size at every zoom level.
 let pins = [];
 function placePin(pn) {
-  const [x, y] = toScreen(pn.p);
+  const [x, y] = toScreen(pn.p, pn.lift || 0);
   pn.el.setAttribute('transform', `translate(${(x + pn.dx).toFixed(1)} ${(y + pn.dy).toFixed(1)})`);
   if (pn.min !== undefined) pn.el.style.display = CAM.view.s >= pn.min && (pn.max === undefined || CAM.view.s <= pn.max) ? '' : 'none';
 }
-const pin = (el, p, dx = 0, dy = 0, extra = {}) => { const pn = { el, p, dx, dy, ...extra }; pins.push(pn); return pn; };
+const pin = (el, p, dx = 0, dy = 0, extra = {}) => {
+  const pn = { el, p, dx, dy, ...extra };
+  pins.push(pn);
+  return pn;
+};
 // A rounded label box around (0,0): align 'l' starts at the anchor, 'r' ends at it, 'c' is centred.
 function labelBox(parent, text, align, cls) {
   const w = Math.max(30, [...text].reduce((n, ch) => n + (ch.charCodeAt(0) > 0x2e7f ? 11.4 : 6.3), 0) + 14);
-  const x0 = align === 'l' ? 0 : align === 'r' ? -w : -w / 2, g = group(parent, { class: cls });
+  const x0 = align === 'l' ? 0 : align === 'r' ? -w : -w / 2,
+    g = group(parent, { class: cls });
   elem('rect', { x: x0, y: -10, width: w, height: 20, rx: 5 }, g);
   const tt = elem('text', { x: x0 + w / 2, y: 0.5 }, g);
   tt.textContent = text;
   return g;
 }
-// The camera moved: move the route group and every pin.
+// The camera moved: everything on the overlay is in screen pixels, so routes, click targets and pins are all placed again.
+let hitEls = [];
 function applyCamera() {
-  const v = CAM.view, fr = $('#frame');
-  if (fr) fr.setAttribute('transform', `translate(${(CAM.vw / 2 - v.x * v.s).toFixed(2)} ${(CAM.vh / 2 - v.y * v.s).toFixed(2)}) scale(${v.s.toFixed(4)})`);
+  const v = CAM.view,
+    tilt = IS3D ? pose().sin : 1;
+  for (const en of sceneRoutes) drawRoute(en, true);
+  for (const h of hitEls) {
+    const [x, y, k] = toScreen(h.p);
+    h.el.setAttribute('cx', x.toFixed(1));
+    h.el.setAttribute('cy', y.toFixed(1));
+    h.el.setAttribute('rx', (h.r * k).toFixed(1));
+    h.el.setAttribute('ry', (h.r * k * tilt).toFixed(1)); // a circle on the ground, seen at the camera's tilt
+  }
   for (const pn of pins) placePin(pn);
   if (lyingTag) placePin(lyingTag);
-  const lim = Camera.limits(World, CAM.vw, CAM.vh, MAX_SCALE), sl = $('#zoomSlider');
+  $('#compassNeedle')?.setAttribute('transform', 'rotate(' + ((CAM.yaw * 180) / Math.PI).toFixed(1) + ')');
+  const lim = Camera.limits(World, CAM.vw, CAM.vh, MAX_SCALE),
+    sl = $('#zoomSlider');
   if (sl && document.activeElement !== sl) sl.value = Math.round(Camera.scaleToSlider(v.s, lim) * 100);
 }
 function rebuildMap() {
@@ -724,6 +956,7 @@ function rebuildMap() {
   const svgEl = $('#mapSvg');
   svgEl.replaceChildren();
   pins = [];
+  hitEls = [];
   sceneRoutes = [];
   sceneEffects = [];
   const ev = events[S.idx];
@@ -745,17 +978,28 @@ function rebuildMap() {
   // Places you can click to filter events
   for (const loc of locations) {
     const nm = tr(labels[loc.key]);
-    const hit = elem('circle', { cx: loc.p[0], cy: loc.p[1], r: loc.r, class: 'place-hit', 'data-key': loc.key, tabindex: '0', role: 'button', 'aria-label': nm + ' — ' + TXT[S.lang].clickloc }, hits);
+    const hit = elem(
+      'ellipse',
+      { class: 'place-hit', 'data-key': loc.key, tabindex: '0', role: 'button', 'aria-label': nm + ' — ' + TXT[S.lang].clickloc },
+      hits,
+    );
+    hitEls.push({ el: hit, p: loc.p, r: loc.r });
     const choose = () => chooseLocation(loc.key, loc.wall);
     hit.addEventListener('click', choose);
     hit.addEventListener('keydown', (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), choose()));
   }
   // Place labels and the three Wall name tags
-  for (const L of MAP_LABELS) if (!L.since || S.idx >= events.findIndex((e) => e.id === L.since)) pin(labelBox(labelLayer, tr(L.text), L.align, 'point-label' + (L.minor ? ' minor' : '')), L.p, L.dx, L.dy, { min: L.min, max: L.max });
-  for (const [id, zh, en, ja, deg] of [['maria', '瑪利亞之牆', 'Wall Maria', 'ウォール・マリア', -132], ['rose', '羅塞之牆', 'Wall Rose', 'ウォール・ローゼ', -138], ['sina', '席納之牆', 'Wall Sina', 'ウォール・シーナ', -146]]) {
+  for (const L of MAP_LABELS)
+    if (!L.since || S.idx >= events.findIndex((e) => e.id === L.since))
+      pin(labelBox(labelLayer, tr(L.text), L.align, 'point-label' + (L.minor ? ' minor' : '')), L.p, L.dx, L.dy, { min: L.min, max: L.max });
+  for (const [id, zh, en, ja, deg] of [
+    ['maria', '瑪利亞之牆', 'Wall Maria', 'ウォール・マリア', -132],
+    ['rose', '羅塞之牆', 'Wall Rose', 'ウォール・ローゼ', -138],
+    ['sina', '席納之牆', 'Wall Sina', 'ウォール・シーナ', -146],
+  ]) {
     const g = labelBox(labelLayer, tr(C(zh, en, ja)), 'r', 'wall-tag');
     g.setAttribute('data-wall', id);
-    pin(g, World.at(World.R[id], deg), -4, -8, { min: 0.62 });
+    pin(g, World.at(World.R[id], deg), -4, -8, { min: 0.62, lift: IS3D ? Stage3D.WALL_H : 0 }); // on top of the Wall
   }
   if (S.enterRoutes) {
     routesLayer.classList.add('routes-enter');
@@ -768,8 +1012,7 @@ function rebuildMap() {
       col = routeColors[R.type] || routeColors.neutral,
       cls = (routeClass[R.type] || 'neutral') + (R.uncertain ? ' uncertain' : '');
     const gr = group(routesLayer, { class: 'route ' + cls, style: '--rc:' + col + ';--d:' + i * 90 + 'ms' });
-    elem('path', { d: geo.d, class: 'r-plan-case' }, gr);
-    elem('path', { d: geo.d, class: 'r-plan' }, gr);
+    const plan = ['r-plan-case', 'r-plan'].map((c) => elem('path', { d: '', class: c }, gr));
     const trail = ['r-trail-case', 'r-trail-glow', 'r-trail', 'r-flow'].map((c) => elem('path', { d: '', class: c }, gr));
     const ends = group(routePins, { class: 'route ' + cls, style: '--rc:' + col });
     pin(elem('circle', { r: 3, class: 'r-start' }, ends), pts[0]);
@@ -783,12 +1026,24 @@ function rebuildMap() {
     const clipId = 'portrait-clip-' + i;
     const clip = elem('clipPath', { id: clipId }, ag);
     elem('circle', { r: 13, cx: 0, cy: 0 }, clip);
-    const txt = elem('image', { href: actorPortrait(R.who), x: -13, y: -13, width: 26, height: 26, preserveAspectRatio: teamActors.has(R.who) && !FLAGS.has(R.who) ? 'xMidYMid meet' : 'xMidYMid slice', 'clip-path': 'url(#' + clipId + ')' }, ag);
+    const txt = elem(
+      'image',
+      {
+        href: actorPortrait(R.who),
+        x: -13,
+        y: -13,
+        width: 26,
+        height: 26,
+        preserveAspectRatio: teamActors.has(R.who) && !FLAGS.has(R.who) ? 'xMidYMid meet' : 'xMidYMid slice',
+        'clip-path': 'url(#' + clipId + ')',
+      },
+      ag,
+    );
     elem('circle', { r: 15.6, class: 'actor-ring2' }, ag);
     elem('circle', { r: 15.6, class: 'shift-flash' }, ag);
     const title = elem('title', {}, ag);
     title.textContent = tr(cast[R.who] || C(R.who, R.who));
-    sceneRoutes.push({ R, geo, trail, endG, ends, ag, gr, txt, title, lastV: -1, arrived: false });
+    sceneRoutes.push({ R, geo, plan, trail, endG, ends, ag, gr, txt, title, v: 0, lastV: -1, arrived: false });
   }
   for (const m of ev.marks) {
     const gr = group(fxLayer);
@@ -826,7 +1081,8 @@ function renderDynamic() {
   }
   const ev = events[S.idx];
   const flags = S.actor;
-  const portraitPhase = (ev.id === 'marcel' ? (S.p < 2 / 3 ? 0 : 1) : -1) + '|' + ev.characters.map(([who]) => titanFormAt(ev.id, who, S.p) || '').join('|'); // human or Titan, per character
+  const portraitPhase =
+    (ev.id === 'marcel' ? (S.p < 2 / 3 ? 0 : 1) : -1) + '|' + ev.characters.map(([who]) => titanFormAt(ev.id, who, S.p) || '').join('|'); // human or Titan, per character
   if (portraitPhase !== castPortraitPhase) {
     castPortraitPhase = portraitPhase;
     renderCast();
@@ -858,11 +1114,8 @@ function renderDynamic() {
     ag.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(moving ? 1.08 : 1) * (entry.titan ? 1.24 : 1)})`);
     ag.style.opacity = vis ? '1' : '0';
     ag.classList.toggle('moving', moving && vis);
-    if (Math.abs(v - entry.lastV) > 0.0004) {
-      const d = RouteGeo.slice(geo.tab, v);
-      for (const p of trail) p.setAttribute('d', d);
-      entry.lastV = v;
-    }
+    entry.v = v;
+    drawRoute(entry, false);
     const arrived = f >= 1;
     if (arrived !== entry.arrived) {
       entry.arrived = arrived;
@@ -880,9 +1133,18 @@ function renderDynamic() {
   refreshSteps();
 }
 const LANG_TAG = { zh: 'zh-Hant', en: 'en', ja: 'ja' };
+// Page text comes from TXT: element text by data-i18n, tooltips by data-i18n-title. The 3D map has its own hint (it can be turned).
+function applyTexts() {
+  const t = TXT[S.lang];
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = (IS3D && t[el.dataset.i18n + '3d']) || t[el.dataset.i18n];
+  for (const el of document.querySelectorAll('[data-i18n-title]')) {
+    el.title = t[el.dataset.i18nTitle];
+    el.setAttribute('aria-label', el.title);
+  }
+}
 function updateLang() {
   document.documentElement.lang = LANG_TAG[S.lang];
-  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = TXT[S.lang][el.dataset.i18n];
+  applyTexts();
   for (const b of document.querySelectorAll('#langSwitch [data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang));
   renderAutoBtn();
   renderMiniKey();
@@ -904,26 +1166,43 @@ function advanceEvent(delta) {
 // ---- Camera: follows the story while playing, yours when you take over ----
 // The box the camera should show: the whole event when paused, the action of the moment while playing.
 function sceneBox(tracking) {
-  const ev = events[S.idx], pts = [];
+  const ev = events[S.idx],
+    pts = [];
   if (ev.frame === 'island') {
     // the Rumbling: the whole island when paused; while playing, the Walls first and then outward with the columns
-    const reach = tracking ? Math.max(World.R.maria + 70, POP.rumble.front(S.idx + S.p) + 110) : 1e4, c0 = World.C;
-    return { x0: Math.max(0, c0[0] - reach), y0: Math.max(0, c0[1] - reach), x1: Math.min(World.W, c0[0] + reach), y1: Math.min(World.H, c0[1] + reach) };
+    const reach = tracking ? Math.max(World.R.maria + 70, POP.rumble.front(S.idx + S.p) + 110) : 1e4,
+      c0 = World.C;
+    return {
+      x0: Math.max(0, c0[0] - reach),
+      y0: Math.max(0, c0[1] - reach),
+      x1: Math.min(World.W, c0[0] + reach),
+      y1: Math.min(World.H, c0[1] + reach),
+    };
   }
   for (const m of ev.marks) if (!tracking || Math.abs((m.at ?? 0.07) - S.p) < 0.25) pts.push(coord(m.point));
   for (const en of sceneRoutes) {
     const R = en.R;
-    if (!tracking) { for (const p of R.path) pts.push(coord(p)); continue; }
+    if (!tracking) {
+      for (const p of R.path) pts.push(coord(p));
+      continue;
+    }
     if (S.p < R.start - 0.12 || S.p > R.end + 0.14 || (R.hideAt !== undefined && S.p > R.hideAt)) continue;
     const f = Math.max(0, Math.min(1, (S.p - R.start) / Math.max(0.001, R.end - R.start)));
-    for (const ff of [f, Math.min(1, f + 0.3)]) { const q = RouteGeo.at(en.geo.tab, RouteGeo.ease(ff)); pts.push([q.x, q.y]); }
+    for (const ff of [f, Math.min(1, f + 0.3)]) {
+      const q = RouteGeo.at(en.geo.tab, RouteGeo.ease(ff));
+      pts.push([q.x, q.y]);
+    }
   }
-  if (!ev.routes.length || !pts.length) { const r = World.R.maria + 48; return { x0: World.C[0] - r, y0: World.C[1] - r, x1: World.C[0] + r, y1: World.C[1] + r }; } // the three Walls
+  if (!ev.routes.length || !pts.length) {
+    const r = World.R.maria + 48;
+    return { x0: World.C[0] - r, y0: World.C[1] - r, x1: World.C[0] + r, y1: World.C[1] + r };
+  } // the three Walls
   return Camera.boxOf(pts, tracking ? 250 : 300);
 }
 function sceneView(tracking) {
-  const v = Camera.frame(sceneBox(tracking), World, CAM.vw, CAM.vh, PHONE ? 34 : 62, MAX_SCALE);
-  return Camera.constrain({ ...v, s: Math.min(v.s, AUTO_MAX) }, World, CAM.vw, CAM.vh, MAX_SCALE);
+  const box = sceneBox(tracking),
+    s = PROJ.fit(box, CAM.vw, CAM.vh, PHONE ? 34 : 62);
+  return Camera.constrain({ x: (box.x0 + box.x1) / 2, y: (box.y0 + box.y1) / 2, s: Math.min(s, AUTO_MAX) }, World, CAM.vw, CAM.vh, MAX_SCALE);
 }
 function setAuto(on) {
   CAM.auto = on;
@@ -952,28 +1231,50 @@ const MINI_COL = { titan: '#ff9b6b', wallTitan: '#ff4d4d', civ: '#7fd0ff', rider
 const MINI_STILL = { reduced: true }; // dots do not need the wandering
 function renderMiniKey() {
   const t = TXT[S.lang];
-  $('#miniKey').innerHTML = [['titan', t.mmTitan], ['civ', t.mmCiv], ['rider', t.mmScout], ['cast', t.mmCast]].map(([k, label]) => '<span><i style="background:' + MINI_COL[k] + '"></i>' + label + '</span>').join('');
+  $('#miniKey').innerHTML = [
+    ['titan', t.mmTitan],
+    ['civ', t.mmCiv],
+    ['rider', t.mmScout],
+    ['cast', t.mmCast],
+  ]
+    .map(([k, label]) => '<span><i style="background:' + MINI_COL[k] + '"></i>' + label + '</span>')
+    .join('');
 }
 function drawMini(T) {
-  const cv = MINI.cv, w = cv.clientWidth, h = cv.clientHeight;
+  const cv = MINI.cv,
+    w = cv.clientWidth,
+    h = cv.clientHeight;
   if (!w) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
-  if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
-  const g = cv.getContext('2d'), k = cv.width / World.W, C0 = World.C;
+  if (cv.width !== Math.round(w * dpr)) {
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+  }
+  const g = cv.getContext('2d'),
+    k = cv.width / World.W,
+    C0 = World.C;
   g.clearRect(0, 0, cv.width, cv.height);
   // the island
   g.beginPath();
   World.coast.forEach((p, i) => (i ? g.lineTo(p[0] * k, p[1] * k) : g.moveTo(p[0] * k, p[1] * k)));
   g.closePath();
-  g.fillStyle = '#4a6a44'; g.fill();
-  g.strokeStyle = '#a9cdd2'; g.lineWidth = 0.8 * dpr; g.stroke();
+  g.fillStyle = '#4a6a44';
+  g.fill();
+  g.strokeStyle = '#a9cdd2';
+  g.lineWidth = 0.8 * dpr;
+  g.stroke();
   // the railways laid so far
-  g.strokeStyle = 'rgba(24,20,18,.85)'; g.lineWidth = 0.9 * dpr;
+  g.strokeStyle = 'rgba(24,20,18,.85)';
+  g.lineWidth = 0.9 * dpr;
   for (const rl of TERRAIN.rails) {
     if (T <= rl.T0 || (rl.wreck && POP.rumble.front(T) > World.R.maria + 40)) continue; // wrecked by the Rumbling
     const f = Math.min(1, (T - rl.T0) / (rl.T1 - rl.T0));
     g.beginPath();
-    for (let i = 0; i <= 14; i++) { const q = RouteGeo.at(rl.geo.tab, (f * i) / 14); if (i) g.lineTo(q.x * k, q.y * k); else g.moveTo(q.x * k, q.y * k); }
+    for (let i = 0; i <= 14; i++) {
+      const q = RouteGeo.at(rl.geo.tab, (f * i) / 14);
+      if (i) g.lineTo(q.x * k, q.y * k);
+      else g.moveTo(q.x * k, q.y * k);
+    }
     g.stroke();
   }
   // the three Walls: standing, lost or fallen
@@ -983,7 +1284,9 @@ function drawMini(T) {
     const fallen = st.w[name] === 'collapsed';
     g.strokeStyle = fallen ? 'rgba(236,229,207,.3)' : st.w[name] === 'lost' ? '#ff8a4a' : st.w[name] === 'breached' ? '#ffc169' : '#f1ead6';
     g.setLineDash(fallen ? [2 * dpr, 3 * dpr] : []);
-    g.beginPath(); g.arc(C0[0] * k, C0[1] * k, World.R[name] * k, 0, 6.2832); g.stroke();
+    g.beginPath();
+    g.arc(C0[0] * k, C0[1] * k, World.R[name] * k, 0, 6.2832);
+    g.stroke();
   }
   g.setLineDash([]);
   // everything that moves: people first, Titans on top
@@ -1002,17 +1305,25 @@ function drawMini(T) {
   }
   // the characters on their routes
   for (const en of sceneRoutes) {
-    const R = en.R, f = (S.p - R.start) / Math.max(0.001, R.end - R.start);
+    const R = en.R,
+      f = (S.p - R.start) / Math.max(0.001, R.end - R.start);
     if (f < 0 || (R.hideAt !== undefined && S.p >= R.hideAt) || R.who === 'pure' || R.who === 'civ') continue;
     const q = RouteGeo.at(en.geo.tab, RouteGeo.ease(Math.max(0, Math.min(1, f))));
-    g.beginPath(); g.arc(q.x * k, q.y * k, 2.6 * dpr, 0, 6.2832);
-    g.fillStyle = MINI_COL.cast; g.fill();
-    g.strokeStyle = '#201a10'; g.lineWidth = 0.8 * dpr; g.stroke();
+    g.beginPath();
+    g.arc(q.x * k, q.y * k, 2.6 * dpr, 0, 6.2832);
+    g.fillStyle = MINI_COL.cast;
+    g.fill();
+    g.strokeStyle = '#201a10';
+    g.lineWidth = 0.8 * dpr;
+    g.stroke();
   }
   // the part of the map that is on screen
-  const v = CAM.view;
-  g.strokeStyle = '#ffffff'; g.lineWidth = 1.2 * dpr;
-  g.strokeRect((v.x - CAM.vw / 2 / v.s) * k, (v.y - CAM.vh / 2 / v.s) * k, (CAM.vw / v.s) * k, (CAM.vh / v.s) * k);
+  g.strokeStyle = '#ffffff';
+  g.lineWidth = 1.2 * dpr;
+  g.beginPath();
+  PROJ.corners(pose()).forEach((c, i) => (i ? g.lineTo(c[0] * k, c[1] * k) : g.moveTo(c[0] * k, c[1] * k))); // the ground the camera sees: wider at the far side
+  g.closePath();
+  g.stroke();
 }
 // Click or drag on the mini map to look there.
 function miniGo(ev) {
@@ -1033,13 +1344,18 @@ const CUT = { el: $('#cutin'), active: null, until: 0, out: false, seen: -1 };
 const cutSrc = (pic) => (pic.startsWith('titan:') ? 'assets/scenes/titans/' : 'assets/scenes/') + pic.split(':')[1] + '.webp';
 const cutFallback = (pic) => (pic.startsWith('titan:') && typeof titanPortraits !== 'undefined' ? titanPortraits[pic.split(':')[1]] : null); // the small embedded picture, when the page was copied on its own
 function showCut(ev, k, now) {
-  const el = CUT.el, card = document.createElement('div'), frame = document.createElement('div'), inner = document.createElement('div'), pics = document.createElement('div');
+  const el = CUT.el,
+    card = document.createElement('div'),
+    frame = document.createElement('div'),
+    inner = document.createElement('div'),
+    pics = document.createElement('div');
   card.className = 'cutin-card fx-' + k.fx + ' n' + k.pics.length;
   frame.className = 'cutin-frame';
   inner.className = 'cutin-inner';
   pics.className = 'cutin-pics';
   for (const p of k.pics) {
-    const w = document.createElement('div'), img = document.createElement('img');
+    const w = document.createElement('div'),
+      img = document.createElement('img');
     w.className = 'cutin-pic';
     img.alt = '';
     img.onerror = () => {
@@ -1052,7 +1368,14 @@ function showCut(ev, k, now) {
     pics.appendChild(w);
   }
   inner.appendChild(pics);
-  inner.insertAdjacentHTML('beforeend', '<div class="cutin-lines"></div><div class="cutin-flash"></div>' + (k.fx === 'transform' ? '<svg class="cutin-bolt" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="54,0 36,46 50,46 38,100 68,38 54,38 64,0"/></svg>' : '') + '<div class="cutin-cap"><span class="cutin-year"></span><strong></strong></div>');
+  inner.insertAdjacentHTML(
+    'beforeend',
+    '<div class="cutin-lines"></div><div class="cutin-flash"></div>' +
+      (k.fx === 'transform'
+        ? '<svg class="cutin-bolt" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="54,0 36,46 50,46 38,100 68,38 54,38 64,0"/></svg>'
+        : '') +
+      '<div class="cutin-cap"><span class="cutin-year"></span><strong></strong></div>',
+  );
   inner.querySelector('.cutin-year').textContent = yearText(ev.year);
   inner.querySelector('.cutin-cap strong').textContent = tr(ev.beats[k.beat]);
   frame.appendChild(inner);
@@ -1078,22 +1401,37 @@ const LOAD = { ema: 0.016, frames: 0 };
 function animate(t) {
   const dt = S.lastTime ? Math.min(0.1, (t - S.lastTime) / 1000) : 0;
   S.lastTime = t;
-  if (dt > 0 && dt < 0.07 && t > 5000 && document.visibilityState === 'visible') { // ignore start-up and one-off stalls
+  if (dt > 0 && dt < 0.07 && t > 5000 && document.visibilityState === 'visible') {
+    // ignore start-up and one-off stalls
     LOAD.ema += (dt - LOAD.ema) * 0.03;
-    if (++LOAD.frames > 150 && LOAD.ema > 0.024) { STAGE.slower(); LOAD.frames = 0; LOAD.ema = 0.016; }
+    if (++LOAD.frames > 150 && LOAD.ema > 0.024) {
+      STAGE.slower();
+      LOAD.frames = 0;
+      LOAD.ema = 0.016;
+    }
   }
   if (CUT.active) {
     // a key scene is on: the story holds until it is over (or playback or the auto camera is switched off)
     if (!S.playing || !CAM.auto || t >= CUT.until) endCut();
-    else if (!CUT.out && t >= CUT.until - 320) { CUT.out = true; CUT.el.classList.add('out'); }
+    else if (!CUT.out && t >= CUT.until - 320) {
+      CUT.out = true;
+      CUT.el.classList.add('out');
+    }
   }
-  if (CUT.seen !== S.idx) { CUT.seen = S.idx; for (const k of KEY_SCENES[events[S.idx].id] || []) for (const p of k.pics) new Image().src = cutSrc(p); } // have this event's pictures ready
+  if (CUT.seen !== S.idx) {
+    CUT.seen = S.idx;
+    for (const k of KEY_SCENES[events[S.idx].id] || []) for (const p of k.pics) new Image().src = cutSrc(p);
+  } // have this event's pictures ready
   if (S.playing && !CUT.active) {
-    const i0 = S.idx, p0 = S.p;
+    const i0 = S.idx,
+      p0 = S.p;
     S.p += (dt * 1000) / (13000 / (S.speed * (EVENT_PACE[events[S.idx].id] || 1)));
     if (CAM.auto && !REDUCED && S.idx === i0) {
       const k = (KEY_SCENES[events[i0].id] || []).find((c) => p0 < c.at && S.p >= c.at);
-      if (k) { S.p = k.at; showCut(events[i0], k, t); }
+      if (k) {
+        S.p = k.at;
+        showCut(events[i0], k, t);
+      }
     }
     if (S.p >= 1) {
       const pos = visible.indexOf(S.idx);
@@ -1115,17 +1453,44 @@ function animate(t) {
     if (n.done) CAM.target = null;
     CAM.moved = true;
   }
+  if (CAM.yaw && (CAM.auto || CAM.yawTo !== null)) {
+    // the story's camera looks north: ease back to it
+    CAM.yaw = REDUCED || Math.abs(CAM.yaw) < 0.004 ? 0 : CAM.yaw * Math.exp(-dt * 4);
+    if (!CAM.yaw) CAM.yawTo = null;
+    CAM.moved = true;
+  }
   if (CAM.moved) applyCamera();
   if (S.playing || CAM.moved) renderDynamic();
   CAM.moved = false;
-  const light = lightAt(S.idx, S.p), awake = events[S.idx].nightActive ? 1 : Math.max(0, Math.min(1, (light - 0.2) / 0.4)); // Titans stop at night, except at Utgard
+  const light = lightAt(S.idx, S.p),
+    awake = events[S.idx].nightActive ? 1 : Math.max(0, Math.min(1, (light - 0.2) / 0.4)); // Titans stop at night, except at Utgard
   renderDayChip(light);
-  STAGE.draw(CAM.view, { T: S.idx + S.p, t: t / 1000, dt, walls: wallState(S.idx), crowd: S.pop, reduced: REDUCED, light, awake, flares: flaresNow() });
+  STAGE.draw(CAM.view, {
+    T: S.idx + S.p,
+    t: t / 1000,
+    dt,
+    walls: wallState(S.idx),
+    crowd: S.pop,
+    reduced: REDUCED,
+    light,
+    awake,
+    flares: flaresNow(),
+    yaw: CAM.yaw,
+  });
   if (MINI.tick++ % MINI.every === 0) drawMini(S.idx + S.p);
   requestAnimationFrame(animate);
 }
 // Signal flares of the long-range scouting formation (57th expedition): fired at set moments of the scene.
-const FLARES = [[0.2, 44, '#e2473b'], [0.24, 24, '#e2473b'], [0.29, 0, '#59c36a'], [0.36, -32, '#262626'], [0.42, 36, '#e2473b'], [0.47, 0, '#59c36a'], [0.56, -20, '#59c36a'], [0.63, 30, '#262626']];
+const FLARES = [
+  [0.2, 44, '#e2473b'],
+  [0.24, 24, '#e2473b'],
+  [0.29, 0, '#59c36a'],
+  [0.36, -32, '#262626'],
+  [0.42, 36, '#e2473b'],
+  [0.47, 0, '#59c36a'],
+  [0.56, -20, '#59c36a'],
+  [0.63, 30, '#262626'],
+];
 const NO_FLARES = [];
 function flaresNow() {
   if (events[S.idx].id !== 'female-forest') return NO_FLARES;
@@ -1143,7 +1508,9 @@ function flaresNow() {
 // Time of day shown on the map.
 let dayChipSig = '';
 function renderDayChip(light) {
-  const t = TXT[S.lang], key = light > 0.75 ? 'dayDay' : light > 0.28 ? 'dayDusk' : events[S.idx].nightActive ? 'dayMoon' : 'dayNight', sig = S.lang + key;
+  const t = TXT[S.lang],
+    key = light > 0.75 ? 'dayDay' : light > 0.28 ? 'dayDusk' : events[S.idx].nightActive ? 'dayMoon' : 'dayNight',
+    sig = S.lang + key;
   if (sig === dayChipSig) return;
   dayChipSig = sig;
   const el = $('#dayChip');
@@ -1225,8 +1592,23 @@ const viewportPoint = (ev) => {
   const r = mapViewport.getBoundingClientRect();
   return [ev.clientX - r.left, ev.clientY - r.top];
 };
+// Zoom keeping the ground under screen point (px, py) where it is.
+function zoomTo(view, s, w, px, py) {
+  const lim = Camera.limits(World, CAM.vw, CAM.vh, MAX_SCALE);
+  return PROJ.hold({ x: view.x, y: view.y, s: Math.max(lim.min, Math.min(lim.max, s)) }, CAM.vw, CAM.vh, w, px, py, CAM.yaw);
+}
+const groundUnder = (view, px, py) => PROJ.ground(PROJ.pose(view, CAM.vw, CAM.vh, CAM.yaw), px, py) || [view.x, view.y];
+// Turn the 3D camera round the point in the middle of the map (the automatic camera always looks north).
+function turnTo(yaw) {
+  if (!IS3D) return;
+  setAuto(false);
+  CAM.target = null;
+  CAM.yawTo = null;
+  CAM.yaw = Math.atan2(Math.sin(yaw), Math.cos(yaw));
+  CAM.moved = true;
+}
 function zoomBy(factor, px = CAM.vw / 2, py = CAM.vh / 2) {
-  userView(Camera.zoomAt(CAM.view, factor, px, py, World, CAM.vw, CAM.vh, MAX_SCALE));
+  userView(zoomTo(CAM.view, CAM.view.s * factor, groundUnder(CAM.view, px, py), px, py));
 }
 mapViewport.addEventListener(
   'wheel',
@@ -1243,6 +1625,10 @@ $('#zoomReset').onclick = () => {
   if (CAM.auto) CAM.target = null; // switching off leaves the view where it is
   setAuto(!CAM.auto);
 };
+$('#compass').onclick = () => {
+  CAM.yawTo = 0;
+  CAM.moved = true;
+}; // face north again
 $('#zoomSlider').oninput = (ev) => {
   const lim = Camera.limits(World, CAM.vw, CAM.vh, MAX_SCALE);
   zoomBy(Camera.sliderToScale(ev.target.value / 100, lim) / CAM.view.s);
@@ -1252,14 +1638,35 @@ let gesture = null,
   suppressMapClick = false;
 function startGesture() {
   const pts = [...pointers.values()];
-  if (pts.length === 1) gesture = { kind: 'pan', start: pts[0], view: { ...CAM.view }, moved: false };
+  if (pts.length === 1)
+    gesture = {
+      kind: turning ? 'turn' : 'pan',
+      start: pts[0],
+      view: { ...CAM.view },
+      yaw: CAM.yaw,
+      w: groundUnder(CAM.view, pts[0][0], pts[0][1]),
+      moved: false,
+    };
   else if (pts.length >= 2) {
     const [a, b] = pts;
-    gesture = { kind: 'pinch', d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, mid: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], view: { ...CAM.view }, moved: true };
+    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    gesture = {
+      kind: 'pinch',
+      d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1,
+      ang: Math.atan2(b[1] - a[1], b[0] - a[0]),
+      yaw: CAM.yaw,
+      mid,
+      w: groundUnder(CAM.view, mid[0], mid[1]),
+      view: { ...CAM.view },
+      moved: true,
+    };
   }
 }
+let turning = false; // dragging with the right mouse button (or with Shift held) turns the 3D map
+mapViewport.addEventListener('contextmenu', (ev) => IS3D && ev.preventDefault());
 mapViewport.addEventListener('pointerdown', (ev) => {
-  if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+  if (ev.pointerType === 'mouse' && ev.button !== 0 && !(IS3D && ev.button === 2)) return;
+  turning = IS3D && ev.pointerType === 'mouse' && (ev.button === 2 || ev.shiftKey);
   pointers.set(ev.pointerId, viewportPoint(ev));
   suppressMapClick = false;
   startGesture();
@@ -1268,10 +1675,17 @@ mapViewport.addEventListener('pointerdown', (ev) => {
 for (const type of ['selectstart', 'dragstart']) mapViewport.addEventListener(type, (ev) => ev.preventDefault());
 mapViewport.addEventListener('pointermove', (ev) => {
   if (!pointers.has(ev.pointerId) || !gesture) return;
-  if (ev.pointerType === 'mouse' && !(ev.buttons & 1)) return endPointer(ev); // the button was released outside the map
+  if (ev.pointerType === 'mouse' && !(ev.buttons & 3)) return endPointer(ev); // the button was released outside the map
   pointers.set(ev.pointerId, viewportPoint(ev));
   const pts = [...pointers.values()];
-  if (gesture.kind === 'pan' && pts.length === 1) {
+  if (gesture.kind === 'turn' && pts.length === 1) {
+    const dx = pts[0][0] - gesture.start[0];
+    if (!gesture.moved && Math.abs(dx) > 4) {
+      gesture.moved = true;
+      mapViewport.setPointerCapture(ev.pointerId);
+    }
+    if (gesture.moved) turnTo(gesture.yaw + dx * 0.006);
+  } else if (gesture.kind === 'pan' && pts.length === 1) {
     const dx = pts[0][0] - gesture.start[0],
       dy = pts[0][1] - gesture.start[1];
     if (!gesture.moved && Math.hypot(dx, dy) > 5) {
@@ -1281,14 +1695,21 @@ mapViewport.addEventListener('pointermove', (ev) => {
     }
     if (gesture.moved) {
       ev.preventDefault();
-      userView({ x: gesture.view.x - dx / gesture.view.s, y: gesture.view.y - dy / gesture.view.s, s: gesture.view.s });
+      userView(PROJ.hold(gesture.view, CAM.vw, CAM.vh, gesture.w, pts[0][0], pts[0][1], CAM.yaw)); // the ground you took hold of stays under the pointer
     }
   } else if (gesture.kind === 'pinch' && pts.length >= 2) {
     const [a, b] = pts,
       d = Math.hypot(a[0] - b[0], a[1] - b[1]) || 1,
       mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-    const v = Camera.zoomAt(gesture.view, d / gesture.d, gesture.mid[0], gesture.mid[1], World, CAM.vw, CAM.vh, MAX_SCALE);
-    userView({ x: v.x - (mid[0] - gesture.mid[0]) / v.s, y: v.y - (mid[1] - gesture.mid[1]) / v.s, s: v.s });
+    const twist = Math.atan2(
+      Math.sin(Math.atan2(b[1] - a[1], b[0] - a[0]) - gesture.ang),
+      Math.cos(Math.atan2(b[1] - a[1], b[0] - a[0]) - gesture.ang),
+    );
+    if (IS3D && (gesture.twisting || Math.abs(twist) > 0.12)) {
+      gesture.twisting = true;
+      turnTo(gesture.yaw + twist);
+    } // two fingers turning: the map turns with them
+    userView(zoomTo(gesture.view, (gesture.view.s * d) / gesture.d, gesture.w, mid[0], mid[1]));
   }
 });
 function endPointer(ev) {
@@ -1339,7 +1760,7 @@ function resizeMap() {
   if (CAM.auto) CAM.retarget = true;
   CAM.moved = true;
 }
-for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = TXT[S.lang][el.dataset.i18n]; // page text comes from TXT
+applyTexts(); // page text comes from TXT
 resizeMap();
 CAM.view = Camera.whole(World, CAM.vw, CAM.vh); // open on the whole island, then ease to the first scene
 filterEvents();
@@ -1360,7 +1781,9 @@ $('#popToggle').onclick = () => {
 $('#playBtn').addEventListener('click', () => {
   if (S.playing) setAuto(true); // pressing Play hands the camera back to the story
 });
-for (const p of document.querySelectorAll('.panel')) for (const c of ['tl', 'tr', 'bl', 'br']) p.insertAdjacentHTML('beforeend', `<svg class="corner ${c}" viewBox="0 0 40 40" aria-hidden="true"><use href="#orn-corner"/></svg>`);
+for (const p of document.querySelectorAll('.panel'))
+  for (const c of ['tl', 'tr', 'bl', 'br'])
+    p.insertAdjacentHTML('beforeend', `<svg class="corner ${c}" viewBox="0 0 40 40" aria-hidden="true"><use href="#orn-corner"/></svg>`);
 requestAnimationFrame(animate);
 new ResizeObserver(resizeMap).observe(mapViewport);
 function fitLayout() {

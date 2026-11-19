@@ -1,20 +1,30 @@
 {
   "data": {
     "WORLD_COAST": "src/world-coast.json",
-    "TERRAIN_GRID": "assets/map-designs/world-terrain.json"
+    "TERRAIN_GRID": "assets/map-designs/world-terrain.json",
+    "DESIGN3D": "assets/3d-design/design.json"
   },
   "scripts": [
     "src/portraits.js",
+    "vendor/three/three.iife.min.js",
     "src/route-geometry.js",
     "src/world.js",
     "src/terrain.js",
+    "src/relief.js",
     "src/camera.js",
+    "src/view3d.js",
+    "src/rig.js",
     "src/story-text.js",
     "src/story.js",
     "src/population.js",
     "assets/population/puppets.js",
     "src/map-painter.js",
     "src/stage.js",
+    "src/s3-kit.js",
+    "src/s3-land.js",
+    "src/s3-walls.js",
+    "src/s3-crowd.js",
+    "src/stage3d.js",
     "src/app.js"
   ],
   "optional": [
