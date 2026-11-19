@@ -187,7 +187,7 @@
     // 850: Ragako. Villagers become Titans inside Wall Rose; all but one walk to Utgard and die there.
     const rag = add('titan', 22, 'ragako', { hidden: true });
     fade(rag, ['ragako', 0.34], ['ragako', 0.56], 1, { spread: 0.4 });
-    Object.assign(rag[0], { still: true, lying: true, home0: at(172, 114) }); // one stays, lying in the village, unable to move
+    Object.assign(rag[0], { still: true, lying: true, home0: at(161.5, 111.8) }); // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
     const ragGo = rag.slice(1);
     move(ragGo, ['ragako', 0.62], ['ragako', 1], 'utgard', { spread: 0.4 });
     kill(ragGo.slice(0, 17), ['utgard', 0.5], ['utgard', 0.96]);

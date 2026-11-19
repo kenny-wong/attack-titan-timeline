@@ -3101,7 +3101,7 @@ body {
 <div class="site">
   <div class="masthead">
   <header class="topbar">
-    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v3.1.1</span></div></div></div>
+    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v3.1.2</span></div></div></div>
     <div class="top-actions"><span class="spoiler" data-i18n="spoiler">全劇劇透</span><div class="lang-switch" id="langSwitch" role="group" aria-label="Language"><button type="button" class="lang-btn" data-lang="zh" lang="zh-Hant" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false">EN</button><button type="button" class="lang-btn" data-lang="ja" lang="ja" aria-pressed="false">日本語</button></div></div>
   </header>
   <div class="hero"><div><div class="eyebrow" data-i18n="kicker">三道城牆 · 114 年入侵及防衛史</div><h1 data-i18n="hero">進擊之巨人</h1><div class="epigraph" data-i18n="epigraph">那一天，人類想起了被巨人支配的恐懼。</div><p data-i18n="subtitle">拖動年份與事件進度，親眼睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重要路線。</p></div><div class="year-plate"><small data-i18n="year">故事年份</small><strong id="heroYear">743</strong></div></div>
@@ -3127,7 +3127,7 @@ body {
       </section>
       <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v3.1.1</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v3.1.2</span></div></div>
     </aside>
   </div>
 </div>
@@ -10679,7 +10679,7 @@ function lightAt(idx, p) {
     // 850: Ragako. Villagers become Titans inside Wall Rose; all but one walk to Utgard and die there.
     const rag = add('titan', 22, 'ragako', { hidden: true });
     fade(rag, ['ragako', 0.34], ['ragako', 0.56], 1, { spread: 0.4 });
-    Object.assign(rag[0], { still: true, lying: true, home0: at(172, 114) }); // one stays, lying in the village, unable to move
+    Object.assign(rag[0], { still: true, lying: true, home0: at(161.5, 111.8) }); // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
     const ragGo = rag.slice(1);
     move(ragGo, ['ragako', 0.62], ['ragako', 1], 'utgard', { spread: 0.4 });
     kill(ragGo.slice(0, 17), ['utgard', 0.5], ['utgard', 0.96]);
@@ -12364,7 +12364,8 @@ function lightAt(idx, p) {
     const countProp = (name, n = 1) => { for (const p of props[name].parts) needB[p.shape] += n; };
     const treeProp = (t) => props[t.g ? 'treeGiant' : t.k ? 'treeConifer' : 'treeBroadleaf'];
     // Solid trees must not stand in a Wall, and the giant forests are thinned so that what happens under them can be seen.
-    const trees = terrain.trees.filter((t, i) => { const r = Math.hypot(t.x - C[0], t.y - C[1]); for (const k in R) if (Math.abs(r - R[k]) < (t.g ? 7 : 3.4)) return false; return !(t.g && (i * 7919) % 100 < 42); });
+    const lyingAt = pop.agents.filter((a) => a.lying && !a.crawl).map((a) => a.home0); // no tree stands over the Titan that lies at Ragako
+    const trees = terrain.trees.filter((t, i) => { const r = Math.hypot(t.x - C[0], t.y - C[1]); for (const k in R) if (Math.abs(r - R[k]) < (t.g ? 7 : 3.4)) return false; if (lyingAt.some((p) => Math.hypot(t.x - p[0], t.y - p[1]) < 9)) return false; return !(t.g && (i * 7919) % 100 < 42); });
     for (const t of trees) for (const p of treeProp(t).parts) need[p.shape]++;
     // Buildings of a place, as [prop, dx, dz, yaw, scale] around its centre.
     const TOWN = 0.54; // towns are drawn a little smaller than the figure scale so that a district holds a real town

@@ -93,7 +93,8 @@
     const countProp = (name, n = 1) => { for (const p of props[name].parts) needB[p.shape] += n; };
     const treeProp = (t) => props[t.g ? 'treeGiant' : t.k ? 'treeConifer' : 'treeBroadleaf'];
     // Solid trees must not stand in a Wall, and the giant forests are thinned so that what happens under them can be seen.
-    const trees = terrain.trees.filter((t, i) => { const r = Math.hypot(t.x - C[0], t.y - C[1]); for (const k in R) if (Math.abs(r - R[k]) < (t.g ? 7 : 3.4)) return false; return !(t.g && (i * 7919) % 100 < 42); });
+    const lyingAt = pop.agents.filter((a) => a.lying && !a.crawl).map((a) => a.home0); // no tree stands over the Titan that lies at Ragako
+    const trees = terrain.trees.filter((t, i) => { const r = Math.hypot(t.x - C[0], t.y - C[1]); for (const k in R) if (Math.abs(r - R[k]) < (t.g ? 7 : 3.4)) return false; if (lyingAt.some((p) => Math.hypot(t.x - p[0], t.y - p[1]) < 9)) return false; return !(t.g && (i * 7919) % 100 < 42); });
     for (const t of trees) for (const p of treeProp(t).parts) need[p.shape]++;
     // Buildings of a place, as [prop, dx, dz, yaw, scale] around its centre.
     const TOWN = 0.54; // towns are drawn a little smaller than the figure scale so that a district holds a real town
