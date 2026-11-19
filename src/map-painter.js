@@ -177,11 +177,16 @@
     if (ground && opt.relief) rockAndSnow(ctx, opt.relief, W, H, opt);
     // District towns: pale paving with little roofs
     for (const d of DISTRICTS) {
-      const a = (d.deg * Math.PI) / 180;
-      ctx.beginPath(); ctx.arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a + Math.PI / 2); ctx.closePath(); ctx.fillStyle = (ground && opt.paving) || '#d3c9a4'; ctx.fill();
-      if (ground) { ctx.strokeStyle = 'rgba(90,80,60,.35)'; ctx.lineWidth = 0.5; for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.arc(d.base[0], d.base[1], (d.r * k) / 4, a - Math.PI / 2, a + Math.PI / 2); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(d.inner[0], d.inner[1]); ctx.lineTo(d.outer[0], d.outer[1]); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(120,104,76,.6)'; ctx.stroke(); continue; } // streets; the houses are solid
-      for (let i = 0; i < 26; i++) {
-        const t = a + (r() - 0.5) * Math.PI * 0.92, dd = 2.5 + r() * (d.r - 5), x = d.base[0] + Math.cos(t) * dd, y = d.base[1] + Math.sin(t) * dd;
+      const at2 = (u, v) => [d.base[0] + d.t[0] * u + d.n[0] * v, d.base[1] + d.t[1] * u + d.n[1] * v]; // across the district, and out from the Wall
+      ctx.beginPath(); for (const q of d.outline(1.5)) ctx.lineTo(q.p[0], q.p[1]); ctx.closePath(); ctx.fillStyle = (ground && opt.paving) || '#d3c9a4'; ctx.fill();
+      if (ground) { // streets; the houses are solid
+        ctx.strokeStyle = 'rgba(90,80,60,.35)'; ctx.lineWidth = 0.5;
+        for (let v = 6; v < d.depth - 4; v += 5.3) { const w = v < d.depth - d.hw ? d.hw - 1.2 : Math.sqrt(Math.max(0, d.hw * d.hw - (v - d.depth + d.hw) ** 2)) - 1.2; if (w < 2) continue; const p = at2(-w, v), q = at2(w, v); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); }
+        ctx.beginPath(); ctx.moveTo(d.inner[0], d.inner[1]); ctx.lineTo(d.outer[0], d.outer[1]); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(120,104,76,.6)'; ctx.stroke(); continue;
+      }
+      for (let i = 0; i < Math.round(d.hw * d.depth * 0.045); i++) {
+        const [x, y] = at2((r() * 2 - 1) * (d.hw - 2.5), 2.5 + r() * (d.depth - 5));
+        if (d.cap([x, y]) > -2.4) continue;
         ctx.fillStyle = r() < 0.5 ? '#9c6a4a' : '#b98a5e'; ctx.fillRect(x - 1.1, y - 0.9, 2.2, 1.8);
       }
     }

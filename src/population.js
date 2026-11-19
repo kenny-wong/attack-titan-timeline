@@ -16,7 +16,7 @@
   const rng = (seed) => { let s = seed >>> 0 || 1; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); };
 
   function create(events, World, opts = {}) {
-    const { C, R, DISTRICTS, at, dist, rOf, degOf, district, onLand, coastDist, coastAt } = World;
+    const { C, R, DR, DISTRICTS, at, atTrue, dist, rOf, degOf, district, onLand, coastDist, coastAt } = World;
     const N = { titans: 200, civilians: 500, riders: 10, wallTitans: 360, ...(opts.counts || {}) };
     const tn = (n) => Math.max(1, Math.round((n * N.titans) / 300)); // the story's shares of the Titans, whatever their number
     const idx = (id) => { const i = events.findIndex((e) => e.id === id); if (i < 0) throw new Error('Unknown event ' + id); return i; };
@@ -24,13 +24,13 @@
 
     // ---- Areas ----
     const REGIONS = ['outside', 'maria', 'rose', 'sina'];
-    const RING = { outside: R.maria + 34, maria: (R.maria + R.rose) / 2, rose: (R.rose + R.sina) / 2, sina: 68 };
-    const clearOf = (p, wall, pad) => DISTRICTS.every((d) => d.wall !== wall || dist(p, d.base) > d.r + pad);
+    const RING = { outside: R.maria + DR.maria[1] + 14, maria: Math.max((R.maria + R.rose) / 2, R.rose + DR.rose[1] + 12), rose: Math.max((R.rose + R.sina) / 2, R.sina + DR.sina[1] + 12), sina: R.sina * 0.55 }; // the way round inside each territory, clear of the district tips
+    const clearOf = (p, wall, pad) => DISTRICTS.every((d) => d.wall !== wall || d.cap(p) > pad);
     const inArea = (area, p) => {
       const d = district(area);
-      if (d) return rOf(p) > R[d.wall] + 2 && dist(p, d.base) < d.r - 3;
-      if (area === 'ragako') return dist(p, at(172, 114)) < 11;
-      if (area === 'utgard') return dist(p, at(174, 134)) < 10 && rOf(p) < R.rose - 5;
+      if (d) return rOf(p) > R[d.wall] + 2 && d.cap(p) < -3;
+      if (area === 'ragako') return dist(p, atTrue(172, 114)) < 11;
+      if (area === 'utgard') return dist(p, atTrue(174, 134)) < 10 && rOf(p) < R.rose - 5;
       if (area === 'shigRing') { const r = rOf(p), a = Math.abs(wrapDeg(degOf(p) - 90)); return r < R.maria - 6 && r > R.maria - 44 && a < 26 && clearOf(p, 'rose', 6); } // Maria side of Shiganshina's inner gate
       const r = rOf(p);
       if (area === 'outside') return r > R.maria + 7 && clearOf(p, 'maria', 5) && onLand(p) && coastDist(p) > 9;
@@ -42,8 +42,8 @@
     const regionOfArea = (area) => { const d = district(area); return d ? d.id : area === 'ragako' || area === 'utgard' ? 'rose' : area === 'shigRing' ? 'maria' : area; };
     const box = (area) => {
       const d = district(area);
-      if (d) return [d.base[0] - d.r, d.base[1] - d.r, d.base[0] + d.r, d.base[1] + d.r];
-      if (area === 'ragako' || area === 'utgard') { const c = at(173, 124); return [c[0] - 40, c[1] - 40, c[0] + 40, c[1] + 40]; }
+      if (d) return [Math.min(d.base[0], d.outer[0]) - d.hw, Math.min(d.base[1], d.outer[1]) - d.hw, Math.max(d.base[0], d.outer[0]) + d.hw, Math.max(d.base[1], d.outer[1]) + d.hw];
+      if (area === 'ragako' || area === 'utgard') { const c = atTrue(173, 124); return [c[0] - 40, c[1] - 40, c[0] + 40, c[1] + 40]; }
       const rr = area === 'outside' ? null : area === 'sina' ? R.sina : area === 'rose' ? R.rose : R.maria;
       return rr ? [C[0] - rr, C[1] - rr, C[0] + rr, C[1] + rr] : [0, 0, World.W, World.H];
     };
@@ -78,31 +78,44 @@
       const [outerReg, innerReg] = ORDER[d.wall];
       LINKS.push([outerReg, d.id, [d.beyond, d.outer]], [d.id, innerReg, [d.inner, d.within]]);
     }
+    // The way round inside a territory from p0 to p1. The districts of the next Wall in stand out into it like piers: the way keeps
+    // clear of them (out to the ring road wherever it would come near one, and straight out first when it starts beside one).
+    const PIERS = { outside: 'maria', maria: 'rose', rose: 'sina' };
     const arc = (node, p0, p1) => {
       const ring = NODES[node]?.ring;
       if (!ring) return [];
-      const a0 = degOf(p0), d = wrapDeg(degOf(p1) - a0), n = Math.floor(Math.abs(d) / 11), out = [];
+      const a0 = degOf(p0), d = wrapDeg(degOf(p1) - a0), n = Math.max(1, Math.floor(Math.abs(d) / 6)), out = [], piers = PIERS[node];
       const r0 = rOf(p0), r1 = rOf(p1);
-      for (let i = 1; i <= n; i++) { const f = i / (n + 1), rr = ring + (r0 - ring) * Math.pow(1 - f, 2.2) + (r1 - ring) * Math.pow(f, 2.2); out.push(at(Math.max(node === 'sina' ? 20 : 0, rr), a0 + d * f)); }
+      if (piers && !clearOf(p0, piers, 16)) out.push(at(Math.max(r0, ring), a0));
+      for (let i = 1; i <= n; i++) {
+        const f = i / (n + 1), rr = ring + (r0 - ring) * Math.pow(1 - f, 2.2) + (r1 - ring) * Math.pow(f, 2.2), p = at(Math.max(node === 'sina' ? 16 : 0, rr), a0 + d * f);
+        out.push(piers && !clearOf(p, piers, 9) ? at(Math.max(rr, ring), a0 + d * f) : p);
+      }
+      if (piers && !clearOf(p1, piers, 16)) out.push(at(Math.max(r1, ring), a0 + d));
       return out;
     };
     const polyLen = (pts) => { let s = 0; for (let i = 1; i < pts.length; i++) s += dist(pts[i - 1], pts[i]); return s; };
     function route(fromArea, A, toArea, B, via) {
       const from = regionOfArea(fromArea), to = regionOfArea(toArea);
       let best = null;
-      const walk = (node, pts, seen) => {
-        if (seen.size > 7) return;
-        if (node === to) { const full = [...pts, ...arc(node, pts[pts.length - 1], B), B], len = polyLen(full); if (!best || len < best.len) best = { pts: full, len }; return; }
+      // Which gates to take is settled on rough lengths (in to the ring road, round it, out again); the way itself is drawn once, for the choice made.
+      const rough = (node, p0, p1) => { const ring = NODES[node]?.ring, d = (Math.abs(wrapDeg(degOf(p1) - degOf(p0))) * Math.PI) / 180; return !ring || d < 0.2 ? dist(p0, p1) : Math.abs(rOf(p0) - ring) + d * ring + Math.abs(rOf(p1) - ring); };
+      const walk = (node, legs, last, len, seen) => {
+        if (seen.size > 7 || (best && len >= best.len)) return;
+        if (node === to) { const L = len + rough(node, last, B); if (!best || L < best.len) best = { len: L, legs: [...legs, [node, [B]]] }; return; }
         for (const [a, b, wp] of LINKS) {
           let next, way;
           if (a === node && !seen.has(b)) { next = b; way = wp; } else if (b === node && !seen.has(a)) { next = a; way = [...wp].reverse(); } else continue;
           const gate = NODES[next].district || NODES[node].district;
           if (via && gate && !via.includes(gate.id)) continue;
-          walk(next, [...pts, ...arc(node, pts[pts.length - 1], way[0]), ...way], new Set([...seen, next]));
+          walk(next, [...legs, [node, way]], way[way.length - 1], len + rough(node, last, way[0]) + polyLen(way), new Set([...seen, next]));
         }
       };
-      walk(from, [A], new Set([from]));
-      return best ? best.pts : [A, B];
+      walk(from, [], A, 0, new Set([from]));
+      if (!best) return [A, B];
+      const pts = [A];
+      for (const [node, way] of best.legs) pts.push(...arc(node, pts[pts.length - 1], way[0]), ...way);
+      return pts;
     }
     const metrics = (pts) => { const ls = []; let total = 0; for (let i = 1; i < pts.length; i++) { const n = dist(pts[i - 1], pts[i]); ls.push(n); total += n; } return { pts, ls, total: Math.max(0.001, total) }; };
     const along = (m, f) => { let rem = m.total * clamp01(f); for (let i = 0; i < m.ls.length; i++) { if (rem <= m.ls[i]) return lerp(m.pts[i], m.pts[i + 1], m.ls[i] ? rem / m.ls[i] : 0); rem -= m.ls[i]; } return m.pts[m.pts.length - 1]; };
@@ -162,7 +175,7 @@
     setCur(inMaria, (a) => lerp(a.home0, TROST.outer, 0.8));
     // 846: the refugee column sent out through Trost draws the Titans nearest to it.
     // The column spreads out to both sides of Trost's gate, close under Wall Rose (where Wall Maria does not hide it from the south).
-    const FLANKS = [at(R.rose + 17, 90 + 15), at(R.rose + 17, 90 - 15)], flank = (list, k) => list.filter((_, i) => i % 2 === k);
+    const FLANKS = [at(R.rose + 24, 90 + 22), at(R.rose + 24, 90 - 22)], flank = (list, k) => list.filter((_, i) => i % 2 === k);
     const drawn = [...first, ...second];
     for (const k of [0, 1]) move(flank(drawn, k), ['reclamation', 0.1], ['reclamation', 0.5], 'maria', { near: FLANKS[k], radius: 30, spread: 0.5 });
     kill(take(inMaria, inMaria.filter((_, i) => i % 13 === 5)), ['cadets', 0.2], ['cadets', 0.9]); // early Survey Corps expeditions
@@ -170,7 +183,7 @@
     const trostTitans = take(inMaria, nearest(inMaria, TROST.outer, tn(26)));
     move(trostTitans, ['trost-attack', 0.42], ['trost-attack', 0.88], 'trost', { via: ['trost'], spread: 0.5 });
     kill(trostTitans, ['trost-seal', 0.45], ['trost-seal', 0.96]);
-    kill(take(inMaria, nearest(inMaria, at(214, 42), tn(6))), ['female-forest', 0.2], ['female-forest', 0.72]); // 57th expedition
+    kill(take(inMaria, nearest(inMaria, atTrue(214, 42), tn(6))), ['female-forest', 0.2], ['female-forest', 0.72]); // 57th expedition
     // Autumn 850: the Trost "executioner" lures and kills Titans night after night.
     const lured = take(inMaria, nearest(inMaria, TROST.outer, tn(30)));
     move(lured, ['rod', 0], ['rod', 0.7], 'maria', { near: TROST.beyond, radius: 16, spread: 0.6 });
@@ -187,7 +200,7 @@
     // 850: Ragako. Villagers become Titans inside Wall Rose; all but one walk to Utgard and die there.
     const rag = add('titan', 22, 'ragako', { hidden: true });
     fade(rag, ['ragako', 0.34], ['ragako', 0.56], 1, { spread: 0.4 });
-    Object.assign(rag[0], { still: true, lying: true, home0: at(164, 113.4), roof: { yaw: 0.6 } }); // it lies on the roof of a house it has crushed, at the edge of the village away from Wall Rose // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
+    Object.assign(rag[0], { still: true, lying: true, home0: atTrue(164, 113.4), roof: { yaw: 0.6 } }); // it lies on the roof of a house it has crushed, at the edge of the village away from Wall Rose // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
     const ragGo = rag.slice(1);
     move(ragGo, ['ragako', 0.62], ['ragako', 1], 'utgard', { spread: 0.4 });
     kill(ragGo.slice(0, 17), ['utgard', 0.5], ['utgard', 0.96]);
@@ -263,25 +276,33 @@
       // Outside Wall Maria nothing is spared: the great circle flattens it all. The one exception is the harbour, which the story still uses after the Rumbling begins.
       const spared = (p) => rOf(p) < R.maria + 34 || (PTS.harbor && dist(p, PTS.harbor) < 8);
       for (const p of [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])]) if (rOf(p) > R.sina - 6 && spared(p) && !spots.some((q) => dist(q, p) < 8)) spots.push(p);
-      rumble.zones = [...DISTRICTS.map((d) => ({ c: d.base, r: d.r, town: d.id })), ...spots.map((c) => ({ c, r: 13 }))];
+      // zones are circles: a district is a row of them along the road between its gates, a village is one
+      const beads = (d) => { const k = Math.ceil((d.depth - d.hw) / (d.hw * 0.8)); return Array.from({ length: k + 1 }, (_, i) => ({ c: [d.base[0] + (d.end[0] - d.base[0]) * (i / k), d.base[1] + (d.end[1] - d.base[1]) * (i / k)], r: d.hw, town: d.id })); };
+      rumble.zones = [...DISTRICTS.flatMap(beads), ...spots.map((c) => ({ c, r: 13 }))];
       const SPOT = 13;
       // a town is the half-round inside its district wall; standing on a wall line is not trampling
       const blockedAt = (p, own) => {
         const rp = rOf(p);
-        for (const d of DISTRICTS) if (rp > R[d.wall] + 0.8 && dist(p, d.base) < d.r + (d === own ? -1 : 3)) return true;
+        for (const d of DISTRICTS) if (rp > R[d.wall] + 0.8 && rp < R[d.wall] + d.depth + 4 && d.cap(p) < (d === own ? -1 : 3)) return true;
         for (const c of spots) if (dist(p, c) < SPOT) return true;
         return false;
       };
       // is the straight way out from radius r0 on this bearing clear? (nearest point of the ray to each town and village)
       const rayFree = (r0, deg, own) => {
         const ux = Math.cos(deg * rad), uy = Math.sin(deg * rad);
-        for (const d of DISTRICTS) { const cx = d.base[0] - C[0], cy = d.base[1] - C[1], al = Math.max(r0 + 2, R[d.wall] + 0.8, cx * ux + cy * uy); if (Math.hypot(cx - ux * al, cy - uy * al) < d.r + (d === own ? -1 : 3)) return false; }
+        // a district lies along a road from the centre, as the ray does: the ray is nearest to it at its start, or level with one end of the road
+        for (const d of DISTRICTS) {
+          const cs = ux * d.n[0] + uy * d.n[1];
+          if (cs <= 0.2) continue;
+          const lo = Math.max(r0 + 2, R[d.wall] + 0.8), Rw = R[d.wall], e = Rw + d.depth - d.hw, pad = d === own ? -1 : 3;
+          for (const al of [lo, Rw * cs, Rw / cs, e * cs, e / cs]) { const q = Math.max(lo, al); if (d.cap([C[0] + ux * q, C[1] + uy * q]) < pad) return false; }
+        }
         for (const c of spots) { const cx = c[0] - C[0], cy = c[1] - C[1], al = Math.max(r0 + 2, cx * ux + cy * uy); if (Math.hypot(cx - ux * al, cy - uy * al) < SPOT) return false; }
         return true;
       };
       const taken = []; // bearings side-steppers already walk out on: the next one keeps 0.8 degrees clear, so they stand side by side
       const clearBearing = (r0, b) => rayFree(r0, b) && taken.every((x) => Math.abs(wrapDeg(x - b)) >= 0.8);
-      const lenOf = (w) => 2 * Math.PI * R[w] + DISTRICTS.filter((d) => d.wall === w).reduce((sum, d) => sum + Math.PI * d.r, 0);
+      const lenOf = (w) => 2 * Math.PI * R[w] + DISTRICTS.filter((d) => d.wall === w).reduce((sum, d) => sum + d.len, 0);
       const total = WALLS.reduce((sum, w) => sum + lenOf(w), 0), r = rng(4242);
       const mk = (start, g) => { const a = { id: agents.length, kind: 'wallTitan', r, variant: 1, area0: 'outside', home0: start, vis0: 0, ops: [], phase: (agents.length * 0.37) % 10, speed: 1, rumble: g }; agents.push(a); wallTitans.push(a); };
       for (const wall of WALLS) {
@@ -294,16 +315,16 @@
           if (!rayFree(Rw, th0)) for (let k = 1; k < 260; k++) { const c = [th0 + k * 0.25, th0 - k * 0.25].find((b) => clearBearing(Rw, b)); if (c !== undefined) { th1 = wrapDeg(c); taken.push(th1); break; } } // the nearest clear bearing along its own Wall
           mk(start, { wall, th0, th1, r0: Rw, s1: 0, pre: Math.abs(wrapDeg(th1 - th0)) * rad * Rw });
         }
-        // the half-round wall of each district
+        // the wall of each district: its two straight sides and its round end
         for (const d of ds) for (let j = 0; j < nB; j++) {
-          const ph = d.deg - 90 + (180 * (j + 0.5)) / nB, start = [d.base[0] + d.r * Math.cos(ph * rad), d.base[1] + d.r * Math.sin(ph * rad)], th0 = degOf(start), rs = rOf(start);
+          const s = (d.len * (j + 0.5)) / nB, start = d.wallAt(s).p, th0 = degOf(start), rs = rOf(start);
           if (rayFree(rs, th0, d)) { mk(start, { wall, district: d, th0, th1: th0, r0: rs, s1: 0, pre: 0 }); continue; } // nothing in the way: straight out from where it stands
           // an outer district lies in the way: along its own wall to the nearer end, then along the ring to the first clear bearing
-          const dir = ph < d.deg ? -1 : 1, thJ = wrapDeg(d.deg + (dir * Math.atan(d.r / Rw)) / rad);
+          const dir = s < d.len / 2 ? -1 : 1, thJ = wrapDeg(d.deg + (dir * Math.asin(d.hw / Rw)) / rad); // the foot of the district wall it is nearer to
           let th1 = thJ;
           for (let k = 0; k < 260; k++) { const c = thJ + dir * k * 0.25; if (clearBearing(Rw, c)) { th1 = wrapDeg(c); taken.push(th1); break; } }
-          const s1 = Math.abs(d.deg + dir * 90 - ph) * rad * d.r;
-          mk(start, { wall, district: d, ph, dir, thJ, rJ: Math.hypot(Rw, d.r), th0, th1, r0: Rw, s1, pre: s1 + Math.abs(wrapDeg(th1 - thJ)) * rad * Rw });
+          const s1 = dir < 0 ? s : d.len - s;
+          mk(start, { wall, district: d, s, dir, thJ, th0, th1, r0: Rw, s1, pre: s1 + Math.abs(wrapDeg(th1 - thJ)) * rad * Rw });
         }
       }
       // places in the great circle: evenly spaced, in the order they stand around the island, so nobody has far to shift
@@ -343,7 +364,7 @@
       if (rho < g.r0) {
         const u = g.pre - (g.r0 - rho); // how far it has stepped along its Wall so far
         if (u <= 0) return [a.home0[0], a.home0[1], 0];
-        if (u < g.s1) { const ph = (g.ph + (g.dir * (u / g.district.r)) / rad) * rad; return [g.district.base[0] + g.district.r * Math.cos(ph), g.district.base[1] + g.district.r * Math.sin(ph), 0]; }
+        if (u < g.s1) { const q = g.district.wallAt(g.s + g.dir * u).p; return [q[0], q[1], 0]; } // along its district's wall
         const u2 = u - g.s1, from = g.district ? g.thJ : g.th0, sign = wrapDeg(g.th1 - from) >= 0 ? 1 : -1;
         const p = at(g.rJ ? Rw + (g.rJ - Rw) * Math.max(0, 1 - u2 / 10) : Rw, from + (sign * (u2 / Rw)) / rad);
         return [p[0], p[1], 0];
@@ -365,13 +386,13 @@
     // 845: evacuation boats carry people up the river from Shiganshina, through the gates, to Trost.
     const boats = [];
     {
-      const river = global.RouteGeo.build([SHIG.centre, SHIG.inner, [C[0] + 1.5, C[1] + R.rose + 38], TROST.outer, TROST.centre, TROST.inner, at(R.rose - 26, 90)], 1);
+      const river = global.RouteGeo.build([SHIG.centre, SHIG.inner, [C[0] + 1.5, C[1] + R.rose + DR.rose[1] + 24], TROST.outer, TROST.centre, TROST.inner, at(R.rose - 26, 90)], 1);
       const trips = [['maria-fall', 0.44], ['maria-fall', 0.53], ['maria-fall', 0.62], ['maria-fall', 0.72], ['maria-fall', 0.84], ['refugees', 0.04], ['refugees', 0.18], ['refugees', 0.33]];
       for (const [id, p] of trips) { const a = { id: agents.length, kind: 'boat', r: rng(5), variant: 1, area0: 'maria', home0: SHIG.centre, vis0: 0, ops: [], phase: p * 9, speed: 1, ferry: { geo: river, T0: T(id, p), T1: T(id, p) + 0.36 } }; agents.push(a); boats.push(a); }
     }
     // Wall cannons on the districts' outer walls.
     const cannons = [];
-    for (const d of DISTRICTS) for (const off of [-48, 48]) { const a = ((d.deg + off) * Math.PI) / 180; cannons.push({ x: d.base[0] + Math.cos(a) * d.r, y: d.base[1] + Math.sin(a) * d.r, face: Math.cos(a) >= 0 ? 1 : -1, wall: d.wall, district: d.id }); }
+    for (const d of DISTRICTS) for (const k of [0.36, 0.64]) { const q = d.wallAt(d.len * k); cannons.push({ x: q.p[0], y: q.p[1], nx: q.n[0], ny: q.n[1], face: q.n[0] >= 0 ? 1 : -1, wall: d.wall, district: d.id }); } // either side of the round end, looking out
 
     // Resolve homes and routes in timeline order.
     for (const a of agents) {
@@ -476,7 +497,7 @@
     // The person's end is set to the moment the Titan gets there, so nobody dies without a Titan beside them.
     const meals = [];
     {
-      const MEAL = 0.2, REACH = 2.4, FAR = 42, RUN = 95, quiet = { reduced: true }, plain = { reduced: true, plain: true }; // a meal's length in events; how near the Titan stands; how far it will go, and how fast (units per event)
+      const MEAL = 0.2, REACH = 2.4, FAR = 60, RUN = 110, quiet = { reduced: true }, plain = { reduced: true, plain: true }; // a meal's length in events; how near the Titan stands; how far it will go, and how fast (units per event)
       const clear = (p, q, reg) => [0.25, 0.5, 0.75, 1].every((k) => World.regionOf(lerp(p, q, k)) === reg); // a straight walk that stays in one territory (never through a Wall)
       const hunters = agents.filter((t) => t.kind === 'titan' && !t.still && !t.lying).sort((x, y) => ((x.id * 2654435761) >>> 0) - ((y.id * 2654435761) >>> 0));
       const resort = (c) => c.ops.sort((x, y) => x.T0 - y.T0);
@@ -526,7 +547,7 @@
     // the nearest first, they leave for Ehrmich district and the land behind Wall Sina, and come home once the Wall is found whole.
     const evacuees = [];
     {
-      const plain = { reduced: true, plain: true }, scare = at(175, 125), FAR = 150, EHR = district('ehrmich');
+      const plain = { reduced: true, plain: true }, scare = atTrue(175, 125), FAR = 95, EHR = district('ehrmich');
       const [f0, f1] = win(['ragako', 0.5], ['utgard', 0.3]), [b0, b1] = win(['reveal-escape', 0.55], ['rod', 0.35]);
       for (const a of agents) {
         if (a.kind !== 'civ' || a.area0 === 'ragako') continue;
@@ -538,7 +559,7 @@
       evacuees.sort((x, y) => x.d - y.d);
       evacuees.forEach((e, i) => {
         const { a, home } = e, u = evacuees.length > 1 ? i / (evacuees.length - 1) : 0, area = i % 3 === 0 ? 'ehrmich' : 'sina';
-        const dest = sample(area, a.r, area === 'sina' ? { near: EHR.within, radius: 55 } : {});
+        const dest = sample(area, a.r, area === 'sina' ? { near: EHR.within, radius: 38 } : {});
         a.ops.push({ type: 'move', T0: f0 + (f1 - f0) * 0.5 * u, T1: f0 + (f1 - f0) * (0.5 + 0.5 * u), area, flee: true, fromArea: 'rose', from: home, home: dest, path: metrics(route('rose', home, area, dest)) });
         a.ops.push({ type: 'move', T0: b0 + (b1 - b0) * 0.5 * u, T1: b0 + (b1 - b0) * (0.5 + 0.5 * u), area: 'rose', fromArea: area, from: dest, home, path: metrics(route(area, dest, 'rose', home)) }); // back to the same home
         a.ops.sort((x, y) => x.T0 - y.T0);

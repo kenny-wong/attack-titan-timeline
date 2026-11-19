@@ -311,8 +311,8 @@ const MAP_LABELS = (() => {
   const beside = (id, o = {}) => {
     const d = D(id);
     return d.dir === 's' || d.dir === 'n'
-      ? { p: [d.base[0] + d.r, d.centre[1]], dx: 8, dy: 0, align: 'l', ...o }
-      : { p: [d.centre[0], d.base[1] + d.r], dx: 0, dy: 13, align: 'c', ...o };
+      ? { p: [d.base[0] + d.hw, d.centre[1]], dx: 8, dy: 0, align: 'l', ...o }
+      : { p: [d.centre[0], d.base[1] + d.hw], dx: 0, dy: 13, align: 'c', ...o };
   };
   out.push({ key: 'shig', text: labels.shig, min: 0.3, ...beside('shig') });
   for (const id of ['trost', 'stohess', 'karanes', 'orvud']) out.push({ key: id, text: labels[id], min: 0.62, ...beside(id) });
@@ -361,7 +361,7 @@ const locations = [
   ['forest', 'outside'],
 ].map(([key, wall]) => {
   const d = World.district(key);
-  return { key, wall, p: d ? d.centre : P[key], r: d ? d.r : key === 'forest' ? 22 : 13 };
+  return { key, wall, p: d ? d.centre : P[key], r: d ? d.hw : key === 'forest' ? 22 : 13 };
 });
 const routeColors = { attack: '#ff8477', defense: '#6bc8f0', covert: '#ecc985', repair: '#8de5ba', neutral: '#e8e4d7' };
 const routeClass = { attack: 'attacking', defense: 'defending', covert: 'infiltrating', repair: 'repairing', neutral: 'neutral' };
@@ -1185,7 +1185,7 @@ function sceneBox(tracking) {
     pts = [];
   if (ev.frame === 'island') {
     // the Rumbling: the whole island when paused; while playing, the Walls first and then outward with the columns
-    const reach = tracking ? Math.max(World.R.maria + 70, POP.rumble.front(S.idx + S.p) + 110) : 1e4,
+    const reach = tracking ? Math.max(World.R.maria + World.DR.maria[1] + 30, POP.rumble.front(S.idx + S.p) + 110) : 1e4,
       c0 = World.C;
     return {
       x0: Math.max(0, c0[0] - reach),
@@ -1209,7 +1209,7 @@ function sceneBox(tracking) {
     }
   }
   if (!ev.routes.length || !pts.length) {
-    const r = World.R.maria + 48;
+    const r = World.R.maria + World.DR.maria[1] + 22;
     return { x0: World.C[0] - r, y0: World.C[1] - r, x1: World.C[0] + r, y1: World.C[1] + r };
   } // the three Walls
   return Camera.boxOf(pts, tracking ? 250 : 300);

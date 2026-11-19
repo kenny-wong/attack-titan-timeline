@@ -1,20 +1,28 @@
 /* World geometry shared by the map builder, the story data, the camera and the crowd simulation.
-   Units: 1 world unit = 2 km. North is up. The three Walls are true circles in their real proportions
-   (Sina 250 km, Rose 380 km, Maria 480 km radius) around C. Angles are degrees clockwise from east
-   (SVG y grows downwards): east 0, south 90, west 180, north -90.
+   Units: 1 world unit = 2 km. North is up. Angles are degrees clockwise from east (SVG y grows
+   downwards): east 0, south 90, west 180, north -90.
+   The three Walls are true circles around C, drawn as in the story's own diagram of the Walls (the user's
+   choice, 3.4): Wall Maria at its true distance, the two inner Walls much closer to the centre, so that
+   the districts can be what they are there: long arches standing out from the Wall, with straight sides
+   and a round end. The story's places are still written at their true distances from the centre (Sina
+   250 km, Rose 380 km, Maria 480 km) and moved with the Walls: see `drawn` and `atTrue`.
    The coastline (src/world-coast.json) was traced from the layout reference the user supplied.
    DOM-free. */
 (function (global) {
   'use strict';
   const W = 1100, H = 1560, C = [500, 770];
-  const R = { sina: 125, rose: 190, maria: 240 };
-  const DR = { sina: 22, rose: 25, maria: 30 }; // radius of the district bulges (drawn larger than life so gates are visible)
+  const R = { sina: 60, rose: 125, maria: 240 };
+  const TRUE = { sina: 125, rose: 190, maria: 240 }; // the Walls' true distances from the centre (250, 380 and 480 km)
+  const DR = { sina: [17, 32], rose: [25, 46], maria: [33, 58] }; // a district's half-width, and how far it stands out from its Wall (larger than life, so towns and gates can be seen)
   const DEG = { n: -90, e: 0, s: 90, w: 180 };
   const rad = (d) => (d * Math.PI) / 180;
   const at = (r, deg) => [C[0] + r * Math.cos(rad(deg)), C[1] + r * Math.sin(rad(deg))];
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const rOf = (p) => dist(p, C);
   const degOf = (p) => (Math.atan2(p[1] - C[1], p[0] - C[0]) * 180) / Math.PI;
+  // Where a true distance from the centre is drawn: it keeps its share of the way between its two Walls.
+  const drawn = (r) => (r <= TRUE.sina ? (r * R.sina) / TRUE.sina : r <= TRUE.rose ? R.sina + ((r - TRUE.sina) * (R.rose - R.sina)) / (TRUE.rose - TRUE.sina) : r <= TRUE.maria ? R.rose + ((r - TRUE.rose) * (R.maria - R.rose)) / (TRUE.maria - TRUE.rose) : r);
+  const atTrue = (r, deg) => at(drawn(r), deg);
 
   // The twelve districts: each bulges outward from its Wall at a compass point.
   const DISTRICTS = [
@@ -31,11 +39,30 @@
     { id: 'ehrmich', wall: 'sina', dir: 's', zh: '艾爾米哈', en: 'Ehrmich', ja: 'エルミハ区', minor: true },
     { id: 'yarckel', wall: 'sina', dir: 'w', zh: '亞爾克爾', en: 'Yarckel', ja: 'ヤルケル区', minor: true },
   ].map((d) => {
-    const deg = DEG[d.dir], r = R[d.wall], dr = DR[d.wall];
-    return { ...d, deg, base: at(r, deg), r: dr, centre: at(r + dr * 0.45, deg), inner: at(r, deg), outer: at(r + dr, deg), beyond: at(r + dr + 16, deg), within: at(r - 16, deg) };
+    /* A district is an arch: two straight walls `hw` either side of the road, standing out from the Wall, joined by a half circle
+       whose outermost point (`outer`, the outer gate) is `depth` from the Wall line. `base` / `inner` is the inner gate on the Wall line.
+       In its own frame u runs across (along `t`) and v outward (along `n`). */
+    const deg = DEG[d.dir], r = R[d.wall], [hw, depth] = DR[d.wall], n = [Math.cos(rad(deg)), Math.sin(rad(deg))], t = [-n[1], n[0]];
+    const base = at(r, deg), end = at(r + depth - hw, deg), v0 = Math.sqrt(r * r - hw * hw) - r, side = depth - hw - v0, len = 2 * side + Math.PI * hw;
+    const o = { ...d, deg, n, t, hw, depth, base, end, len, side, centre: at(r + depth * 0.5, deg), inner: base, outer: at(r + depth, deg), beyond: at(r + depth + 16, deg), within: at(r - 16, deg) };
+    const world = (u, v) => [base[0] + t[0] * u + n[0] * v, base[1] + t[1] * u + n[1] * v];
+    // how far p is outside the district (negative inside): the distance to the road between the gates, less the half-width; the Wall line closes it on the inner side
+    o.cap = (p) => { const k = Math.max(0, Math.min(1, ((p[0] - base[0]) * n[0] + (p[1] - base[1]) * n[1]) / (depth - hw))); return Math.hypot(p[0] - base[0] - n[0] * k * (depth - hw), p[1] - base[1] - n[1] * k * (depth - hw)) - hw; }; // the same without the Wall line
+    o.sd = (p) => Math.max(o.cap(p), r - rOf(p));
+    // the point of the district wall s units along it (from the foot on the -t side, round the end, to the other foot), and its outward normal
+    o.wallAt = (s) => {
+      s = Math.max(0, Math.min(len, s));
+      if (s <= side) return { p: world(-hw, v0 + s), n: [-t[0], -t[1]], s };
+      if (s >= len - side) return { p: world(hw, v0 + (len - s)), n: [t[0], t[1]], s };
+      const a = (s - side) / hw, cu = -Math.cos(a), cv = Math.sin(a);
+      return { p: world(hw * cu, depth - hw + hw * cv), n: [t[0] * cu + n[0] * cv, t[1] * cu + n[1] * cv], s };
+    };
+    // the wall as a line of points about `step` apart
+    o.outline = (step = 2) => { const k = Math.max(8, Math.ceil(len / step)); return Array.from({ length: k + 1 }, (_, i) => o.wallAt((len * i) / k)); };
+    return o;
   });
   const district = (id) => DISTRICTS.find((d) => d.id === id);
-  const inDistrict = (p) => DISTRICTS.find((d) => rOf(p) >= R[d.wall] - 0.5 && dist(p, d.base) <= d.r) || null;
+  const inDistrict = (p) => DISTRICTS.find((d) => rOf(p) >= R[d.wall] - 0.5 && d.sd(p) <= 0) || null;
 
   let coast = [];
   const inPoly = (poly, [x, y]) => {
@@ -84,7 +111,7 @@
     return onLand(p) ? 'outside' : 'sea';
   };
 
-  const World = { W, H, C, R, DR, DEG, DISTRICTS, at, dist, rOf, degOf, district, inDistrict, inPoly, onLand, coastDist, coastHit, coastAt, regionOf,
+  const World = { W, H, C, R, TRUE, DR, DEG, DISTRICTS, at, atTrue, drawn, dist, rOf, degOf, district, inDistrict, inPoly, onLand, coastDist, coastHit, coastAt, regionOf,
     get coast() { return coast; },
     init(poly) { coast = poly; return World; } };
   if (typeof WORLD_COAST !== 'undefined') World.init(WORLD_COAST); // injected by the build

@@ -31,8 +31,8 @@ test('relief: the ground is level under the three Walls and the district walls',
     for (let deg = 0; deg < 360; deg += 2) { const h = relief.h(...World.at(R, deg)); lo = Math.min(lo, h); hi = Math.max(hi, h); }
     assert.ok(hi - lo < 1.2 && lo > 0.3, `Wall ${name}: ground from ${lo.toFixed(2)} to ${hi.toFixed(2)}`);
   }
-  for (const d of World.DISTRICTS) for (let a = -80; a <= 80; a += 20) {
-    const p = [d.base[0] + Math.cos(((d.deg + a) * Math.PI) / 180) * d.r, d.base[1] + Math.sin(((d.deg + a) * Math.PI) / 180) * d.r], h = relief.h(...p);
+  for (const d of World.DISTRICTS) for (const q of d.outline(6)) {
+    const p = q.p, h = relief.h(...p);
     assert.ok(h > 0.3 && h < 2.6, `${d.id} wall stands at ${h.toFixed(2)}`);
   }
 });

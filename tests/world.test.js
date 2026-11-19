@@ -6,9 +6,47 @@ const c = load();
 const { World, Camera } = c;
 const near = (a, b, eps = 0.01) => Math.abs(a - b) < eps;
 
-test('the Walls are true circles in their real proportions (250 / 380 / 480 km)', () => {
-  assert.ok(near(World.R.sina / World.R.maria, 250 / 480, 0.005));
-  assert.ok(near(World.R.rose / World.R.maria, 380 / 480, 0.005));
+test('the Walls are drawn as in the story\'s diagram: Maria at its true distance, the inner Walls closer in; true distances are moved with them', () => {
+  assert.ok(near(World.TRUE.sina / World.TRUE.maria, 250 / 480, 0.005) && near(World.TRUE.rose / World.TRUE.maria, 380 / 480, 0.005));
+  assert.strictEqual(World.R.maria, World.TRUE.maria);
+  assert.ok(World.R.sina < World.TRUE.sina && World.R.rose < World.TRUE.rose && World.R.sina < World.R.rose && World.R.rose < World.R.maria);
+  for (const k of ['sina', 'rose', 'maria']) assert.ok(near(World.drawn(World.TRUE[k]), World.R[k]), k + ' is drawn at its own Wall');
+  assert.strictEqual(World.drawn(0), 0);
+  assert.strictEqual(World.drawn(300), 300); // beyond Wall Maria nothing moves
+  for (let r = 1; r < 300; r += 3) assert.ok(World.drawn(r) > World.drawn(r - 1), 'order from the centre is kept');
+  // a village a third of the way from Sina to Rose stays a third of the way
+  assert.ok(near((World.drawn(146.67) - World.R.sina) / (World.R.rose - World.R.sina), 1 / 3, 0.001));
+  assert.ok(near(World.rOf(World.atTrue(172, 114)), World.drawn(172)) && near(World.degOf(World.atTrue(172, 114)), 114));
+});
+
+test('a district is an arch standing out from its Wall: straight sides, a round end, longer than a half circle', () => {
+  for (const d of World.DISTRICTS) {
+    const Rw = World.R[d.wall];
+    assert.ok(d.depth > d.hw * 1.5, d.id + ' stands out further than it is wide by half');
+    assert.ok(near(World.rOf(d.inner), Rw) && near(World.rOf(d.outer), Rw + d.depth) && near(World.degOf(d.outer), d.deg));
+    assert.ok(d.sd(d.centre) < -d.hw * 0.6 && near(d.sd(d.outer), 0) && d.sd(d.beyond) > 15 && d.sd(d.within) > 0);
+    // the wall: both feet on the main Wall, the outer gate in the middle, every point on the outline
+    const a = d.wallAt(0), b = d.wallAt(d.len), mid = d.wallAt(d.len / 2);
+    assert.ok(near(World.rOf(a.p), Rw) && near(World.rOf(b.p), Rw), d.id + ' feet on the Wall');
+    assert.ok(near(World.dist(a.p, b.p), d.hw * 2), 'as wide as it says');
+    assert.ok(near(mid.p[0], d.outer[0]) && near(mid.p[1], d.outer[1]) && near(mid.n[0], d.n[0]) && near(mid.n[1], d.n[1]));
+    let prev = null;
+    for (const q of d.outline(1.5)) {
+      assert.ok(Math.abs(d.sd(q.p)) < 0.3, d.id + ' outline off the wall by ' + d.sd(q.p));
+      assert.ok(near(Math.hypot(q.n[0], q.n[1]), 1));
+      assert.ok(d.sd([q.p[0] + q.n[0] * 3, q.p[1] + q.n[1] * 3]) > 2 || World.rOf(q.p) < Rw + 3, 'the normal points out');
+      if (prev) assert.ok(World.dist(prev.p, q.p) < 1.6);
+      prev = q;
+    }
+    // straight sides: a third of the way along the first side the wall runs straight out
+    const s1 = d.wallAt(d.side * 0.3), s2 = d.wallAt(d.side * 0.8);
+    assert.ok(near((s2.p[0] - s1.p[0]) * d.t[0] + (s2.p[1] - s1.p[1]) * d.t[1], 0) && near(World.dist(s1.p, s2.p), d.side * 0.5));
+    assert.ok(d.side > d.hw * 0.4, d.id + ' has straight sides');
+    assert.strictEqual(World.inDistrict(d.centre), d);
+    assert.strictEqual(World.inDistrict(d.within), null);
+  }
+  // districts do not touch the next Wall out, or each other
+  assert.ok(World.R.sina + World.DR.sina[1] < World.R.rose - 20 && World.R.rose + World.DR.rose[1] < World.R.maria - 20);
 });
 
 test('the districts sit at the compass points of their Walls', () => {
@@ -23,8 +61,9 @@ test('the districts sit at the compass points of their Walls', () => {
 
 test('regionOf tells the territories, districts, outside land and sea apart', () => {
   const C = World.C;
-  assert.strictEqual(World.regionOf([C[0], C[1] - 60]), 'sina');
-  assert.strictEqual(World.regionOf([C[0] + 160, C[1]]), 'rose');
+  assert.strictEqual(World.regionOf([C[0], C[1] - 40]), 'sina');
+  assert.strictEqual(World.regionOf(World.at(100, 45)), 'rose');
+  assert.strictEqual(World.regionOf(World.at(180, 45)), 'maria');
   assert.strictEqual(World.regionOf([C[0], C[1] + 228]), 'maria');
   assert.strictEqual(World.regionOf(World.district('shig').centre), 'shig');
   assert.strictEqual(World.regionOf([C[0], C[1] + 320]), 'outside');
@@ -33,9 +72,13 @@ test('regionOf tells the territories, districts, outside land and sea apart', ()
 
 test('the whole of Wall Maria and its districts is on land, with land beyond', () => {
   for (let deg = -180; deg < 180; deg += 5) {
-    assert.ok(World.onLand(World.at(World.R.maria + World.DR.maria + 20, deg)), 'no land beyond Wall Maria at ' + deg);
+    assert.ok(World.onLand(World.at(World.R.maria + 40, deg)), 'no land beyond Wall Maria at ' + deg);
     const hit = World.coastHit(World.C, deg);
     assert.ok(hit && hit.t > World.R.maria + 60, 'coast too close at ' + deg);
+  }
+  for (const d of World.DISTRICTS.filter((x) => x.wall === 'maria')) {
+    for (const q of d.outline(4)) assert.ok(World.onLand(q.p) && World.coastDist(q.p) > 12, d.id + ' reaches the coast');
+    assert.ok(World.onLand(d.beyond) && World.coastDist(d.beyond) > 6, 'land beyond ' + d.id);
   }
   assert.ok(World.onLand(World.coastAt(90, -8)) && !World.onLand(World.coastAt(90, 20)));
 });

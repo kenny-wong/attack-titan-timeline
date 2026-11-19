@@ -6,16 +6,17 @@
    The text of each event is in story-text.js. */
 const C = (zh, en, ja) => ({ zh, en, ja }); // a text in Traditional Chinese, English and Japanese
 const P = (() => {
-  const { at, district: D, coastAt } = World;
+  // Places are written at their true distance from the centre (in units of 2 km) and bearing; atTrue draws them where the Walls are drawn.
+  const { atTrue: at, district: D, coastAt } = World;
   return {
     mitras: World.C,
     // Wall Maria: Shiganshina (south)
-    shigI: D('shig').inner, shig: D('shig').centre, shigO: D('shig').outer, outer: at(288, 90),
+    shigI: D('shig').inner, shig: D('shig').centre, shigO: D('shig').outer, outer: D('shig').beyond,
     // Wall Rose: Trost (south) and Karanes (east)
     trostI: D('trost').inner, trost: D('trost').centre, trostO: D('trost').outer,
     karanes: D('karanes').centre,
     // Wall Sina
-    ehrmich: D('ehrmich').centre, stohess: D('stohess').centre, orvud: D('orvud').centre, orvudWall: at(147, -90),
+    ehrmich: D('ehrmich').centre, stohess: D('stohess').centre, orvud: D('orvud').centre, orvudWall: D('orvud').outer,
     // Inside the Walls
     between: at(228, 84), // Maria territory just outside Trost
     roseLand: at(160, 78), // inside Wall Rose, behind Trost
@@ -154,7 +155,7 @@ const cast = {
 // (place names or [x, y]), when within the scene (0..1) and whether the story leaves it unconfirmed.
 const r = (who, type, path, start = 0.05, end = 0.9, uncertain = false) => ({ who, type, path, start, end, uncertain });
 const SCENES = (() => {
-  const { at, coastAt } = World;
+  const { atTrue: at, coastAt } = World;
   const enc = P.south; // where Ymir attacks the Warriors
   return {
     founding: { routes: [], marks: [{ point: 'mitras', kind: 'reveal' }] },
@@ -318,7 +319,7 @@ const SCENES = (() => {
 // Everything else belongs to the closing event and is schematic:
 // the story only hints at how the island grew afterwards.
 const GROWTH = (() => {
-  const { at, coastAt, district: D } = World;
+  const { atTrue: at, coastAt, district: D } = World;
   const thru = (id, outward) => { const d = D(id), pts = [d.inner, d.centre, d.outer]; return outward ? pts : pts.reverse(); }; // a line through a district town
   const port = (deg) => coastAt(deg, -5), seaward = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
   const N2 = at(440, -90);

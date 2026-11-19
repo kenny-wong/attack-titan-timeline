@@ -12,7 +12,7 @@
     const { scene, World, terrain, relief, pop, Q, D, props, U, renderer } = ctx;
     const { W, H, C, R, DISTRICTS } = World, RG = global.RouteGeo, hAt = relief.land;
     const rnd = S3.rng(52017), m12 = new Float32Array(12);
-    const zones = pop.rumble.zones;
+    const zones = pop.rumble.zones, hi3 = Q.shadow > 0;
 
     // ---------- Ground ----------
     const stride = Q.meshStride, gc = Math.floor((relief.cols - 1) / stride) + 1, gr = Math.floor((relief.rows - 1) / stride) + 1;
@@ -32,19 +32,19 @@
     const mkTex = (ppu) => { const t = new T.CanvasTexture(global.MapPainter.paint(ppu, terrain, World, paintOpt)); t.colorSpace = T.SRGBColorSpace; t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); return t; };
     const U3 = { // what the ground shader needs for the Rumbling and the cloud shadows
       uRho: { value: 0 }, uSina: { value: R.sina }, uMaria: { value: R.maria }, uCentre: { value: new T.Vector2(C[0], C[1]) }, uTrample: { value: S3.col(D.terrain.trample) }, uScar: { value: S3.col(D.terrain.scarEarth) },
-      uTrampleK: { value: 0 }, uScarK: { value: 0 }, uZones: { value: Array.from({ length: 24 }, () => new T.Vector3(0, 0, -1)) }, uClouds: { value: Array.from({ length: 8 }, () => new T.Vector4(0, 0, 1, 0)) },
+      uTrampleK: { value: 0 }, uScarK: { value: 0 }, uZones: { value: Array.from({ length: 40 }, () => new T.Vector3(0, 0, -1)) }, uClouds: { value: Array.from({ length: 8 }, () => new T.Vector4(0, 0, 1, 0)) },
     };
-    zones.slice(0, 24).forEach((z, i) => U3.uZones.value[i].set(z.c[0], z.c[1], z.r + 2));
+    zones.slice(0, 40).forEach((z, i) => U3.uZones.value[i].set(z.c[0], z.c[1], z.r + 2));
     const ground = new T.Mesh(geo, new T.MeshLambertMaterial({ map: mkTex(Q.firstPpu) }));
     ground.material.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, U3);
       sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp; uniform float uRho, uSina, uMaria, uTrampleK, uScarK; uniform vec2 uCentre; uniform vec3 uTrample, uScar; uniform vec3 uZones[24]; uniform vec4 uClouds[8];')
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp; uniform float uRho, uSina, uMaria, uTrampleK, uScarK; uniform vec2 uCentre; uniform vec3 uTrample, uScar; uniform vec3 uZones[40]; uniform vec4 uClouds[8];')
         .replace('#include <map_fragment>', `#include <map_fragment>
         float rr = distance(vWp.xz, uCentre);
         if (uRho > uSina && rr > uSina && rr < uRho && vWp.y > 0.03) {
           float k = (rr > uMaria + 4.0 ? uScarK : uTrampleK) * smoothstep(uRho, uRho - 5.0, rr);
-          for (int i = 0; i < 24; i++) { if (uZones[i].z > 0.0) k *= smoothstep(uZones[i].z - 1.5, uZones[i].z + 1.5, distance(vWp.xz, uZones[i].xy)); }
+          for (int i = 0; i < 40; i++) { if (uZones[i].z > 0.0) k *= smoothstep(uZones[i].z - 1.5, uZones[i].z + 1.5, distance(vWp.xz, uZones[i].xy)); }
           diffuseColor.rgb = mix(diffuseColor.rgb, rr > uMaria + 4.0 ? uScar : uTrample, k);
         }
         float cl = 0.0;
@@ -120,17 +120,14 @@
     }
     // Ragako: the Titan that cannot move lies on the roof of a house, which has given way under it.
     for (const a of pop.agents) if (a.roof) fixed.push({ pl: { p: a.home0 }, items: [['villageHut', 0, 0, a.roof.yaw, ctx.roof.k, ctx.roof.ky]] });
-    // District towns: houses in rings inside each half-round wall, leaving the main street free.
+    // District towns: rows of houses either side of the street that joins the two gates, filling the arch of the district wall.
     const townHouses = [];
     for (const d of DISTRICTS) {
-      const a0 = (d.deg * Math.PI) / 180, ux = Math.cos(a0), uz = Math.sin(a0);
-      for (const [rad, n] of [[d.r * 0.3, 5], [d.r * 0.53, 9], [d.r * 0.76, 14]]) {
-        for (let i = 0; i < n; i++) {
-          const a = a0 - Math.PI / 2 + ((i + 0.5) / n) * Math.PI, x = d.base[0] + Math.cos(a) * rad, z = d.base[1] + Math.sin(a) * rad;
-          const off = Math.abs((x - d.base[0]) * -uz + (z - d.base[1]) * ux); // distance from the street that joins the two gates
-          if (off < 2.6 || (x - d.base[0]) * ux + (z - d.base[1]) * uz < 2.2) continue;
-          townHouses.push([rnd() < 0.3 ? 'houseTall' : 'house', x + (rnd() - 0.5) * 0.8, z + (rnd() - 0.5) * 0.8, -a + (rnd() - 0.5) * 0.3, TOWN * (0.85 + rnd() * 0.3), d]); // gable ends towards the street
-        }
+      const yaw = -((d.deg * Math.PI) / 180 + Math.PI / 2), gapU = hi3 ? 4.9 : 6.4, gapV = hi3 ? 5.3 : 6.8;
+      for (let v = 3.4; v < d.depth - 2.4; v += gapV) for (let u = 3.7; u < d.hw - 2; u += gapU) for (const sg of [-1, 1]) {
+        const x = d.base[0] + d.t[0] * u * sg + d.n[0] * v + (rnd() - 0.5) * 0.9, z = d.base[1] + d.t[1] * u * sg + d.n[1] * v + (rnd() - 0.5) * 0.9;
+        if (d.cap([x, z]) > -3.3 || rnd() < 0.1) continue; // clear of the wall; a yard here and there
+        townHouses.push([rnd() < 0.3 ? 'houseTall' : 'house', x, z, yaw + (sg > 0 ? Math.PI : 0) + (rnd() - 0.5) * 0.3, TOWN * (0.85 + rnd() * 0.3), d]); // facing the street
       }
     }
     for (const h of townHouses) countProp(h[0]);
@@ -234,7 +231,7 @@
     const clouds = Array.from({ length: Math.min(8, Q.clouds) }, () => ({ x: wr() * W, y: 80 + wr() * (H - 160), r: 80 + wr() * 100, v: 5 + wr() * 7 }));
     const flakes = Array.from({ length: Q.snow }, () => ({ x: 120 + wr() * 760, z: 120 + wr() * 420, y: wr() * 70, v: 7 + wr() * 7, ph: wr() * 6.3 }));
     const snow = S3.Puffs(Math.max(1, Q.snow), { order: 7, maxPx: 6 }); scene.add(snow.points);
-    const lit = [[C, 13, null], ...DISTRICTS.map((d) => [d.centre, d.r * 0.7, d])];
+    const lit = [[C, 13, null], ...DISTRICTS.map((d) => [d.centre, d.hw * 0.85, d])];
     const lamps = S3.Puffs(lit.length * 7 + 40, { additive: true, order: 6 }); scene.add(lamps.points);
     const lampSeeds = lit.map(([p, r]) => Array.from({ length: 7 }, (_, i) => { const a = wr() * TAU, d = i ? Math.sqrt(wr()) * r : 0; return [p[0] + Math.cos(a) * d, p[1] + Math.sin(a) * d, 0.6 + wr() * 0.8]; }));
 

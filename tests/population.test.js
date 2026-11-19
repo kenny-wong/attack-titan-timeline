@@ -57,9 +57,15 @@ test('Titans and civilians cross the Walls only at gates (before the Walls fall)
       const q = [pts[i - 1][0] + ((pts[i][0] - pts[i - 1][0]) * k) / 16, pts[i - 1][1] + ((pts[i][1] - pts[i - 1][1]) * k) / 16];
       for (const wall of ['maria', 'rose', 'sina']) {
         if (World.rOf(p) < World.R[wall] === World.rOf(q) < World.R[wall]) continue;
-        const g = gates.find((d) => d.wall === wall && Math.hypot(q[0] - d.base[0], q[1] - d.base[1]) < d.r + 6);
+        const g = gates.find((d) => d.wall === wall && Math.hypot(q[0] - d.base[0], q[1] - d.base[1]) < 8);
         assert.ok(g, `${a.kind} ${a.id} crosses Wall ${wall} away from a gate`);
         if (a.kind === 'titan') assert.ok(g.id === 'shig' || g.id === 'trost', `a Titan uses the ${g.id} gate`);
+      }
+      // a district's own wall (its straight sides and round end) is crossed only at the outer gate
+      for (const d of gates) {
+        if (World.rOf(p) < World.R[d.wall] + 0.5 || World.rOf(q) < World.R[d.wall] + 0.5 || d.cap(p) < 0 === d.cap(q) < 0) continue;
+        assert.ok(Math.hypot(q[0] - d.outer[0], q[1] - d.outer[1]) < 8, `${a.kind} ${a.id} walks through the wall of ${d.id} at ${q.map(Math.round)}`);
+        if (a.kind === 'titan') assert.ok(d.id === 'shig' || d.id === 'trost', `a Titan uses the outer gate of ${d.id}`);
       }
     }
   }
@@ -94,12 +100,12 @@ test('Wall Titans stand in every Wall and in every district wall, and only appea
   assert.strictEqual(pop.counts(T('ambassadors', 0.5)).wallTitan, 0);
   for (const w of ['maria', 'rose', 'sina']) {
     const mine = wallT.filter((a) => a.rumble.wall === w);
-    assert.ok(mine.filter((a) => !a.rumble.district).length >= 50, w + ': the ring is manned');
-    for (const d of World.DISTRICTS.filter((x) => x.wall === w)) assert.ok(mine.filter((a) => a.rumble.district === d).length >= 4, d.id + ': the half-round wall is manned');
+    assert.ok(mine.filter((a) => !a.rumble.district).length >= (w === 'sina' ? 22 : 45), w + ': the ring is manned (' + mine.filter((a) => !a.rumble.district).length + ')');
+    for (const d of World.DISTRICTS.filter((x) => x.wall === w)) assert.ok(mine.filter((a) => a.rumble.district === d).length >= 4, d.id + ': the district wall is manned');
   }
   for (const a of wallT) {
     const g = a.rumble, p = a.home0;
-    if (g.district) assert.ok(Math.abs(Math.hypot(p[0] - g.district.base[0], p[1] - g.district.base[1]) - g.district.r) < 0.01, 'on the district wall');
+    if (g.district) assert.ok(Math.abs(g.district.cap(p)) < 0.3 && World.rOf(p) > World.R[g.wall] - 0.01, 'on the district wall');
     else assert.ok(Math.abs(World.rOf(p) - World.R[g.wall]) < 0.01, 'on the ring');
   }
   // shoulder to shoulder: evenly spaced along each ring
@@ -110,7 +116,7 @@ test('Wall Titans stand in every Wall and in every district wall, and only appea
 test('the Rumbling spares the towns: no Wall Titan walks through a district or a village', () => {
   const keep = ['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => c.P[k]);
   for (const a of wallT) walk(a, (p) => {
-    for (const d of World.DISTRICTS) assert.ok(!(World.rOf(p) > World.R[d.wall] + 1.5 && Math.hypot(p[0] - d.base[0], p[1] - d.base[1]) < d.r - 1.5), 'a Wall Titan is inside ' + d.id);
+    for (const d of World.DISTRICTS) assert.ok(!(World.rOf(p) > World.R[d.wall] + 1.5 && d.cap(p) < -1.5), 'a Wall Titan is inside ' + d.id);
     for (const k of keep) assert.ok(Math.hypot(p[0] - k[0], p[1] - k[1]) >= 12, 'a Wall Titan tramples a village');
   });
 });
@@ -131,7 +137,7 @@ test('they take the shortest way: straight out, unless a town or village is in t
   for (const a of wallT.filter((x) => x.rumble.pre > 0)) {
     assert.ok(a.rumble.pre < 90, 'a long detour: ' + a.rumble.pre);
     const Rw = World.R[a.rumble.wall], s = pop.stateAt(a, whenFront(a.rumble.r0 - a.rumble.pre / 2), 0, {}), p = [s.x, s.y];
-    const onRing = Math.abs(World.rOf(p) - Rw) < 2.2, onDistrictWall = a.rumble.district && Math.abs(Math.hypot(p[0] - a.rumble.district.base[0], p[1] - a.rumble.district.base[1]) - a.rumble.district.r) < 0.6;
+    const onRing = Math.abs(World.rOf(p) - Rw) < 2.2, onDistrictWall = a.rumble.district && Math.abs(a.rumble.district.cap(p)) < 0.6;
     assert.ok(onRing || onDistrictWall, 'a side-stepper leaves the Wall lines');
   }
 });
@@ -272,7 +278,9 @@ test('outside the Walls the Rumbling spares nothing but the harbour; inside, the
   assert.ok(!has(seaWall), 'the sea wall is flattened');
   assert.ok(has(c.P.harbor), 'the harbour is still used by the story');
   assert.ok(has(c.P.ragako), 'villages inside the Walls stay protected');
-  assert.strictEqual(p2.rumble.zones.filter((z) => z.town).length, 12);
+  assert.strictEqual(new Set(p2.rumble.zones.filter((z) => z.town).map((z) => z.town)).size, 12);
+  assert.ok(p2.rumble.zones.length <= 40, 'the ground shader has room for 40 zones');
+  for (const d of World.DISTRICTS) for (const q of d.outline(5)) { const inside = [q.p[0] - q.n[0] * 4, q.p[1] - q.n[1] * 4]; if (World.rOf(inside) > World.R[d.wall] + 3) assert.ok(p2.rumble.zones.some((z) => z.town === d.id && Math.hypot(z.c[0] - inside[0], z.c[1] - inside[1]) < z.r + 2), d.id + ': part of the town is not protected'); }
   // so a Wall Titan does walk over the ruin
   const over = p2.agents.filter((a) => a.kind === 'wallTitan').some((a) => { for (let t = p2.T('rumbling', 0.7); t < p2.T('alliance', 0.3); t += 0.004) { const s = p2.stateAt(a, t, 0, {}); if (Math.hypot(s.x - ruin[0], s.y - ruin[1]) < 6) return true; } return false; });
   assert.ok(over, 'nobody walks over the ruin');

@@ -3132,7 +3132,7 @@ body {
 <div class="site">
   <div class="masthead">
   <header class="topbar">
-    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v3.3.0</span></div></div></div>
+    <div class="identity"><div class="crest"><svg class="crest-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-survey"/></svg></div><div><div class="topline">Paradis Archive / Interactive Chronicle <span class="head-version" id="headVersion">v3.4.0</span></div></div></div>
     <div class="top-actions"><span class="spoiler" data-i18n="spoiler">全劇劇透</span><div class="lang-switch" id="langSwitch" role="group" aria-label="Language"><button type="button" class="lang-btn" data-lang="zh" lang="zh-Hant" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false">EN</button><button type="button" class="lang-btn" data-lang="ja" lang="ja" aria-pressed="false">日本語</button></div></div>
   </header>
   <div class="hero"><div><div class="eyebrow" data-i18n="kicker">三道城牆 · 114 年入侵及防衛史</div><h1 data-i18n="hero">進擊之巨人</h1><div class="epigraph" data-i18n="epigraph">那一天，人類想起了被巨人支配的恐懼。</div><p data-i18n="subtitle">拖動年份與事件進度，親眼睇巨人進攻、間諜進出、人類防守同城門重建。依照原作故事順序重現重要路線。</p></div><div class="year-plate"><small data-i18n="year">故事年份</small><strong id="heroYear">743</strong></div></div>
@@ -3158,7 +3158,7 @@ body {
       </section>
       <section class="panel status-panel"><div class="status-top"><svg class="sec-ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#em-wall"/></svg><span data-i18n="status">三道城牆當時狀態</span><span data-i18n="stateHint">狀態會隨年份累積變化</span></div><div class="wall-status-grid" id="wallStatus"></div><div class="gateway" id="gateStatus"></div><div class="pop-status" id="popStatus"></div></section>
       <section class="panel cast-panel"><div class="subsection"><svg class="sec-ico" viewBox="0 0 32 32" aria-hidden="true"><use href="#orn-blades"/></svg><span data-i18n="cast">參與角色與互動</span><span id="castCount" style="color:#93aa9b"></span></div><div class="cast-hint" data-i18n="castHint">按角色可以突出地圖上佢嘅路線</div><div class="cast-list" id="castList"></div></section>
-      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v3.3.0</span></div></div>
+      <div class="notes"><span data-i18n="notes">註：地圖為原創示意插圖，島嶼形狀、海岸線及地形並非官方比例。路線係概念性視覺化，並非精確定位；原作冇交代嘅入口用虛線及說明標示。畫面為原創示意動畫，並非官方動畫片段。</span><div style="margin-top:7px"><span data-i18n="sources">劇情核對：</span> <a href="https://attackontitan.fandom.com/wiki/Timeline" target="_blank" rel="noopener">Story timeline</a> · <a href="https://attackontitan.fandom.com/wiki/Walls" target="_blank" rel="noopener">Wall geography</a> · <span class="app-version" id="appVersion">v3.4.0</span></div></div>
     </aside>
   </div>
 </div>
@@ -7486,22 +7486,30 @@ void main() {
 </script>
 <script data-src="src/world.js">
 /* World geometry shared by the map builder, the story data, the camera and the crowd simulation.
-   Units: 1 world unit = 2 km. North is up. The three Walls are true circles in their real proportions
-   (Sina 250 km, Rose 380 km, Maria 480 km radius) around C. Angles are degrees clockwise from east
-   (SVG y grows downwards): east 0, south 90, west 180, north -90.
+   Units: 1 world unit = 2 km. North is up. Angles are degrees clockwise from east (SVG y grows
+   downwards): east 0, south 90, west 180, north -90.
+   The three Walls are true circles around C, drawn as in the story's own diagram of the Walls (the user's
+   choice, 3.4): Wall Maria at its true distance, the two inner Walls much closer to the centre, so that
+   the districts can be what they are there: long arches standing out from the Wall, with straight sides
+   and a round end. The story's places are still written at their true distances from the centre (Sina
+   250 km, Rose 380 km, Maria 480 km) and moved with the Walls: see `drawn` and `atTrue`.
    The coastline (src/world-coast.json) was traced from the layout reference the user supplied.
    DOM-free. */
 (function (global) {
   'use strict';
   const W = 1100, H = 1560, C = [500, 770];
-  const R = { sina: 125, rose: 190, maria: 240 };
-  const DR = { sina: 22, rose: 25, maria: 30 }; // radius of the district bulges (drawn larger than life so gates are visible)
+  const R = { sina: 60, rose: 125, maria: 240 };
+  const TRUE = { sina: 125, rose: 190, maria: 240 }; // the Walls' true distances from the centre (250, 380 and 480 km)
+  const DR = { sina: [17, 32], rose: [25, 46], maria: [33, 58] }; // a district's half-width, and how far it stands out from its Wall (larger than life, so towns and gates can be seen)
   const DEG = { n: -90, e: 0, s: 90, w: 180 };
   const rad = (d) => (d * Math.PI) / 180;
   const at = (r, deg) => [C[0] + r * Math.cos(rad(deg)), C[1] + r * Math.sin(rad(deg))];
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const rOf = (p) => dist(p, C);
   const degOf = (p) => (Math.atan2(p[1] - C[1], p[0] - C[0]) * 180) / Math.PI;
+  // Where a true distance from the centre is drawn: it keeps its share of the way between its two Walls.
+  const drawn = (r) => (r <= TRUE.sina ? (r * R.sina) / TRUE.sina : r <= TRUE.rose ? R.sina + ((r - TRUE.sina) * (R.rose - R.sina)) / (TRUE.rose - TRUE.sina) : r <= TRUE.maria ? R.rose + ((r - TRUE.rose) * (R.maria - R.rose)) / (TRUE.maria - TRUE.rose) : r);
+  const atTrue = (r, deg) => at(drawn(r), deg);
 
   // The twelve districts: each bulges outward from its Wall at a compass point.
   const DISTRICTS = [
@@ -7518,11 +7526,30 @@ void main() {
     { id: 'ehrmich', wall: 'sina', dir: 's', zh: '艾爾米哈', en: 'Ehrmich', ja: 'エルミハ区', minor: true },
     { id: 'yarckel', wall: 'sina', dir: 'w', zh: '亞爾克爾', en: 'Yarckel', ja: 'ヤルケル区', minor: true },
   ].map((d) => {
-    const deg = DEG[d.dir], r = R[d.wall], dr = DR[d.wall];
-    return { ...d, deg, base: at(r, deg), r: dr, centre: at(r + dr * 0.45, deg), inner: at(r, deg), outer: at(r + dr, deg), beyond: at(r + dr + 16, deg), within: at(r - 16, deg) };
+    /* A district is an arch: two straight walls `hw` either side of the road, standing out from the Wall, joined by a half circle
+       whose outermost point (`outer`, the outer gate) is `depth` from the Wall line. `base` / `inner` is the inner gate on the Wall line.
+       In its own frame u runs across (along `t`) and v outward (along `n`). */
+    const deg = DEG[d.dir], r = R[d.wall], [hw, depth] = DR[d.wall], n = [Math.cos(rad(deg)), Math.sin(rad(deg))], t = [-n[1], n[0]];
+    const base = at(r, deg), end = at(r + depth - hw, deg), v0 = Math.sqrt(r * r - hw * hw) - r, side = depth - hw - v0, len = 2 * side + Math.PI * hw;
+    const o = { ...d, deg, n, t, hw, depth, base, end, len, side, centre: at(r + depth * 0.5, deg), inner: base, outer: at(r + depth, deg), beyond: at(r + depth + 16, deg), within: at(r - 16, deg) };
+    const world = (u, v) => [base[0] + t[0] * u + n[0] * v, base[1] + t[1] * u + n[1] * v];
+    // how far p is outside the district (negative inside): the distance to the road between the gates, less the half-width; the Wall line closes it on the inner side
+    o.cap = (p) => { const k = Math.max(0, Math.min(1, ((p[0] - base[0]) * n[0] + (p[1] - base[1]) * n[1]) / (depth - hw))); return Math.hypot(p[0] - base[0] - n[0] * k * (depth - hw), p[1] - base[1] - n[1] * k * (depth - hw)) - hw; }; // the same without the Wall line
+    o.sd = (p) => Math.max(o.cap(p), r - rOf(p));
+    // the point of the district wall s units along it (from the foot on the -t side, round the end, to the other foot), and its outward normal
+    o.wallAt = (s) => {
+      s = Math.max(0, Math.min(len, s));
+      if (s <= side) return { p: world(-hw, v0 + s), n: [-t[0], -t[1]], s };
+      if (s >= len - side) return { p: world(hw, v0 + (len - s)), n: [t[0], t[1]], s };
+      const a = (s - side) / hw, cu = -Math.cos(a), cv = Math.sin(a);
+      return { p: world(hw * cu, depth - hw + hw * cv), n: [t[0] * cu + n[0] * cv, t[1] * cu + n[1] * cv], s };
+    };
+    // the wall as a line of points about `step` apart
+    o.outline = (step = 2) => { const k = Math.max(8, Math.ceil(len / step)); return Array.from({ length: k + 1 }, (_, i) => o.wallAt((len * i) / k)); };
+    return o;
   });
   const district = (id) => DISTRICTS.find((d) => d.id === id);
-  const inDistrict = (p) => DISTRICTS.find((d) => rOf(p) >= R[d.wall] - 0.5 && dist(p, d.base) <= d.r) || null;
+  const inDistrict = (p) => DISTRICTS.find((d) => rOf(p) >= R[d.wall] - 0.5 && d.sd(p) <= 0) || null;
 
   let coast = [];
   const inPoly = (poly, [x, y]) => {
@@ -7571,7 +7598,7 @@ void main() {
     return onLand(p) ? 'outside' : 'sea';
   };
 
-  const World = { W, H, C, R, DR, DEG, DISTRICTS, at, dist, rOf, degOf, district, inDistrict, inPoly, onLand, coastDist, coastHit, coastAt, regionOf,
+  const World = { W, H, C, R, TRUE, DR, DEG, DISTRICTS, at, atTrue, drawn, dist, rOf, degOf, district, inDistrict, inPoly, onLand, coastDist, coastHit, coastAt, regionOf,
     get coast() { return coast; },
     init(poly) { coast = poly; return World; } };
   if (typeof WORLD_COAST !== 'undefined') World.init(WORLD_COAST); // injected by the build
@@ -7589,33 +7616,34 @@ void main() {
   const rng = (seed) => { let s = seed >>> 0 || 1; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); };
 
   function build(grid, World) {
-    const { C, R, at, dist, rOf, onLand, coastDist, coastAt, inDistrict, DISTRICTS } = World;
+    const { C, R, DR, at, atTrue, dist, rOf, onLand, coastDist, coastAt, inDistrict, DISTRICTS } = World;
+    const road = (wall, deg, k) => at(R[wall] + DR[wall][1] * k, deg); // a point on the road through a district: k = 0 at its inner gate, 1 at the outer
     const r = rng(74311), names = grid.names, cell = grid.cell, [ox, oy] = grid.origin;
     const cls = (i, j) => { const row = grid.rows[j]; return row && row[i] !== undefined ? names[+row[i]] : 'sea'; };
 
     // Rivers (world units). The two main rivers cross at Mitras and pass through the districts.
     const rivers = [
-      { w: 3.4, pts: [[468, 318], [488, 400], [503, 470], at(270, -90), at(203, -90), at(137, -90), [497, 700], C, [503, 840], at(137, 90), at(203, 90), at(255, 90), [503, 1090], [498, 1150], coastAt(90, 6)] },
-      { w: 3.2, pts: [coastAt(180, 6), [215, 762], at(255, 180), at(203, 180), at(137, 180), [430, 774], C, [570, 766], at(137, 0), at(203, 0), at(255, 0), [790, 758], coastAt(-2, 6)] },
+      { w: 3.4, pts: [[468, 318], [488, 400], [503, 470], road('maria', -90, 1.2), road('rose', -90, 0.5), road('sina', -90, 0.5), [498, 735], C, [502, 805], road('sina', 90, 0.5), road('rose', 90, 0.5), road('maria', 90, 0.5), [503, 1090], [498, 1150], coastAt(90, 6)] },
+      { w: 3.2, pts: [coastAt(180, 6), road('maria', 180, 1.15), road('maria', 180, 0.5), road('rose', 180, 0.5), road('sina', 180, 0.5), [465, 772], C, [535, 768], road('sina', 0, 0.5), road('rose', 0, 0.5), road('maria', 0, 0.5), road('maria', 0, 1.15), coastAt(-2, 6)] },
       { w: 1.8, pts: [[372, 552], [420, 610], [455, 668], [482, 722], C] },
-      { w: 1.6, pts: [at(160, -62), [545, 668], [520, 720], [506, 752]] },
+      { w: 1.6, pts: [atTrue(160, -62), [528, 716], [512, 744], [506, 756]] },
       { w: 2.0, pts: [[690, 1000], [742, 1080], [786, 1170], [812, 1262], [828, 1340], coastAt(69, 6)] },
       { w: 1.6, pts: [[640, 1060], [700, 1130], [752, 1215], [786, 1290], [806, 1350]] },
       { w: 1.8, pts: [[352, 398], [300, 440], [246, 474], coastAt(-152, 6)] },
       { w: 1.6, pts: [[660, 430], [706, 470], [760, 500], coastAt(-38, 6)] },
       { w: 1.5, pts: [[330, 1010], [300, 1060], [262, 1090], coastAt(137, 6)] },
     ];
-    const lake = { c: at(160, -62), rx: 17, ry: 11 };
+    const lake = { c: atTrue(160, -62), rx: 15, ry: 10 };
 
     // Named woods from the story (forced forest around them), in addition to the grid's forests.
     const woods = [
-      { c: at(214, 42), r: 26, giant: true }, // Forest of Giant Trees (57th expedition), south-east Maria territory
-      { c: at(214, 30), r: 18, giant: true }, // the forest where Levi guarded Zeke
-      { c: at(214, 133), r: 22, giant: true }, // giant-tree forest of the Reiner and Bertholdt escape
-      { c: [488, 1066], r: 20, giant: false }, // woods south of Shiganshina
+      { c: atTrue(214, 42), r: 26, giant: true }, // Forest of Giant Trees (57th expedition), south-east Maria territory
+      { c: atTrue(214, 30), r: 18, giant: true }, // the forest where Levi guarded Zeke
+      { c: atTrue(214, 133), r: 22, giant: true }, // giant-tree forest of the Reiner and Bertholdt escape
+      { c: [482, 1112], r: 20, giant: false }, // woods south of Shiganshina
     ];
     const inWood = (p) => woods.find((w) => dist(p, w.c) < w.r);
-    const nearRing = (p, pad) => Object.values(R).some((rr) => Math.abs(rOf(p) - rr) < pad) || DISTRICTS.some((d) => dist(p, d.base) < d.r + pad);
+    const nearRing = (p, pad) => Object.values(R).some((rr) => Math.abs(rOf(p) - rr) < pad) || DISTRICTS.some((d) => d.sd(p) < pad);
     const nearRiver = (p, pad) => rivers.some((rv) => rv.pts.some((q, i) => i && segDist(p, rv.pts[i - 1], q) < pad));
     function segDist(p, a, b) { const dx = b[0] - a[0], dy = b[1] - a[1], t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy || 1))); return dist(p, [a[0] + dx * t, a[1] + dy * t]); }
 
@@ -7650,10 +7678,10 @@ void main() {
     // Places drawn on the map (icons). Story labels are added by the app.
     const places = [
       { id: 'mitras', kind: 'capital', p: C },
-      { id: 'ragako', kind: 'village', p: at(172, 114) },
-      { id: 'dauper', kind: 'village', p: at(150, 158) },
-      { id: 'utgard', kind: 'ruin', p: at(177, 136) },
-      { id: 'reiss', kind: 'chapel', p: at(168, -77) },
+      { id: 'ragako', kind: 'village', p: atTrue(172, 114) },
+      { id: 'dauper', kind: 'village', p: atTrue(150, 158) },
+      { id: 'utgard', kind: 'ruin', p: atTrue(177, 136) },
+      { id: 'reiss', kind: 'chapel', p: atTrue(168, -77) },
       { id: 'harbor', kind: 'harbor', p: coastAt(104, -5) },
       { id: 'krugerWall', kind: 'seawall', p: coastAt(84, -3) },
       { id: 'castleRuin', kind: 'ruin', p: [556, 1072] },
@@ -7744,7 +7772,7 @@ void main() {
     const lk = terrain.lake;
     each(lk.c[0], lk.c[1], lk.rx + 10, (o) => { const i = o % cols, j = (o - i) / cols, e = Math.hypot((i * step - lk.c[0]) / lk.rx, (j * step - lk.c[1]) / lk.ry); const v = (e - 1) * lk.ry; if (v < river[o]) river[o] = v; });
     const lvl = new Float32Array(N), pad = new Float32Array(N); // how level the ground is made: under Walls and districts, around places
-    for (const d of DISTRICTS) each(d.base[0], d.base[1], d.r + 13, (o, dist) => { const v = 1 - smooth(3, 13, dist - d.r); if (v > lvl[o]) lvl[o] = v; });
+    for (const d of DISTRICTS) each(d.centre[0], d.centre[1], d.depth * 0.5 + d.hw + 14, (o) => { const i = o % cols, j = (o - i) / cols, v = 1 - smooth(3, 13, d.sd([i * step, j * step])); if (v > lvl[o]) lvl[o] = v; });
     for (const f of flats) each(f.p[0], f.p[1], f.r * 1.5, (o, dist) => { const v = 1 - smooth(f.r * 0.7, f.r * 1.5, dist); if (v > pad[o]) pad[o] = v; });
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
       const o = j * cols + i, r = Math.hypot(i * step - C[0], j * step - C[1]);
@@ -10149,16 +10177,17 @@ const EVENT_TEXT = [
    The text of each event is in story-text.js. */
 const C = (zh, en, ja) => ({ zh, en, ja }); // a text in Traditional Chinese, English and Japanese
 const P = (() => {
-  const { at, district: D, coastAt } = World;
+  // Places are written at their true distance from the centre (in units of 2 km) and bearing; atTrue draws them where the Walls are drawn.
+  const { atTrue: at, district: D, coastAt } = World;
   return {
     mitras: World.C,
     // Wall Maria: Shiganshina (south)
-    shigI: D('shig').inner, shig: D('shig').centre, shigO: D('shig').outer, outer: at(288, 90),
+    shigI: D('shig').inner, shig: D('shig').centre, shigO: D('shig').outer, outer: D('shig').beyond,
     // Wall Rose: Trost (south) and Karanes (east)
     trostI: D('trost').inner, trost: D('trost').centre, trostO: D('trost').outer,
     karanes: D('karanes').centre,
     // Wall Sina
-    ehrmich: D('ehrmich').centre, stohess: D('stohess').centre, orvud: D('orvud').centre, orvudWall: at(147, -90),
+    ehrmich: D('ehrmich').centre, stohess: D('stohess').centre, orvud: D('orvud').centre, orvudWall: D('orvud').outer,
     // Inside the Walls
     between: at(228, 84), // Maria territory just outside Trost
     roseLand: at(160, 78), // inside Wall Rose, behind Trost
@@ -10297,7 +10326,7 @@ const cast = {
 // (place names or [x, y]), when within the scene (0..1) and whether the story leaves it unconfirmed.
 const r = (who, type, path, start = 0.05, end = 0.9, uncertain = false) => ({ who, type, path, start, end, uncertain });
 const SCENES = (() => {
-  const { at, coastAt } = World;
+  const { atTrue: at, coastAt } = World;
   const enc = P.south; // where Ymir attacks the Warriors
   return {
     founding: { routes: [], marks: [{ point: 'mitras', kind: 'reveal' }] },
@@ -10461,7 +10490,7 @@ const SCENES = (() => {
 // Everything else belongs to the closing event and is schematic:
 // the story only hints at how the island grew afterwards.
 const GROWTH = (() => {
-  const { at, coastAt, district: D } = World;
+  const { atTrue: at, coastAt, district: D } = World;
   const thru = (id, outward) => { const d = D(id), pts = [d.inner, d.centre, d.outer]; return outward ? pts : pts.reverse(); }; // a line through a district town
   const port = (deg) => coastAt(deg, -5), seaward = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
   const N2 = at(440, -90);
@@ -10540,7 +10569,7 @@ function lightAt(idx, p) {
   const rng = (seed) => { let s = seed >>> 0 || 1; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); };
 
   function create(events, World, opts = {}) {
-    const { C, R, DISTRICTS, at, dist, rOf, degOf, district, onLand, coastDist, coastAt } = World;
+    const { C, R, DR, DISTRICTS, at, atTrue, dist, rOf, degOf, district, onLand, coastDist, coastAt } = World;
     const N = { titans: 200, civilians: 500, riders: 10, wallTitans: 360, ...(opts.counts || {}) };
     const tn = (n) => Math.max(1, Math.round((n * N.titans) / 300)); // the story's shares of the Titans, whatever their number
     const idx = (id) => { const i = events.findIndex((e) => e.id === id); if (i < 0) throw new Error('Unknown event ' + id); return i; };
@@ -10548,13 +10577,13 @@ function lightAt(idx, p) {
 
     // ---- Areas ----
     const REGIONS = ['outside', 'maria', 'rose', 'sina'];
-    const RING = { outside: R.maria + 34, maria: (R.maria + R.rose) / 2, rose: (R.rose + R.sina) / 2, sina: 68 };
-    const clearOf = (p, wall, pad) => DISTRICTS.every((d) => d.wall !== wall || dist(p, d.base) > d.r + pad);
+    const RING = { outside: R.maria + DR.maria[1] + 14, maria: Math.max((R.maria + R.rose) / 2, R.rose + DR.rose[1] + 12), rose: Math.max((R.rose + R.sina) / 2, R.sina + DR.sina[1] + 12), sina: R.sina * 0.55 }; // the way round inside each territory, clear of the district tips
+    const clearOf = (p, wall, pad) => DISTRICTS.every((d) => d.wall !== wall || d.cap(p) > pad);
     const inArea = (area, p) => {
       const d = district(area);
-      if (d) return rOf(p) > R[d.wall] + 2 && dist(p, d.base) < d.r - 3;
-      if (area === 'ragako') return dist(p, at(172, 114)) < 11;
-      if (area === 'utgard') return dist(p, at(174, 134)) < 10 && rOf(p) < R.rose - 5;
+      if (d) return rOf(p) > R[d.wall] + 2 && d.cap(p) < -3;
+      if (area === 'ragako') return dist(p, atTrue(172, 114)) < 11;
+      if (area === 'utgard') return dist(p, atTrue(174, 134)) < 10 && rOf(p) < R.rose - 5;
       if (area === 'shigRing') { const r = rOf(p), a = Math.abs(wrapDeg(degOf(p) - 90)); return r < R.maria - 6 && r > R.maria - 44 && a < 26 && clearOf(p, 'rose', 6); } // Maria side of Shiganshina's inner gate
       const r = rOf(p);
       if (area === 'outside') return r > R.maria + 7 && clearOf(p, 'maria', 5) && onLand(p) && coastDist(p) > 9;
@@ -10566,8 +10595,8 @@ function lightAt(idx, p) {
     const regionOfArea = (area) => { const d = district(area); return d ? d.id : area === 'ragako' || area === 'utgard' ? 'rose' : area === 'shigRing' ? 'maria' : area; };
     const box = (area) => {
       const d = district(area);
-      if (d) return [d.base[0] - d.r, d.base[1] - d.r, d.base[0] + d.r, d.base[1] + d.r];
-      if (area === 'ragako' || area === 'utgard') { const c = at(173, 124); return [c[0] - 40, c[1] - 40, c[0] + 40, c[1] + 40]; }
+      if (d) return [Math.min(d.base[0], d.outer[0]) - d.hw, Math.min(d.base[1], d.outer[1]) - d.hw, Math.max(d.base[0], d.outer[0]) + d.hw, Math.max(d.base[1], d.outer[1]) + d.hw];
+      if (area === 'ragako' || area === 'utgard') { const c = atTrue(173, 124); return [c[0] - 40, c[1] - 40, c[0] + 40, c[1] + 40]; }
       const rr = area === 'outside' ? null : area === 'sina' ? R.sina : area === 'rose' ? R.rose : R.maria;
       return rr ? [C[0] - rr, C[1] - rr, C[0] + rr, C[1] + rr] : [0, 0, World.W, World.H];
     };
@@ -10602,31 +10631,44 @@ function lightAt(idx, p) {
       const [outerReg, innerReg] = ORDER[d.wall];
       LINKS.push([outerReg, d.id, [d.beyond, d.outer]], [d.id, innerReg, [d.inner, d.within]]);
     }
+    // The way round inside a territory from p0 to p1. The districts of the next Wall in stand out into it like piers: the way keeps
+    // clear of them (out to the ring road wherever it would come near one, and straight out first when it starts beside one).
+    const PIERS = { outside: 'maria', maria: 'rose', rose: 'sina' };
     const arc = (node, p0, p1) => {
       const ring = NODES[node]?.ring;
       if (!ring) return [];
-      const a0 = degOf(p0), d = wrapDeg(degOf(p1) - a0), n = Math.floor(Math.abs(d) / 11), out = [];
+      const a0 = degOf(p0), d = wrapDeg(degOf(p1) - a0), n = Math.max(1, Math.floor(Math.abs(d) / 6)), out = [], piers = PIERS[node];
       const r0 = rOf(p0), r1 = rOf(p1);
-      for (let i = 1; i <= n; i++) { const f = i / (n + 1), rr = ring + (r0 - ring) * Math.pow(1 - f, 2.2) + (r1 - ring) * Math.pow(f, 2.2); out.push(at(Math.max(node === 'sina' ? 20 : 0, rr), a0 + d * f)); }
+      if (piers && !clearOf(p0, piers, 16)) out.push(at(Math.max(r0, ring), a0));
+      for (let i = 1; i <= n; i++) {
+        const f = i / (n + 1), rr = ring + (r0 - ring) * Math.pow(1 - f, 2.2) + (r1 - ring) * Math.pow(f, 2.2), p = at(Math.max(node === 'sina' ? 16 : 0, rr), a0 + d * f);
+        out.push(piers && !clearOf(p, piers, 9) ? at(Math.max(rr, ring), a0 + d * f) : p);
+      }
+      if (piers && !clearOf(p1, piers, 16)) out.push(at(Math.max(r1, ring), a0 + d));
       return out;
     };
     const polyLen = (pts) => { let s = 0; for (let i = 1; i < pts.length; i++) s += dist(pts[i - 1], pts[i]); return s; };
     function route(fromArea, A, toArea, B, via) {
       const from = regionOfArea(fromArea), to = regionOfArea(toArea);
       let best = null;
-      const walk = (node, pts, seen) => {
-        if (seen.size > 7) return;
-        if (node === to) { const full = [...pts, ...arc(node, pts[pts.length - 1], B), B], len = polyLen(full); if (!best || len < best.len) best = { pts: full, len }; return; }
+      // Which gates to take is settled on rough lengths (in to the ring road, round it, out again); the way itself is drawn once, for the choice made.
+      const rough = (node, p0, p1) => { const ring = NODES[node]?.ring, d = (Math.abs(wrapDeg(degOf(p1) - degOf(p0))) * Math.PI) / 180; return !ring || d < 0.2 ? dist(p0, p1) : Math.abs(rOf(p0) - ring) + d * ring + Math.abs(rOf(p1) - ring); };
+      const walk = (node, legs, last, len, seen) => {
+        if (seen.size > 7 || (best && len >= best.len)) return;
+        if (node === to) { const L = len + rough(node, last, B); if (!best || L < best.len) best = { len: L, legs: [...legs, [node, [B]]] }; return; }
         for (const [a, b, wp] of LINKS) {
           let next, way;
           if (a === node && !seen.has(b)) { next = b; way = wp; } else if (b === node && !seen.has(a)) { next = a; way = [...wp].reverse(); } else continue;
           const gate = NODES[next].district || NODES[node].district;
           if (via && gate && !via.includes(gate.id)) continue;
-          walk(next, [...pts, ...arc(node, pts[pts.length - 1], way[0]), ...way], new Set([...seen, next]));
+          walk(next, [...legs, [node, way]], way[way.length - 1], len + rough(node, last, way[0]) + polyLen(way), new Set([...seen, next]));
         }
       };
-      walk(from, [A], new Set([from]));
-      return best ? best.pts : [A, B];
+      walk(from, [], A, 0, new Set([from]));
+      if (!best) return [A, B];
+      const pts = [A];
+      for (const [node, way] of best.legs) pts.push(...arc(node, pts[pts.length - 1], way[0]), ...way);
+      return pts;
     }
     const metrics = (pts) => { const ls = []; let total = 0; for (let i = 1; i < pts.length; i++) { const n = dist(pts[i - 1], pts[i]); ls.push(n); total += n; } return { pts, ls, total: Math.max(0.001, total) }; };
     const along = (m, f) => { let rem = m.total * clamp01(f); for (let i = 0; i < m.ls.length; i++) { if (rem <= m.ls[i]) return lerp(m.pts[i], m.pts[i + 1], m.ls[i] ? rem / m.ls[i] : 0); rem -= m.ls[i]; } return m.pts[m.pts.length - 1]; };
@@ -10686,7 +10728,7 @@ function lightAt(idx, p) {
     setCur(inMaria, (a) => lerp(a.home0, TROST.outer, 0.8));
     // 846: the refugee column sent out through Trost draws the Titans nearest to it.
     // The column spreads out to both sides of Trost's gate, close under Wall Rose (where Wall Maria does not hide it from the south).
-    const FLANKS = [at(R.rose + 17, 90 + 15), at(R.rose + 17, 90 - 15)], flank = (list, k) => list.filter((_, i) => i % 2 === k);
+    const FLANKS = [at(R.rose + 24, 90 + 22), at(R.rose + 24, 90 - 22)], flank = (list, k) => list.filter((_, i) => i % 2 === k);
     const drawn = [...first, ...second];
     for (const k of [0, 1]) move(flank(drawn, k), ['reclamation', 0.1], ['reclamation', 0.5], 'maria', { near: FLANKS[k], radius: 30, spread: 0.5 });
     kill(take(inMaria, inMaria.filter((_, i) => i % 13 === 5)), ['cadets', 0.2], ['cadets', 0.9]); // early Survey Corps expeditions
@@ -10694,7 +10736,7 @@ function lightAt(idx, p) {
     const trostTitans = take(inMaria, nearest(inMaria, TROST.outer, tn(26)));
     move(trostTitans, ['trost-attack', 0.42], ['trost-attack', 0.88], 'trost', { via: ['trost'], spread: 0.5 });
     kill(trostTitans, ['trost-seal', 0.45], ['trost-seal', 0.96]);
-    kill(take(inMaria, nearest(inMaria, at(214, 42), tn(6))), ['female-forest', 0.2], ['female-forest', 0.72]); // 57th expedition
+    kill(take(inMaria, nearest(inMaria, atTrue(214, 42), tn(6))), ['female-forest', 0.2], ['female-forest', 0.72]); // 57th expedition
     // Autumn 850: the Trost "executioner" lures and kills Titans night after night.
     const lured = take(inMaria, nearest(inMaria, TROST.outer, tn(30)));
     move(lured, ['rod', 0], ['rod', 0.7], 'maria', { near: TROST.beyond, radius: 16, spread: 0.6 });
@@ -10711,7 +10753,7 @@ function lightAt(idx, p) {
     // 850: Ragako. Villagers become Titans inside Wall Rose; all but one walk to Utgard and die there.
     const rag = add('titan', 22, 'ragako', { hidden: true });
     fade(rag, ['ragako', 0.34], ['ragako', 0.56], 1, { spread: 0.4 });
-    Object.assign(rag[0], { still: true, lying: true, home0: at(164, 113.4), roof: { yaw: 0.6 } }); // it lies on the roof of a house it has crushed, at the edge of the village away from Wall Rose // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
+    Object.assign(rag[0], { still: true, lying: true, home0: atTrue(164, 113.4), roof: { yaw: 0.6 } }); // it lies on the roof of a house it has crushed, at the edge of the village away from Wall Rose // one stays, unable to move: it lies beside the houses, on the side away from Wall Rose, where neither a roof nor the Wall hides it
     const ragGo = rag.slice(1);
     move(ragGo, ['ragako', 0.62], ['ragako', 1], 'utgard', { spread: 0.4 });
     kill(ragGo.slice(0, 17), ['utgard', 0.5], ['utgard', 0.96]);
@@ -10787,25 +10829,33 @@ function lightAt(idx, p) {
       // Outside Wall Maria nothing is spared: the great circle flattens it all. The one exception is the harbour, which the story still uses after the Rumbling begins.
       const spared = (p) => rOf(p) < R.maria + 34 || (PTS.harbor && dist(p, PTS.harbor) < 8);
       for (const p of [...['ragako', 'utgard', 'reiss', 'harbor', 'cadetCamp'].map((k) => PTS[k]).filter(Boolean), ...(opts.protect || [])]) if (rOf(p) > R.sina - 6 && spared(p) && !spots.some((q) => dist(q, p) < 8)) spots.push(p);
-      rumble.zones = [...DISTRICTS.map((d) => ({ c: d.base, r: d.r, town: d.id })), ...spots.map((c) => ({ c, r: 13 }))];
+      // zones are circles: a district is a row of them along the road between its gates, a village is one
+      const beads = (d) => { const k = Math.ceil((d.depth - d.hw) / (d.hw * 0.8)); return Array.from({ length: k + 1 }, (_, i) => ({ c: [d.base[0] + (d.end[0] - d.base[0]) * (i / k), d.base[1] + (d.end[1] - d.base[1]) * (i / k)], r: d.hw, town: d.id })); };
+      rumble.zones = [...DISTRICTS.flatMap(beads), ...spots.map((c) => ({ c, r: 13 }))];
       const SPOT = 13;
       // a town is the half-round inside its district wall; standing on a wall line is not trampling
       const blockedAt = (p, own) => {
         const rp = rOf(p);
-        for (const d of DISTRICTS) if (rp > R[d.wall] + 0.8 && dist(p, d.base) < d.r + (d === own ? -1 : 3)) return true;
+        for (const d of DISTRICTS) if (rp > R[d.wall] + 0.8 && rp < R[d.wall] + d.depth + 4 && d.cap(p) < (d === own ? -1 : 3)) return true;
         for (const c of spots) if (dist(p, c) < SPOT) return true;
         return false;
       };
       // is the straight way out from radius r0 on this bearing clear? (nearest point of the ray to each town and village)
       const rayFree = (r0, deg, own) => {
         const ux = Math.cos(deg * rad), uy = Math.sin(deg * rad);
-        for (const d of DISTRICTS) { const cx = d.base[0] - C[0], cy = d.base[1] - C[1], al = Math.max(r0 + 2, R[d.wall] + 0.8, cx * ux + cy * uy); if (Math.hypot(cx - ux * al, cy - uy * al) < d.r + (d === own ? -1 : 3)) return false; }
+        // a district lies along a road from the centre, as the ray does: the ray is nearest to it at its start, or level with one end of the road
+        for (const d of DISTRICTS) {
+          const cs = ux * d.n[0] + uy * d.n[1];
+          if (cs <= 0.2) continue;
+          const lo = Math.max(r0 + 2, R[d.wall] + 0.8), Rw = R[d.wall], e = Rw + d.depth - d.hw, pad = d === own ? -1 : 3;
+          for (const al of [lo, Rw * cs, Rw / cs, e * cs, e / cs]) { const q = Math.max(lo, al); if (d.cap([C[0] + ux * q, C[1] + uy * q]) < pad) return false; }
+        }
         for (const c of spots) { const cx = c[0] - C[0], cy = c[1] - C[1], al = Math.max(r0 + 2, cx * ux + cy * uy); if (Math.hypot(cx - ux * al, cy - uy * al) < SPOT) return false; }
         return true;
       };
       const taken = []; // bearings side-steppers already walk out on: the next one keeps 0.8 degrees clear, so they stand side by side
       const clearBearing = (r0, b) => rayFree(r0, b) && taken.every((x) => Math.abs(wrapDeg(x - b)) >= 0.8);
-      const lenOf = (w) => 2 * Math.PI * R[w] + DISTRICTS.filter((d) => d.wall === w).reduce((sum, d) => sum + Math.PI * d.r, 0);
+      const lenOf = (w) => 2 * Math.PI * R[w] + DISTRICTS.filter((d) => d.wall === w).reduce((sum, d) => sum + d.len, 0);
       const total = WALLS.reduce((sum, w) => sum + lenOf(w), 0), r = rng(4242);
       const mk = (start, g) => { const a = { id: agents.length, kind: 'wallTitan', r, variant: 1, area0: 'outside', home0: start, vis0: 0, ops: [], phase: (agents.length * 0.37) % 10, speed: 1, rumble: g }; agents.push(a); wallTitans.push(a); };
       for (const wall of WALLS) {
@@ -10818,16 +10868,16 @@ function lightAt(idx, p) {
           if (!rayFree(Rw, th0)) for (let k = 1; k < 260; k++) { const c = [th0 + k * 0.25, th0 - k * 0.25].find((b) => clearBearing(Rw, b)); if (c !== undefined) { th1 = wrapDeg(c); taken.push(th1); break; } } // the nearest clear bearing along its own Wall
           mk(start, { wall, th0, th1, r0: Rw, s1: 0, pre: Math.abs(wrapDeg(th1 - th0)) * rad * Rw });
         }
-        // the half-round wall of each district
+        // the wall of each district: its two straight sides and its round end
         for (const d of ds) for (let j = 0; j < nB; j++) {
-          const ph = d.deg - 90 + (180 * (j + 0.5)) / nB, start = [d.base[0] + d.r * Math.cos(ph * rad), d.base[1] + d.r * Math.sin(ph * rad)], th0 = degOf(start), rs = rOf(start);
+          const s = (d.len * (j + 0.5)) / nB, start = d.wallAt(s).p, th0 = degOf(start), rs = rOf(start);
           if (rayFree(rs, th0, d)) { mk(start, { wall, district: d, th0, th1: th0, r0: rs, s1: 0, pre: 0 }); continue; } // nothing in the way: straight out from where it stands
           // an outer district lies in the way: along its own wall to the nearer end, then along the ring to the first clear bearing
-          const dir = ph < d.deg ? -1 : 1, thJ = wrapDeg(d.deg + (dir * Math.atan(d.r / Rw)) / rad);
+          const dir = s < d.len / 2 ? -1 : 1, thJ = wrapDeg(d.deg + (dir * Math.asin(d.hw / Rw)) / rad); // the foot of the district wall it is nearer to
           let th1 = thJ;
           for (let k = 0; k < 260; k++) { const c = thJ + dir * k * 0.25; if (clearBearing(Rw, c)) { th1 = wrapDeg(c); taken.push(th1); break; } }
-          const s1 = Math.abs(d.deg + dir * 90 - ph) * rad * d.r;
-          mk(start, { wall, district: d, ph, dir, thJ, rJ: Math.hypot(Rw, d.r), th0, th1, r0: Rw, s1, pre: s1 + Math.abs(wrapDeg(th1 - thJ)) * rad * Rw });
+          const s1 = dir < 0 ? s : d.len - s;
+          mk(start, { wall, district: d, s, dir, thJ, th0, th1, r0: Rw, s1, pre: s1 + Math.abs(wrapDeg(th1 - thJ)) * rad * Rw });
         }
       }
       // places in the great circle: evenly spaced, in the order they stand around the island, so nobody has far to shift
@@ -10867,7 +10917,7 @@ function lightAt(idx, p) {
       if (rho < g.r0) {
         const u = g.pre - (g.r0 - rho); // how far it has stepped along its Wall so far
         if (u <= 0) return [a.home0[0], a.home0[1], 0];
-        if (u < g.s1) { const ph = (g.ph + (g.dir * (u / g.district.r)) / rad) * rad; return [g.district.base[0] + g.district.r * Math.cos(ph), g.district.base[1] + g.district.r * Math.sin(ph), 0]; }
+        if (u < g.s1) { const q = g.district.wallAt(g.s + g.dir * u).p; return [q[0], q[1], 0]; } // along its district's wall
         const u2 = u - g.s1, from = g.district ? g.thJ : g.th0, sign = wrapDeg(g.th1 - from) >= 0 ? 1 : -1;
         const p = at(g.rJ ? Rw + (g.rJ - Rw) * Math.max(0, 1 - u2 / 10) : Rw, from + (sign * (u2 / Rw)) / rad);
         return [p[0], p[1], 0];
@@ -10889,13 +10939,13 @@ function lightAt(idx, p) {
     // 845: evacuation boats carry people up the river from Shiganshina, through the gates, to Trost.
     const boats = [];
     {
-      const river = global.RouteGeo.build([SHIG.centre, SHIG.inner, [C[0] + 1.5, C[1] + R.rose + 38], TROST.outer, TROST.centre, TROST.inner, at(R.rose - 26, 90)], 1);
+      const river = global.RouteGeo.build([SHIG.centre, SHIG.inner, [C[0] + 1.5, C[1] + R.rose + DR.rose[1] + 24], TROST.outer, TROST.centre, TROST.inner, at(R.rose - 26, 90)], 1);
       const trips = [['maria-fall', 0.44], ['maria-fall', 0.53], ['maria-fall', 0.62], ['maria-fall', 0.72], ['maria-fall', 0.84], ['refugees', 0.04], ['refugees', 0.18], ['refugees', 0.33]];
       for (const [id, p] of trips) { const a = { id: agents.length, kind: 'boat', r: rng(5), variant: 1, area0: 'maria', home0: SHIG.centre, vis0: 0, ops: [], phase: p * 9, speed: 1, ferry: { geo: river, T0: T(id, p), T1: T(id, p) + 0.36 } }; agents.push(a); boats.push(a); }
     }
     // Wall cannons on the districts' outer walls.
     const cannons = [];
-    for (const d of DISTRICTS) for (const off of [-48, 48]) { const a = ((d.deg + off) * Math.PI) / 180; cannons.push({ x: d.base[0] + Math.cos(a) * d.r, y: d.base[1] + Math.sin(a) * d.r, face: Math.cos(a) >= 0 ? 1 : -1, wall: d.wall, district: d.id }); }
+    for (const d of DISTRICTS) for (const k of [0.36, 0.64]) { const q = d.wallAt(d.len * k); cannons.push({ x: q.p[0], y: q.p[1], nx: q.n[0], ny: q.n[1], face: q.n[0] >= 0 ? 1 : -1, wall: d.wall, district: d.id }); } // either side of the round end, looking out
 
     // Resolve homes and routes in timeline order.
     for (const a of agents) {
@@ -11000,7 +11050,7 @@ function lightAt(idx, p) {
     // The person's end is set to the moment the Titan gets there, so nobody dies without a Titan beside them.
     const meals = [];
     {
-      const MEAL = 0.2, REACH = 2.4, FAR = 42, RUN = 95, quiet = { reduced: true }, plain = { reduced: true, plain: true }; // a meal's length in events; how near the Titan stands; how far it will go, and how fast (units per event)
+      const MEAL = 0.2, REACH = 2.4, FAR = 60, RUN = 110, quiet = { reduced: true }, plain = { reduced: true, plain: true }; // a meal's length in events; how near the Titan stands; how far it will go, and how fast (units per event)
       const clear = (p, q, reg) => [0.25, 0.5, 0.75, 1].every((k) => World.regionOf(lerp(p, q, k)) === reg); // a straight walk that stays in one territory (never through a Wall)
       const hunters = agents.filter((t) => t.kind === 'titan' && !t.still && !t.lying).sort((x, y) => ((x.id * 2654435761) >>> 0) - ((y.id * 2654435761) >>> 0));
       const resort = (c) => c.ops.sort((x, y) => x.T0 - y.T0);
@@ -11050,7 +11100,7 @@ function lightAt(idx, p) {
     // the nearest first, they leave for Ehrmich district and the land behind Wall Sina, and come home once the Wall is found whole.
     const evacuees = [];
     {
-      const plain = { reduced: true, plain: true }, scare = at(175, 125), FAR = 150, EHR = district('ehrmich');
+      const plain = { reduced: true, plain: true }, scare = atTrue(175, 125), FAR = 95, EHR = district('ehrmich');
       const [f0, f1] = win(['ragako', 0.5], ['utgard', 0.3]), [b0, b1] = win(['reveal-escape', 0.55], ['rod', 0.35]);
       for (const a of agents) {
         if (a.kind !== 'civ' || a.area0 === 'ragako') continue;
@@ -11062,7 +11112,7 @@ function lightAt(idx, p) {
       evacuees.sort((x, y) => x.d - y.d);
       evacuees.forEach((e, i) => {
         const { a, home } = e, u = evacuees.length > 1 ? i / (evacuees.length - 1) : 0, area = i % 3 === 0 ? 'ehrmich' : 'sina';
-        const dest = sample(area, a.r, area === 'sina' ? { near: EHR.within, radius: 55 } : {});
+        const dest = sample(area, a.r, area === 'sina' ? { near: EHR.within, radius: 38 } : {});
         a.ops.push({ type: 'move', T0: f0 + (f1 - f0) * 0.5 * u, T1: f0 + (f1 - f0) * (0.5 + 0.5 * u), area, flee: true, fromArea: 'rose', from: home, home: dest, path: metrics(route('rose', home, area, dest)) });
         a.ops.push({ type: 'move', T0: b0 + (b1 - b0) * 0.5 * u, T1: b0 + (b1 - b0) * (0.5 + 0.5 * u), area: 'rose', fromArea: area, from: dest, home, path: metrics(route(area, dest, 'rose', home)) }); // back to the same home
         a.ops.sort((x, y) => x.T0 - y.T0);
@@ -11636,11 +11686,16 @@ function lightAt(idx, p) {
     if (ground && opt.relief) rockAndSnow(ctx, opt.relief, W, H, opt);
     // District towns: pale paving with little roofs
     for (const d of DISTRICTS) {
-      const a = (d.deg * Math.PI) / 180;
-      ctx.beginPath(); ctx.arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a + Math.PI / 2); ctx.closePath(); ctx.fillStyle = (ground && opt.paving) || '#d3c9a4'; ctx.fill();
-      if (ground) { ctx.strokeStyle = 'rgba(90,80,60,.35)'; ctx.lineWidth = 0.5; for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.arc(d.base[0], d.base[1], (d.r * k) / 4, a - Math.PI / 2, a + Math.PI / 2); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(d.inner[0], d.inner[1]); ctx.lineTo(d.outer[0], d.outer[1]); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(120,104,76,.6)'; ctx.stroke(); continue; } // streets; the houses are solid
-      for (let i = 0; i < 26; i++) {
-        const t = a + (r() - 0.5) * Math.PI * 0.92, dd = 2.5 + r() * (d.r - 5), x = d.base[0] + Math.cos(t) * dd, y = d.base[1] + Math.sin(t) * dd;
+      const at2 = (u, v) => [d.base[0] + d.t[0] * u + d.n[0] * v, d.base[1] + d.t[1] * u + d.n[1] * v]; // across the district, and out from the Wall
+      ctx.beginPath(); for (const q of d.outline(1.5)) ctx.lineTo(q.p[0], q.p[1]); ctx.closePath(); ctx.fillStyle = (ground && opt.paving) || '#d3c9a4'; ctx.fill();
+      if (ground) { // streets; the houses are solid
+        ctx.strokeStyle = 'rgba(90,80,60,.35)'; ctx.lineWidth = 0.5;
+        for (let v = 6; v < d.depth - 4; v += 5.3) { const w = v < d.depth - d.hw ? d.hw - 1.2 : Math.sqrt(Math.max(0, d.hw * d.hw - (v - d.depth + d.hw) ** 2)) - 1.2; if (w < 2) continue; const p = at2(-w, v), q = at2(w, v); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); }
+        ctx.beginPath(); ctx.moveTo(d.inner[0], d.inner[1]); ctx.lineTo(d.outer[0], d.outer[1]); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(120,104,76,.6)'; ctx.stroke(); continue;
+      }
+      for (let i = 0; i < Math.round(d.hw * d.depth * 0.045); i++) {
+        const [x, y] = at2((r() * 2 - 1) * (d.hw - 2.5), 2.5 + r() * (d.depth - 5));
+        if (d.cap([x, y]) > -2.4) continue;
         ctx.fillStyle = r() < 0.5 ? '#9c6a4a' : '#b98a5e'; ctx.fillRect(x - 1.1, y - 0.9, 2.2, 1.8);
       }
     }
@@ -11851,9 +11906,9 @@ function lightAt(idx, p) {
           ctx.beginPath();
           const sorted = [...ds].sort((a, b) => a.deg - b.deg);
           for (let i = 0; i < sorted.length; i++) {
-            const d = sorted[i], nx = sorted[(i + 1) % sorted.length], half = Math.asin(d.r / R[wall] / 1) , a = (d.deg * Math.PI) / 180, an = (nx.deg * Math.PI) / 180 + (i === sorted.length - 1 ? Math.PI * 2 : 0);
-            const nh = Math.asin(nx.r / R[wall]);
-            ctx.arc(X(d.base), Y(d.base), d.r * s, a - Math.PI / 2, a + Math.PI / 2); // the bulge
+            const d = sorted[i], nx = sorted[(i + 1) % sorted.length], half = Math.asin(d.hw / R[wall]), a = (d.deg * Math.PI) / 180, an = (nx.deg * Math.PI) / 180 + (i === sorted.length - 1 ? Math.PI * 2 : 0);
+            const nh = Math.asin(nx.hw / R[wall]);
+            for (const q of d.outline(3)) ctx.lineTo(X(q.p), Y(q.p)); // the district: two straight walls and a round end
             ctx.arc(cx, cy, rr, a + half, an - nh); // the Wall to the next district
           }
           ctx.closePath();
@@ -11867,7 +11922,7 @@ function lightAt(idx, p) {
         ctx.strokeStyle = STONE_EDGE; ctx.lineWidth = lw + 1.8; ctx.stroke();
         ctx.strokeStyle = STONE; ctx.lineWidth = lw; ctx.stroke();
         // the inner Wall line across each district (its inner gate sits on it)
-        for (const d of ds) { const half = Math.asin(d.r / R[wall]), a = (d.deg * Math.PI) / 180; ctx.beginPath(); ctx.arc(cx, cy, rr, a - half, a + half); ctx.strokeStyle = STONE_EDGE; ctx.lineWidth = lw * 0.75 + 1.6; ctx.stroke(); ctx.strokeStyle = '#ddd5bd'; ctx.lineWidth = lw * 0.75; ctx.stroke(); }
+        for (const d of ds) { const half = Math.asin(d.hw / R[wall]), a = (d.deg * Math.PI) / 180; ctx.beginPath(); ctx.arc(cx, cy, rr, a - half, a + half); ctx.strokeStyle = STONE_EDGE; ctx.lineWidth = lw * 0.75 + 1.6; ctx.stroke(); ctx.strokeStyle = '#ddd5bd'; ctx.lineWidth = lw * 0.75; ctx.stroke(); }
         if (state === 'lost' || state === 'breached') { // territory lost / outer gate breached: a warning tint along the Wall
           ctx.globalAlpha = (state === 'lost' ? 0.75 : 0.5) * (1 - fall); ctx.setLineDash([lw * 1.6, lw * 1.9]); ctx.lineDashOffset = -t * 6;
           ctx.strokeStyle = state === 'lost' ? '#ff8a4a' : '#ffc169'; ctx.lineWidth = Math.max(1.4, lw * 0.42); ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
@@ -12064,7 +12119,7 @@ function lightAt(idx, p) {
     }
     // ---- The Rumbling: rows of Wall Titans in the Walls, the great circle they form, and the ground it tramples ----
     const RB = pop.rumble, RAD = Math.PI / 180, RWALLS = ['maria', 'rose', 'sina'];
-    const GAP_R = R.maria + 36, GAP_HALF = 11.5; // until the circle is past the outermost districts it has a gap at each compass point: nobody walks through the towns
+    const GAP_R = R.maria + World.DR.maria[1] + 8, GAP_HALF = 17; // until the circle is past the outermost districts it has a gap at each compass point: nobody walks through the towns
     let landPath = null;
     const healT = pop.T('rebuild', 0);
     // Heads standing shoulder to shoulder: a dotted stroke along the current path.
@@ -12102,9 +12157,9 @@ function lightAt(idx, p) {
         if (left > 0) { ctx.beginPath(); ctx.arc(cx, cy, Rw * s, 0, 6.2832); headRow(hw, appear * left); }
         for (const d of DISTRICTS) {
           if (d.wall !== wall) continue;
-          const leftB = Math.max(0, Math.min(1, (Rw + d.r * 0.55 - rho) / 8));
+          const leftB = Math.max(0, Math.min(1, (Rw + d.depth * 0.6 - rho) / 8));
           if (leftB <= 0) continue;
-          ctx.beginPath(); ctx.arc((d.base[0] - view.x) * s + vw / 2, (d.base[1] - view.y) * s + vh / 2, d.r * s, (d.deg - 90) * RAD, (d.deg + 90) * RAD);
+          ctx.beginPath(); for (const q of d.outline(3)) ctx.lineTo((q.p[0] - view.x) * s + vw / 2, (q.p[1] - view.y) * s + vh / 2);
           headRow(hw, appear * leftB);
         }
       }
@@ -12150,7 +12205,7 @@ function lightAt(idx, p) {
       ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = 'rgb(' + mix(255, 44) + ',' + mix(255, 60) + ',' + mix(255, 116) + ')'; ctx.fillRect(0, 0, vw, vh);
       ctx.globalCompositeOperation = 'screen';
       const lit = [[C, 15]];
-      for (const d of DISTRICTS) if (!(d.wall === 'maria' && (sc.walls.w.maria === 'lost' || sc.walls.w.maria === 'collapsed' && false))) lit.push([d.centre, d.r * 0.8]);
+      for (const d of DISTRICTS) if (!(d.wall === 'maria' && (sc.walls.w.maria === 'lost' || sc.walls.w.maria === 'collapsed' && false))) lit.push([d.centre, d.hw * 0.9]);
       for (const [p, r] of lit) {
         const sx = (p[0] - view.x) * s + vw / 2, sy = (p[1] - view.y) * s + vh / 2, rr = Math.max(7, r * s * 1.5);
         if (sx + rr < 0 || sy + rr < 0 || sx - rr > vw || sy - rr > vh) continue;
@@ -12338,7 +12393,7 @@ function lightAt(idx, p) {
     const { scene, World, terrain, relief, pop, Q, D, props, U, renderer } = ctx;
     const { W, H, C, R, DISTRICTS } = World, RG = global.RouteGeo, hAt = relief.land;
     const rnd = S3.rng(52017), m12 = new Float32Array(12);
-    const zones = pop.rumble.zones;
+    const zones = pop.rumble.zones, hi3 = Q.shadow > 0;
 
     // ---------- Ground ----------
     const stride = Q.meshStride, gc = Math.floor((relief.cols - 1) / stride) + 1, gr = Math.floor((relief.rows - 1) / stride) + 1;
@@ -12358,19 +12413,19 @@ function lightAt(idx, p) {
     const mkTex = (ppu) => { const t = new T.CanvasTexture(global.MapPainter.paint(ppu, terrain, World, paintOpt)); t.colorSpace = T.SRGBColorSpace; t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); return t; };
     const U3 = { // what the ground shader needs for the Rumbling and the cloud shadows
       uRho: { value: 0 }, uSina: { value: R.sina }, uMaria: { value: R.maria }, uCentre: { value: new T.Vector2(C[0], C[1]) }, uTrample: { value: S3.col(D.terrain.trample) }, uScar: { value: S3.col(D.terrain.scarEarth) },
-      uTrampleK: { value: 0 }, uScarK: { value: 0 }, uZones: { value: Array.from({ length: 24 }, () => new T.Vector3(0, 0, -1)) }, uClouds: { value: Array.from({ length: 8 }, () => new T.Vector4(0, 0, 1, 0)) },
+      uTrampleK: { value: 0 }, uScarK: { value: 0 }, uZones: { value: Array.from({ length: 40 }, () => new T.Vector3(0, 0, -1)) }, uClouds: { value: Array.from({ length: 8 }, () => new T.Vector4(0, 0, 1, 0)) },
     };
-    zones.slice(0, 24).forEach((z, i) => U3.uZones.value[i].set(z.c[0], z.c[1], z.r + 2));
+    zones.slice(0, 40).forEach((z, i) => U3.uZones.value[i].set(z.c[0], z.c[1], z.r + 2));
     const ground = new T.Mesh(geo, new T.MeshLambertMaterial({ map: mkTex(Q.firstPpu) }));
     ground.material.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, U3);
       sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp; uniform float uRho, uSina, uMaria, uTrampleK, uScarK; uniform vec2 uCentre; uniform vec3 uTrample, uScar; uniform vec3 uZones[24]; uniform vec4 uClouds[8];')
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp; uniform float uRho, uSina, uMaria, uTrampleK, uScarK; uniform vec2 uCentre; uniform vec3 uTrample, uScar; uniform vec3 uZones[40]; uniform vec4 uClouds[8];')
         .replace('#include <map_fragment>', `#include <map_fragment>
         float rr = distance(vWp.xz, uCentre);
         if (uRho > uSina && rr > uSina && rr < uRho && vWp.y > 0.03) {
           float k = (rr > uMaria + 4.0 ? uScarK : uTrampleK) * smoothstep(uRho, uRho - 5.0, rr);
-          for (int i = 0; i < 24; i++) { if (uZones[i].z > 0.0) k *= smoothstep(uZones[i].z - 1.5, uZones[i].z + 1.5, distance(vWp.xz, uZones[i].xy)); }
+          for (int i = 0; i < 40; i++) { if (uZones[i].z > 0.0) k *= smoothstep(uZones[i].z - 1.5, uZones[i].z + 1.5, distance(vWp.xz, uZones[i].xy)); }
           diffuseColor.rgb = mix(diffuseColor.rgb, rr > uMaria + 4.0 ? uScar : uTrample, k);
         }
         float cl = 0.0;
@@ -12446,17 +12501,14 @@ function lightAt(idx, p) {
     }
     // Ragako: the Titan that cannot move lies on the roof of a house, which has given way under it.
     for (const a of pop.agents) if (a.roof) fixed.push({ pl: { p: a.home0 }, items: [['villageHut', 0, 0, a.roof.yaw, ctx.roof.k, ctx.roof.ky]] });
-    // District towns: houses in rings inside each half-round wall, leaving the main street free.
+    // District towns: rows of houses either side of the street that joins the two gates, filling the arch of the district wall.
     const townHouses = [];
     for (const d of DISTRICTS) {
-      const a0 = (d.deg * Math.PI) / 180, ux = Math.cos(a0), uz = Math.sin(a0);
-      for (const [rad, n] of [[d.r * 0.3, 5], [d.r * 0.53, 9], [d.r * 0.76, 14]]) {
-        for (let i = 0; i < n; i++) {
-          const a = a0 - Math.PI / 2 + ((i + 0.5) / n) * Math.PI, x = d.base[0] + Math.cos(a) * rad, z = d.base[1] + Math.sin(a) * rad;
-          const off = Math.abs((x - d.base[0]) * -uz + (z - d.base[1]) * ux); // distance from the street that joins the two gates
-          if (off < 2.6 || (x - d.base[0]) * ux + (z - d.base[1]) * uz < 2.2) continue;
-          townHouses.push([rnd() < 0.3 ? 'houseTall' : 'house', x + (rnd() - 0.5) * 0.8, z + (rnd() - 0.5) * 0.8, -a + (rnd() - 0.5) * 0.3, TOWN * (0.85 + rnd() * 0.3), d]); // gable ends towards the street
-        }
+      const yaw = -((d.deg * Math.PI) / 180 + Math.PI / 2), gapU = hi3 ? 4.9 : 6.4, gapV = hi3 ? 5.3 : 6.8;
+      for (let v = 3.4; v < d.depth - 2.4; v += gapV) for (let u = 3.7; u < d.hw - 2; u += gapU) for (const sg of [-1, 1]) {
+        const x = d.base[0] + d.t[0] * u * sg + d.n[0] * v + (rnd() - 0.5) * 0.9, z = d.base[1] + d.t[1] * u * sg + d.n[1] * v + (rnd() - 0.5) * 0.9;
+        if (d.cap([x, z]) > -3.3 || rnd() < 0.1) continue; // clear of the wall; a yard here and there
+        townHouses.push([rnd() < 0.3 ? 'houseTall' : 'house', x, z, yaw + (sg > 0 ? Math.PI : 0) + (rnd() - 0.5) * 0.3, TOWN * (0.85 + rnd() * 0.3), d]); // facing the street
       }
     }
     for (const h of townHouses) countProp(h[0]);
@@ -12560,7 +12612,7 @@ function lightAt(idx, p) {
     const clouds = Array.from({ length: Math.min(8, Q.clouds) }, () => ({ x: wr() * W, y: 80 + wr() * (H - 160), r: 80 + wr() * 100, v: 5 + wr() * 7 }));
     const flakes = Array.from({ length: Q.snow }, () => ({ x: 120 + wr() * 760, z: 120 + wr() * 420, y: wr() * 70, v: 7 + wr() * 7, ph: wr() * 6.3 }));
     const snow = S3.Puffs(Math.max(1, Q.snow), { order: 7, maxPx: 6 }); scene.add(snow.points);
-    const lit = [[C, 13, null], ...DISTRICTS.map((d) => [d.centre, d.r * 0.7, d])];
+    const lit = [[C, 13, null], ...DISTRICTS.map((d) => [d.centre, d.hw * 0.85, d])];
     const lamps = S3.Puffs(lit.length * 7 + 40, { additive: true, order: 6 }); scene.add(lamps.points);
     const lampSeeds = lit.map(([p, r]) => Array.from({ length: 7 }, (_, i) => { const a = wr() * TAU, d = i ? Math.sqrt(wr()) * r : 0; return [p[0] + Math.cos(a) * d, p[1] + Math.sin(a) * d, 0.6 + wr() * 0.8]; }));
 
@@ -12772,11 +12824,13 @@ function lightAt(idx, p) {
     for (const wall of ['maria', 'rose', 'sina']) {
       const Rw = R[wall], ds = DISTRICTS.filter((d) => d.wall === wall).sort((a, b) => a.deg - b.deg), into = newPiece(), side = sideMat(), top = topMatBase.clone();
       ds.forEach((d, i) => {
-        const nx = ds[(i + 1) % ds.length], a = d.deg * RAD, an = nx.deg * RAD + (i === ds.length - 1 ? TAU : 0), half = Math.asin(d.r / Rw), nh = Math.asin(nx.r / Rw), br = BREAKS[d.id] || [];
-        const cutO = (BW / 2 + 0.9) / d.r, cutI = (BW / 2 + 0.9) / Rw;
-        // the half-round district wall (its outer gate is in the middle)
-        if (br[0]) { strip(arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a - cutO, 5), TH, Hw, into, null, -1); strip(arc(d.base[0], d.base[1], d.r, a + cutO, a + Math.PI / 2, 5), TH, Hw, into, null, -1); section(br[0], arcN(d.base[0], d.base[1], d.r, a - cutO, a + cutO, 22), TH, side, top); }
-        else strip(arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a + Math.PI / 2, 5), TH, Hw, into, null, -1);
+        const nx = ds[(i + 1) % ds.length], a = d.deg * RAD, an = nx.deg * RAD + (i === ds.length - 1 ? TAU : 0), half = Math.asin(d.hw / Rw), nh = Math.asin(nx.hw / Rw), br = BREAKS[d.id] || [];
+        const cutS = BW / 2 + 0.9, cutI = (BW / 2 + 0.9) / Rw, mid = d.len / 2;
+        // a stretch of the district wall (two straight sides and a round end), from s0 to s1 along it
+        const run = (s0, s1, n) => Array.from({ length: n + 1 }, (_, j) => { const q = d.wallAt(s0 + ((s1 - s0) * j) / n); return { x: q.p[0], z: q.p[1], nx: q.n[0], nz: q.n[1] }; }), steps = (l) => Math.max(2, Math.ceil(l / 2.2));
+        // the district wall (its outer gate is in the middle of the round end)
+        if (br[0]) { strip(run(0, mid - cutS, steps(mid - cutS)), TH, Hw, into, null, -1); strip(run(mid + cutS, d.len, steps(mid - cutS)), TH, Hw, into, null, -1); section(br[0], run(mid - cutS, mid + cutS, 22), TH, side, top); }
+        else strip(run(0, d.len, steps(d.len)), TH, Hw, into, null, -1);
         strip(arc(C[0], C[1], Rw, a + half - 0.004, an - nh + 0.004, 1.5), TH, Hw, into); // the Wall to the next district
         // the Wall line across the district (its inner gate is on it)
         if (br[1]) { strip(arc(C[0], C[1], Rw, a - half, a - cutI, 1.5), TH * 0.9, Hw, into, null, 1); strip(arc(C[0], C[1], Rw, a + cutI, a + half, 1.5), TH * 0.9, Hw, into, null, 1); section(br[1], arcN(C[0], C[1], Rw, a - cutI, a + cutI, 22), TH * 0.9, side, top); }
@@ -12994,11 +13048,11 @@ function lightAt(idx, p) {
     const nTitans = pop.agents.filter((a) => a.kind === 'titan').length; need.sphere += nTitans * 4; need.box += nTitans * 2; // faces, drawn when the camera is close, and blood round the mouth and on the hand
     // the standing rows: Wall Titans shoulder to shoulder in every Wall and district wall
     const WT = rigs.wallTitan, gapW = Q.rowGap, rows = [];
-    const GAP_R = R.maria + 36, GAP_HALF = 11.5;
+    const GAP_R = R.maria + World.DR.maria[1] + 8, GAP_HALF = 17;
     for (const wall of ['sina', 'rose', 'maria']) {
       const Rw = R[wall], n = Math.round((TAU * Rw) / gapW), off = wall === 'rose' ? 0.37 : wall === 'maria' ? 0.71 : 0;
       for (let i = 0; i < n; i++) { const deg = ((i + off) / n) * 360 - 180, near = Math.min(...[-90, 0, 90, 180, -180].map((c) => Math.abs(deg - c))); rows.push({ Rw, th: deg * RAD, gap: near < GAP_HALF, ph: (i * 0.37) % 1 }); }
-      for (const d of DISTRICTS) if (d.wall === wall) { const m = Math.round((Math.PI * d.r) / gapW); for (let i = 1; i < m; i++) { const a = (d.deg - 90 + (180 * i) / m) * RAD; rows.push({ bulge: d, x: d.base[0] + Math.cos(a) * d.r, z: d.base[1] + Math.sin(a) * d.r, th: a, Rw, ph: (i * 0.53) % 1 }); } }
+      for (const d of DISTRICTS) if (d.wall === wall) { const m = Math.round(d.len / gapW); for (let i = 1; i < m; i++) { const q = d.wallAt((d.len * i) / m); rows.push({ bulge: d, x: q.p[0], z: q.p[1], th: Math.atan2(q.n[1], q.n[0]), r0: Math.hypot(q.p[0] - C[0], q.p[1] - C[1]), Rw, ph: (i * 0.53) % 1 }); } }
     }
     count(WT, rows.length);
     const mat = new T.MeshLambertMaterial();
@@ -13107,7 +13161,7 @@ function lightAt(idx, p) {
 
     // ---- state that lives between frames ----
     const dyn = pop.agents.map((a) => ({ has: false, x: 0, y: 0, yaw: a.phase * 0.63, ph: a.phase, ox: 0, oy: 0, speed: 0, w: 0, reach: 0, h: 0 }));
-    const cannonState = pop.cannons.map((c, i) => ({ next: 1 + (i % 5) * 0.37, start: -9, yaw: Math.atan2(Math.cos(Math.atan2(c.y - World.district(c.district).base[1], c.x - World.district(c.district).base[0])), Math.sin(Math.atan2(c.y - World.district(c.district).base[1], c.x - World.district(c.district).base[0]))) }));
+    const cannonState = pop.cannons.map((c, i) => ({ next: 1 + (i % 5) * 0.37, start: -9, yaw: Math.atan2(c.nx, c.ny) }));
     let logicEvery = Q.logicEvery, frameNo = 0, accDt = 0, lastT = -1, titanClock = 0;
     const CELL = 40, grid = new Map(), civGrid = new Map();
     const key = (x, y) => ((x / CELL) | 0) * 4096 + ((y / CELL) | 0);
@@ -13253,7 +13307,7 @@ function lightAt(idx, p) {
         for (let i = 0; i < rows.length; i++) {
           const rw = rows[i];
           let x, z, sink = ctx.wallTitanSink, marching = false;
-          if (rw.bulge) { if (rho > rw.Rw + rw.bulge.r * 0.55) continue; x = rw.x; z = rw.z; }
+          if (rw.bulge) { if (rho > rw.r0 + 2) continue; x = rw.x; z = rw.z; }
           else {
             if (rho > rw.Rw) { if (rw.gap && rho < GAP_R) continue; marching = true; }
             const rr = Math.max(rw.Rw, rho);
@@ -13768,8 +13822,8 @@ const MAP_LABELS = (() => {
   const beside = (id, o = {}) => {
     const d = D(id);
     return d.dir === 's' || d.dir === 'n'
-      ? { p: [d.base[0] + d.r, d.centre[1]], dx: 8, dy: 0, align: 'l', ...o }
-      : { p: [d.centre[0], d.base[1] + d.r], dx: 0, dy: 13, align: 'c', ...o };
+      ? { p: [d.base[0] + d.hw, d.centre[1]], dx: 8, dy: 0, align: 'l', ...o }
+      : { p: [d.centre[0], d.base[1] + d.hw], dx: 0, dy: 13, align: 'c', ...o };
   };
   out.push({ key: 'shig', text: labels.shig, min: 0.3, ...beside('shig') });
   for (const id of ['trost', 'stohess', 'karanes', 'orvud']) out.push({ key: id, text: labels[id], min: 0.62, ...beside(id) });
@@ -13818,7 +13872,7 @@ const locations = [
   ['forest', 'outside'],
 ].map(([key, wall]) => {
   const d = World.district(key);
-  return { key, wall, p: d ? d.centre : P[key], r: d ? d.r : key === 'forest' ? 22 : 13 };
+  return { key, wall, p: d ? d.centre : P[key], r: d ? d.hw : key === 'forest' ? 22 : 13 };
 });
 const routeColors = { attack: '#ff8477', defense: '#6bc8f0', covert: '#ecc985', repair: '#8de5ba', neutral: '#e8e4d7' };
 const routeClass = { attack: 'attacking', defense: 'defending', covert: 'infiltrating', repair: 'repairing', neutral: 'neutral' };
@@ -14642,7 +14696,7 @@ function sceneBox(tracking) {
     pts = [];
   if (ev.frame === 'island') {
     // the Rumbling: the whole island when paused; while playing, the Walls first and then outward with the columns
-    const reach = tracking ? Math.max(World.R.maria + 70, POP.rumble.front(S.idx + S.p) + 110) : 1e4,
+    const reach = tracking ? Math.max(World.R.maria + World.DR.maria[1] + 30, POP.rumble.front(S.idx + S.p) + 110) : 1e4,
       c0 = World.C;
     return {
       x0: Math.max(0, c0[0] - reach),
@@ -14666,7 +14720,7 @@ function sceneBox(tracking) {
     }
   }
   if (!ev.routes.length || !pts.length) {
-    const r = World.R.maria + 48;
+    const r = World.R.maria + World.DR.maria[1] + 22;
     return { x0: World.C[0] - r, y0: World.C[1] - r, x1: World.C[0] + r, y1: World.C[1] + r };
   } // the three Walls
   return Camera.boxOf(pts, tracking ? 250 : 300);

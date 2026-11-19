@@ -165,9 +165,9 @@
           ctx.beginPath();
           const sorted = [...ds].sort((a, b) => a.deg - b.deg);
           for (let i = 0; i < sorted.length; i++) {
-            const d = sorted[i], nx = sorted[(i + 1) % sorted.length], half = Math.asin(d.r / R[wall] / 1) , a = (d.deg * Math.PI) / 180, an = (nx.deg * Math.PI) / 180 + (i === sorted.length - 1 ? Math.PI * 2 : 0);
-            const nh = Math.asin(nx.r / R[wall]);
-            ctx.arc(X(d.base), Y(d.base), d.r * s, a - Math.PI / 2, a + Math.PI / 2); // the bulge
+            const d = sorted[i], nx = sorted[(i + 1) % sorted.length], half = Math.asin(d.hw / R[wall]), a = (d.deg * Math.PI) / 180, an = (nx.deg * Math.PI) / 180 + (i === sorted.length - 1 ? Math.PI * 2 : 0);
+            const nh = Math.asin(nx.hw / R[wall]);
+            for (const q of d.outline(3)) ctx.lineTo(X(q.p), Y(q.p)); // the district: two straight walls and a round end
             ctx.arc(cx, cy, rr, a + half, an - nh); // the Wall to the next district
           }
           ctx.closePath();
@@ -181,7 +181,7 @@
         ctx.strokeStyle = STONE_EDGE; ctx.lineWidth = lw + 1.8; ctx.stroke();
         ctx.strokeStyle = STONE; ctx.lineWidth = lw; ctx.stroke();
         // the inner Wall line across each district (its inner gate sits on it)
-        for (const d of ds) { const half = Math.asin(d.r / R[wall]), a = (d.deg * Math.PI) / 180; ctx.beginPath(); ctx.arc(cx, cy, rr, a - half, a + half); ctx.strokeStyle = STONE_EDGE; ctx.lineWidth = lw * 0.75 + 1.6; ctx.stroke(); ctx.strokeStyle = '#ddd5bd'; ctx.lineWidth = lw * 0.75; ctx.stroke(); }
+        for (const d of ds) { const half = Math.asin(d.hw / R[wall]), a = (d.deg * Math.PI) / 180; ctx.beginPath(); ctx.arc(cx, cy, rr, a - half, a + half); ctx.strokeStyle = STONE_EDGE; ctx.lineWidth = lw * 0.75 + 1.6; ctx.stroke(); ctx.strokeStyle = '#ddd5bd'; ctx.lineWidth = lw * 0.75; ctx.stroke(); }
         if (state === 'lost' || state === 'breached') { // territory lost / outer gate breached: a warning tint along the Wall
           ctx.globalAlpha = (state === 'lost' ? 0.75 : 0.5) * (1 - fall); ctx.setLineDash([lw * 1.6, lw * 1.9]); ctx.lineDashOffset = -t * 6;
           ctx.strokeStyle = state === 'lost' ? '#ff8a4a' : '#ffc169'; ctx.lineWidth = Math.max(1.4, lw * 0.42); ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
@@ -378,7 +378,7 @@
     }
     // ---- The Rumbling: rows of Wall Titans in the Walls, the great circle they form, and the ground it tramples ----
     const RB = pop.rumble, RAD = Math.PI / 180, RWALLS = ['maria', 'rose', 'sina'];
-    const GAP_R = R.maria + 36, GAP_HALF = 11.5; // until the circle is past the outermost districts it has a gap at each compass point: nobody walks through the towns
+    const GAP_R = R.maria + World.DR.maria[1] + 8, GAP_HALF = 17; // until the circle is past the outermost districts it has a gap at each compass point: nobody walks through the towns
     let landPath = null;
     const healT = pop.T('rebuild', 0);
     // Heads standing shoulder to shoulder: a dotted stroke along the current path.
@@ -416,9 +416,9 @@
         if (left > 0) { ctx.beginPath(); ctx.arc(cx, cy, Rw * s, 0, 6.2832); headRow(hw, appear * left); }
         for (const d of DISTRICTS) {
           if (d.wall !== wall) continue;
-          const leftB = Math.max(0, Math.min(1, (Rw + d.r * 0.55 - rho) / 8));
+          const leftB = Math.max(0, Math.min(1, (Rw + d.depth * 0.6 - rho) / 8));
           if (leftB <= 0) continue;
-          ctx.beginPath(); ctx.arc((d.base[0] - view.x) * s + vw / 2, (d.base[1] - view.y) * s + vh / 2, d.r * s, (d.deg - 90) * RAD, (d.deg + 90) * RAD);
+          ctx.beginPath(); for (const q of d.outline(3)) ctx.lineTo((q.p[0] - view.x) * s + vw / 2, (q.p[1] - view.y) * s + vh / 2);
           headRow(hw, appear * leftB);
         }
       }
@@ -464,7 +464,7 @@
       ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = 'rgb(' + mix(255, 44) + ',' + mix(255, 60) + ',' + mix(255, 116) + ')'; ctx.fillRect(0, 0, vw, vh);
       ctx.globalCompositeOperation = 'screen';
       const lit = [[C, 15]];
-      for (const d of DISTRICTS) if (!(d.wall === 'maria' && (sc.walls.w.maria === 'lost' || sc.walls.w.maria === 'collapsed' && false))) lit.push([d.centre, d.r * 0.8]);
+      for (const d of DISTRICTS) if (!(d.wall === 'maria' && (sc.walls.w.maria === 'lost' || sc.walls.w.maria === 'collapsed' && false))) lit.push([d.centre, d.hw * 0.9]);
       for (const [p, r] of lit) {
         const sx = (p[0] - view.x) * s + vw / 2, sy = (p[1] - view.y) * s + vh / 2, rr = Math.max(7, r * s * 1.5);
         if (sx + rr < 0 || sy + rr < 0 || sx - rr > vw || sy - rr > vh) continue;

@@ -7,33 +7,34 @@
   const rng = (seed) => { let s = seed >>> 0 || 1; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); };
 
   function build(grid, World) {
-    const { C, R, at, dist, rOf, onLand, coastDist, coastAt, inDistrict, DISTRICTS } = World;
+    const { C, R, DR, at, atTrue, dist, rOf, onLand, coastDist, coastAt, inDistrict, DISTRICTS } = World;
+    const road = (wall, deg, k) => at(R[wall] + DR[wall][1] * k, deg); // a point on the road through a district: k = 0 at its inner gate, 1 at the outer
     const r = rng(74311), names = grid.names, cell = grid.cell, [ox, oy] = grid.origin;
     const cls = (i, j) => { const row = grid.rows[j]; return row && row[i] !== undefined ? names[+row[i]] : 'sea'; };
 
     // Rivers (world units). The two main rivers cross at Mitras and pass through the districts.
     const rivers = [
-      { w: 3.4, pts: [[468, 318], [488, 400], [503, 470], at(270, -90), at(203, -90), at(137, -90), [497, 700], C, [503, 840], at(137, 90), at(203, 90), at(255, 90), [503, 1090], [498, 1150], coastAt(90, 6)] },
-      { w: 3.2, pts: [coastAt(180, 6), [215, 762], at(255, 180), at(203, 180), at(137, 180), [430, 774], C, [570, 766], at(137, 0), at(203, 0), at(255, 0), [790, 758], coastAt(-2, 6)] },
+      { w: 3.4, pts: [[468, 318], [488, 400], [503, 470], road('maria', -90, 1.2), road('rose', -90, 0.5), road('sina', -90, 0.5), [498, 735], C, [502, 805], road('sina', 90, 0.5), road('rose', 90, 0.5), road('maria', 90, 0.5), [503, 1090], [498, 1150], coastAt(90, 6)] },
+      { w: 3.2, pts: [coastAt(180, 6), road('maria', 180, 1.15), road('maria', 180, 0.5), road('rose', 180, 0.5), road('sina', 180, 0.5), [465, 772], C, [535, 768], road('sina', 0, 0.5), road('rose', 0, 0.5), road('maria', 0, 0.5), road('maria', 0, 1.15), coastAt(-2, 6)] },
       { w: 1.8, pts: [[372, 552], [420, 610], [455, 668], [482, 722], C] },
-      { w: 1.6, pts: [at(160, -62), [545, 668], [520, 720], [506, 752]] },
+      { w: 1.6, pts: [atTrue(160, -62), [528, 716], [512, 744], [506, 756]] },
       { w: 2.0, pts: [[690, 1000], [742, 1080], [786, 1170], [812, 1262], [828, 1340], coastAt(69, 6)] },
       { w: 1.6, pts: [[640, 1060], [700, 1130], [752, 1215], [786, 1290], [806, 1350]] },
       { w: 1.8, pts: [[352, 398], [300, 440], [246, 474], coastAt(-152, 6)] },
       { w: 1.6, pts: [[660, 430], [706, 470], [760, 500], coastAt(-38, 6)] },
       { w: 1.5, pts: [[330, 1010], [300, 1060], [262, 1090], coastAt(137, 6)] },
     ];
-    const lake = { c: at(160, -62), rx: 17, ry: 11 };
+    const lake = { c: atTrue(160, -62), rx: 15, ry: 10 };
 
     // Named woods from the story (forced forest around them), in addition to the grid's forests.
     const woods = [
-      { c: at(214, 42), r: 26, giant: true }, // Forest of Giant Trees (57th expedition), south-east Maria territory
-      { c: at(214, 30), r: 18, giant: true }, // the forest where Levi guarded Zeke
-      { c: at(214, 133), r: 22, giant: true }, // giant-tree forest of the Reiner and Bertholdt escape
-      { c: [488, 1066], r: 20, giant: false }, // woods south of Shiganshina
+      { c: atTrue(214, 42), r: 26, giant: true }, // Forest of Giant Trees (57th expedition), south-east Maria territory
+      { c: atTrue(214, 30), r: 18, giant: true }, // the forest where Levi guarded Zeke
+      { c: atTrue(214, 133), r: 22, giant: true }, // giant-tree forest of the Reiner and Bertholdt escape
+      { c: [482, 1112], r: 20, giant: false }, // woods south of Shiganshina
     ];
     const inWood = (p) => woods.find((w) => dist(p, w.c) < w.r);
-    const nearRing = (p, pad) => Object.values(R).some((rr) => Math.abs(rOf(p) - rr) < pad) || DISTRICTS.some((d) => dist(p, d.base) < d.r + pad);
+    const nearRing = (p, pad) => Object.values(R).some((rr) => Math.abs(rOf(p) - rr) < pad) || DISTRICTS.some((d) => d.sd(p) < pad);
     const nearRiver = (p, pad) => rivers.some((rv) => rv.pts.some((q, i) => i && segDist(p, rv.pts[i - 1], q) < pad));
     function segDist(p, a, b) { const dx = b[0] - a[0], dy = b[1] - a[1], t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy || 1))); return dist(p, [a[0] + dx * t, a[1] + dy * t]); }
 
@@ -68,10 +69,10 @@
     // Places drawn on the map (icons). Story labels are added by the app.
     const places = [
       { id: 'mitras', kind: 'capital', p: C },
-      { id: 'ragako', kind: 'village', p: at(172, 114) },
-      { id: 'dauper', kind: 'village', p: at(150, 158) },
-      { id: 'utgard', kind: 'ruin', p: at(177, 136) },
-      { id: 'reiss', kind: 'chapel', p: at(168, -77) },
+      { id: 'ragako', kind: 'village', p: atTrue(172, 114) },
+      { id: 'dauper', kind: 'village', p: atTrue(150, 158) },
+      { id: 'utgard', kind: 'ruin', p: atTrue(177, 136) },
+      { id: 'reiss', kind: 'chapel', p: atTrue(168, -77) },
       { id: 'harbor', kind: 'harbor', p: coastAt(104, -5) },
       { id: 'krugerWall', kind: 'seawall', p: coastAt(84, -3) },
       { id: 'castleRuin', kind: 'ruin', p: [556, 1072] },

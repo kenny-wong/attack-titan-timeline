@@ -77,7 +77,7 @@
     const lk = terrain.lake;
     each(lk.c[0], lk.c[1], lk.rx + 10, (o) => { const i = o % cols, j = (o - i) / cols, e = Math.hypot((i * step - lk.c[0]) / lk.rx, (j * step - lk.c[1]) / lk.ry); const v = (e - 1) * lk.ry; if (v < river[o]) river[o] = v; });
     const lvl = new Float32Array(N), pad = new Float32Array(N); // how level the ground is made: under Walls and districts, around places
-    for (const d of DISTRICTS) each(d.base[0], d.base[1], d.r + 13, (o, dist) => { const v = 1 - smooth(3, 13, dist - d.r); if (v > lvl[o]) lvl[o] = v; });
+    for (const d of DISTRICTS) each(d.centre[0], d.centre[1], d.depth * 0.5 + d.hw + 14, (o) => { const i = o % cols, j = (o - i) / cols, v = 1 - smooth(3, 13, d.sd([i * step, j * step])); if (v > lvl[o]) lvl[o] = v; });
     for (const f of flats) each(f.p[0], f.p[1], f.r * 1.5, (o, dist) => { const v = 1 - smooth(f.r * 0.7, f.r * 1.5, dist); if (v > pad[o]) pad[o] = v; });
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
       const o = j * cols + i, r = Math.hypot(i * step - C[0], j * step - C[1]);

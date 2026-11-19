@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wall and district options</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 22px 26px 40px; background: #10191e; color: #e9e2cf; font: 15px/1.5 "Segoe UI", system-ui, sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.lead { margin: 0 0 18px; color: #b9b39f; max-width: 980px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: #17242b; border: 1px solid #2f434c; border-radius: 12px; padding: 14px 16px 16px; }
+  .card h2 { margin: 0; font-size: 18px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .card h2 b { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #d9b96f; color: #14202a; font-size: 17px; }
+  .card h2 small { font-weight: 400; font-size: 13px; color: #b9b39f; }
+  .maps { display: grid; grid-template-columns: 1.12fr 1fr; gap: 10px; margin: 10px 0; align-items: start; }
+  svg { width: 100%; height: auto; display: block; border-radius: 8px; background: #2c4b5c; }
+  figure { margin: 0; } figcaption { font-size: 12px; color: #9da595; margin-top: 4px; }
+  table { border-collapse: collapse; font-size: 13px; width: 100%; margin-top: 6px; }
+  th, td { text-align: left; padding: 3px 10px 3px 0; vertical-align: top; }
+  th { color: #9da595; font-weight: 600; white-space: nowrap; }
+  ul { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; } li { margin: 2px 0; }
+  .lab { font: 700 15px "Segoe UI", sans-serif; fill: #1b2428; paint-order: stroke; stroke: #f3ecd7; stroke-width: 3.4px; stroke-linejoin: round; }
+  .lab.wall { fill: #5a2f22; font-size: 14px; letter-spacing: .06em; }
+  .lab.place { font-weight: 600; font-size: 12.5px; fill: #2d3a2a; }
+  .zoom .lab { font-size: 8.5px; stroke-width: 2.2px; } .zoom .lab.place { font-size: 7.5px; }
+</style>
+</head>
+<body>
+<h1>The three Walls and their districts: four ways to draw them</h1>
+<p class="lead">Each card shows the whole wall system on the island's real coastline (left) and the south close up, from Ehrmich to Shiganshina (right). A is the map as it is now. In B, C and D the inner Walls are drawn smaller, as in your two pictures, which leaves room for districts that stick out further than a half circle. Wall Maria keeps its size in all four, so the coast, the harbour and the Titans' country stay where they are. Dark marks are gates.</p>
+<div class="grid" id="grid"></div>
+<script>
+const COAST = [[139.7,119.8],[155.8,119.8],[155.8,126.5],[168.1,133.1],[218.2,143.5],[223.9,147.3],[331.7,149.2],[343.1,155.8],[374.3,162.4],[413.1,161.5],[435.8,143.5],[448.1,138.8],[457.5,149.2],[478.3,193.6],[489.7,203.1],[515.2,237.1],[530.4,246.6],[559.7,280.6],[580.5,278.7],[603.2,256],[616.4,249.4],[639.1,240.9],[653.3,241.9],[656.2,245.6],[656.2,271.2],[659,275.9],[712,338.3],[700.6,388.5],[700.6,403.6],[724.3,417.8],[744.1,440.5],[777.2,449],[786.7,462.2],[788.6,484.9],[773.4,542.6],[765.9,560.6],[765.9,600.3],[772.5,616.4],[772.5,634.4],[780.1,660.9],[791.4,676],[814.1,725.2],[834,758.3],[840.6,826.4],[847.2,855.7],[847.2,894.5],[851.9,913.4],[893.6,961.6],[904,966.4],[919.1,985.3],[941.8,995.7],[979.6,1040.1],[963.5,1067.6],[940.8,1086.5],[921,1095.9],[913.4,1111.1],[915.3,1176.3],[938,1233.1],[963.5,1274.7],[952.2,1276.6],[904.9,1304],[884.1,1323.9],[866.1,1335.2],[850,1352.2],[823.6,1385.3],[809.4,1410.9],[804.6,1431.7],[799.9,1438.3],[785.7,1425.1],[769.7,1401.4],[740.3,1394.8],[709.1,1378.7],[698.7,1378.7],[682.6,1372.1],[647.6,1368.3],[619.3,1295.5],[600.4,1263.3],[584.3,1252.9],[567.2,1247.3],[551.2,1235.9],[534.1,1233.1],[505.8,1212.3],[485,1201.9],[472.7,1200],[459.4,1191.5],[450.9,1178.2],[450.9,1147],[440.5,1130.9],[410.2,1129],[391.3,1133.8],[381.9,1141.3],[376.2,1155.5],[372.4,1155.5],[332.7,1132.8],[302.4,1111.1],[267.4,1112],[252.3,1096.9],[224.9,1086.5],[195.5,1059],[195.5,966.4],[180.4,912.4],[180.4,804.6],[168.1,738.4],[164.3,687.3],[155.8,671.3],[158.7,663.7],[176.6,653.3],[190.8,639.1],[193.7,620.2],[179.5,590.9],[174.7,573.8],[174.7,559.7],[164.3,538.8],[154.9,530.3],[135,520.9],[143.5,496.3],[141.6,434.8],[131.2,411.2],[131.2,400.8],[119.9,378.1],[114.2,375.2],[133.1,367.7],[135,355.4],[156.8,332.7],[156.8,319.4],[140.7,303.3],[157.7,262.7],[157.7,210.6]];
+const C = [500, 770], RAD = Math.PI / 180;
+const OLD = { sina: 125, rose: 190, maria: 240 };
+const NAMES = { maria: [[-90, 'North district'], [0, 'Holst'], [90, 'Shiganshina'], [180, 'Quinta']], rose: [[-90, 'Utopia'], [0, 'Karanes'], [90, 'Trost'], [180, 'Klorva']], sina: [[-90, 'Orvud'], [0, 'Stohess'], [90, 'Ehrmich'], [180, 'Yarckel']] };
+const PLACES = [['Ragako', 172, 114], ['Utgard', 177, 136], ['Reiss chapel', 168, -77], ['Giant forest', 214, 42], ['Cadet camp', 170, 98]];
+const OPTIONS = [
+  { id: 'A', name: 'As it is now', sub: 'true proportions, half-round districts', R: { sina: 125, rose: 190, maria: 240 }, shape: 'round', d: { sina: [22, 22], rose: [25, 25], maria: [30, 30] },
+    notes: ['The Walls stand at the story\'s distances from the centre (250, 380 and 480 km).', 'Districts are half circles: little room, and Trost\'s tip is only 25 units from Wall Maria.'] },
+  { id: 'B', name: 'Like the official diagram', sub: 'small inner Walls, long arch-shaped districts', R: { sina: 60, rose: 125, maria: 240 }, shape: 'arch', d: { sina: [17, 32], rose: [25, 46], maria: [33, 58] },
+    notes: ['Closest to your second picture: districts are long arches with straight sides and a round end.', 'The land inside Wall Sina shrinks to a quarter of its present area; Maria territory becomes very wide.', 'Biggest change to the story\'s routes and to where people and Titans stand.'] },
+  { id: 'C', name: 'Like the hand-drawn map', sub: 'medium inner Walls, shield-shaped districts', R: { sina: 72, rose: 155, maria: 240 }, shape: 'shield', d: { sina: [18, 28], rose: [26, 40], maria: [34, 52] },
+    notes: ['Closest to your first picture: districts swell out from the Wall and end in a blunt point.', 'Wall Rose stays far enough out for Ragako, Utgard and the chapel to sit comfortably.', 'Inside Wall Sina: about a third of its present area.'] },
+  { id: 'D', name: 'Arches of the diagram on medium Walls', sub: 'medium inner Walls, arch-shaped districts', R: { sina: 72, rose: 155, maria: 240 }, shape: 'arch', d: { sina: [17, 30], rose: [24, 42], maria: [31, 54] },
+    notes: ['The arch shape of the official diagram (B) with the wall sizes of C.', 'Districts are as long as in B, but the land inside Wall Sina and Wall Rose keeps more room for the capital, Ragako, Utgard and the people who live there.'] },
+];
+const at = (r, deg) => [C[0] + r * Math.cos(deg * RAD), C[1] + r * Math.sin(deg * RAD)];
+// where a place of today's map lies once the Walls have moved: it keeps its share of the way between its two Walls
+const remap = (r, R) => r <= OLD.sina ? r * R.sina / OLD.sina : r <= OLD.rose ? R.sina + (r - OLD.sina) * (R.rose - R.sina) / (OLD.rose - OLD.sina) : r <= OLD.maria ? R.rose + (r - OLD.rose) * (R.maria - R.rose) / (OLD.maria - OLD.rose) : r;
+const f = (n) => n.toFixed(1);
+// a district's outline: u across the Wall, v outward from it
+function district(shape, Rw, deg, hw, L) {
+  const n = [Math.cos(deg * RAD), Math.sin(deg * RAD)], t = [-n[1], n[0]], O = at(Rw, deg);
+  const p = (u, v) => f(O[0] + t[0] * u + n[0] * v) + ' ' + f(O[1] + t[1] * u + n[1] * v);
+  const round = (v) => Array.from({ length: 25 }, (_, i) => { const a = (Math.PI * i) / 24; return p(-hw * Math.cos(a), v + hw * Math.sin(a)); }).join(' L'); // a half circle, bulging outward
+  if (shape === 'round') return 'M' + round(0);
+  const v0 = Math.sqrt(Rw * Rw - hw * hw) - Rw;
+  if (shape === 'arch') return 'M' + p(-hw, v0) + ' L' + round(L - hw) + ' L' + p(hw, v0);
+  const hb = hw * 0.78, vb = Math.sqrt(Rw * Rw - hb * hb) - Rw; // shield: narrower at the Wall, widest a third of the way out, a blunt point
+  return 'M' + p(-hb, vb) + ' C' + p(-hw * 1.22, L * 0.12) + ' ' + p(-hw * 1.12, L * 0.74) + ' ' + p(-hw * 0.2, L * 0.97) + ' Q' + p(0, L * 1.03) + ' ' + p(hw * 0.2, L * 0.97) + ' C' + p(hw * 1.12, L * 0.74) + ' ' + p(hw * 1.22, L * 0.12) + ' ' + p(hb, vb);
+}
+function gate(Rw, deg, v, w) { const a = at(Rw + v, deg), horizontal = Math.abs(Math.sin(deg * RAD)) > 0.5; return '<rect x="' + f(a[0] - (horizontal ? w : 1.6)) + '" y="' + f(a[1] - (horizontal ? 1.6 : w)) + '" width="' + (horizontal ? w * 2 : 3.2) + '" height="' + (horizontal ? 3.2 : w * 2) + '" fill="#3a2a1c"/>'; }
+function draw(o, zoom) {
+  const R = o.R, vb = zoom ? '380 812 240 268' : '165 435 670 670';
+  let s = '<svg viewBox="' + vb + '"' + (zoom ? ' class="zoom"' : '') + ' role="img" aria-label="Option ' + o.id + (zoom ? ', the south close up' : '') + '">';
+  s += '<path d="M' + COAST.map((q) => f(q[0]) + ' ' + f(q[1])).join(' L') + ' Z" fill="#b5bf74" stroke="#e6dfb5" stroke-width="2.5" stroke-linejoin="round"/>';
+  for (const [k, c] of [['maria', '#c1c980'], ['rose', '#ccd28c'], ['sina', '#d8da9c']]) s += '<circle cx="500" cy="770" r="' + R[k] + '" fill="' + c + '"/>';
+  // rivers along the four roads, as on the present map
+  for (const deg of [0, 90, 180, -90]) { const a = at(8, deg), b = at(R.maria + o.d.maria[1] + 40, deg); s += '<path d="M' + f(a[0]) + ' ' + f(a[1]) + ' L' + f(b[0]) + ' ' + f(b[1]) + '" stroke="#7fb1c2" stroke-width="' + (zoom ? 2.2 : 2.6) + '" opacity=".75"/>'; }
+  for (const k of ['maria', 'rose', 'sina']) {
+    const [hw, L] = o.d[k];
+    for (const [deg] of NAMES[k]) s += '<path d="' + district(o.shape, R[k], deg, hw, L) + '" fill="#cfa77c" stroke="#5a5546" stroke-width="4.4" stroke-linejoin="round"/>';
+  }
+  for (const k of ['maria', 'rose', 'sina']) s += '<circle cx="500" cy="770" r="' + R[k] + '" fill="none" stroke="#5a5546" stroke-width="4.4"/>';
+  for (const k of ['maria', 'rose', 'sina']) {
+    const [hw, L] = o.d[k];
+    for (const [deg] of NAMES[k]) s += '<path d="' + district(o.shape, R[k], deg, hw, L) + '" fill="none" stroke="#efe8d2" stroke-width="2.6" stroke-linejoin="round"/>';
+    s += '<circle cx="500" cy="770" r="' + R[k] + '" fill="none" stroke="#efe8d2" stroke-width="2.6"/>';
+    for (const [deg] of NAMES[k]) s += gate(R[k], deg, L, 3.4) + gate(R[k], deg, 0, 3.4);
+  }
+  s += '<path d="M500 762 l2.4 5.2 5.6 .6 -4.2 3.8 1.2 5.6 -5 -2.9 -5 2.9 1.2 -5.6 -4.2 -3.8 5.6 -.6z" fill="#8c3a2a"/>';
+  for (const [name, r, deg] of PLACES) { const q = at(remap(r, R), deg); s += '<circle cx="' + f(q[0]) + '" cy="' + f(q[1]) + '" r="' + (zoom ? 1.8 : 2.6) + '" fill="#3f5a36" stroke="#f3ecd7" stroke-width=".8"/>' + '<text class="lab place" x="' + f(q[0] + (zoom ? 3.5 : 6)) + '" y="' + f(q[1] + (zoom ? 2.6 : 4.5)) + '">' + name + '</text>'; }
+  for (const k of ['maria', 'rose', 'sina']) {
+    const [hw, L] = o.d[k];
+    for (const [deg, name] of NAMES[k]) {
+      if (zoom && deg !== 90) continue;
+      if (!zoom && k === 'sina' && R.sina < 80 && deg !== -90) continue; // too tight to label on the small map
+      const q = at(R[k] + L * 0.5, deg), side = deg === 0 ? 1 : deg === 180 ? -1 : 0;
+      s += '<text class="lab" text-anchor="' + (zoom ? 'start' : side ? 'middle' : 'start') + '" x="' + f(q[0] + (zoom ? hw + 5 : side ? 0 : hw + 6)) + '" y="' + f(q[1] + (side && !zoom ? -hw - 6 : 3)) + '">' + name + '</text>';
+    }
+    if (!zoom) { const q = at(R[k], -52); s += '<text class="lab wall" text-anchor="middle" x="' + f(q[0]) + '" y="' + f(q[1] - 5) + '">WALL ' + k.toUpperCase() + '</text>'; }
+  }
+  if (!zoom) s += '<text class="lab place" x="510" y="762">Mitras</text>';
+  return s + '</svg>';
+}
+const grid = document.getElementById('grid');
+for (const o of OPTIONS) {
+  const R = o.R, gap = (R.maria - R.rose - o.d.rose[1]).toFixed(0), inner = Math.round((R.sina / OLD.sina) ** 2 * 100);
+  const card = document.createElement('section'); card.className = 'card';
+  card.innerHTML = '<h2><b>' + o.id + '</b>' + o.name + ' <small>' + o.sub + '</small></h2>' +
+    '<div class="maps"><figure>' + draw(o, false) + '<figcaption>The whole wall system</figcaption></figure><figure>' + draw(o, true) + '<figcaption>The south: Ehrmich, Trost, Shiganshina</figcaption></figure></div>' +
+    '<table><tr><th>Wall radius (Sina / Rose / Maria)</th><td>' + R.sina + ' / ' + R.rose + ' / ' + R.maria + ' units' + (o.id === 'A' ? '' : ' &nbsp;(now 125 / 190 / 240)') + '</td></tr>' +
+    '<tr><th>District width &times; how far it sticks out</th><td>Sina ' + o.d.sina[0] * 2 + ' &times; ' + o.d.sina[1] + ', Rose ' + o.d.rose[0] * 2 + ' &times; ' + o.d.rose[1] + ', Maria ' + o.d.maria[0] * 2 + ' &times; ' + o.d.maria[1] + '</td></tr>' +
+    '<tr><th>Trost\'s tip to Wall Maria</th><td>' + gap + ' units</td></tr><tr><th>Land inside Wall Sina</th><td>' + inner + '% of today\'s area</td></tr></table>' +
+    '<ul>' + o.notes.map((n) => '<li>' + n + '</li>').join('') + '</ul>';
+  grid.appendChild(card);
+}
+</script>
+</body>
+</html>

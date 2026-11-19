@@ -32,11 +32,11 @@
     const nTitans = pop.agents.filter((a) => a.kind === 'titan').length; need.sphere += nTitans * 4; need.box += nTitans * 2; // faces, drawn when the camera is close, and blood round the mouth and on the hand
     // the standing rows: Wall Titans shoulder to shoulder in every Wall and district wall
     const WT = rigs.wallTitan, gapW = Q.rowGap, rows = [];
-    const GAP_R = R.maria + 36, GAP_HALF = 11.5;
+    const GAP_R = R.maria + World.DR.maria[1] + 8, GAP_HALF = 17;
     for (const wall of ['sina', 'rose', 'maria']) {
       const Rw = R[wall], n = Math.round((TAU * Rw) / gapW), off = wall === 'rose' ? 0.37 : wall === 'maria' ? 0.71 : 0;
       for (let i = 0; i < n; i++) { const deg = ((i + off) / n) * 360 - 180, near = Math.min(...[-90, 0, 90, 180, -180].map((c) => Math.abs(deg - c))); rows.push({ Rw, th: deg * RAD, gap: near < GAP_HALF, ph: (i * 0.37) % 1 }); }
-      for (const d of DISTRICTS) if (d.wall === wall) { const m = Math.round((Math.PI * d.r) / gapW); for (let i = 1; i < m; i++) { const a = (d.deg - 90 + (180 * i) / m) * RAD; rows.push({ bulge: d, x: d.base[0] + Math.cos(a) * d.r, z: d.base[1] + Math.sin(a) * d.r, th: a, Rw, ph: (i * 0.53) % 1 }); } }
+      for (const d of DISTRICTS) if (d.wall === wall) { const m = Math.round(d.len / gapW); for (let i = 1; i < m; i++) { const q = d.wallAt((d.len * i) / m); rows.push({ bulge: d, x: q.p[0], z: q.p[1], th: Math.atan2(q.n[1], q.n[0]), r0: Math.hypot(q.p[0] - C[0], q.p[1] - C[1]), Rw, ph: (i * 0.53) % 1 }); } }
     }
     count(WT, rows.length);
     const mat = new T.MeshLambertMaterial();
@@ -145,7 +145,7 @@
 
     // ---- state that lives between frames ----
     const dyn = pop.agents.map((a) => ({ has: false, x: 0, y: 0, yaw: a.phase * 0.63, ph: a.phase, ox: 0, oy: 0, speed: 0, w: 0, reach: 0, h: 0 }));
-    const cannonState = pop.cannons.map((c, i) => ({ next: 1 + (i % 5) * 0.37, start: -9, yaw: Math.atan2(Math.cos(Math.atan2(c.y - World.district(c.district).base[1], c.x - World.district(c.district).base[0])), Math.sin(Math.atan2(c.y - World.district(c.district).base[1], c.x - World.district(c.district).base[0]))) }));
+    const cannonState = pop.cannons.map((c, i) => ({ next: 1 + (i % 5) * 0.37, start: -9, yaw: Math.atan2(c.nx, c.ny) }));
     let logicEvery = Q.logicEvery, frameNo = 0, accDt = 0, lastT = -1, titanClock = 0;
     const CELL = 40, grid = new Map(), civGrid = new Map();
     const key = (x, y) => ((x / CELL) | 0) * 4096 + ((y / CELL) | 0);
@@ -291,7 +291,7 @@
         for (let i = 0; i < rows.length; i++) {
           const rw = rows[i];
           let x, z, sink = ctx.wallTitanSink, marching = false;
-          if (rw.bulge) { if (rho > rw.Rw + rw.bulge.r * 0.55) continue; x = rw.x; z = rw.z; }
+          if (rw.bulge) { if (rho > rw.r0 + 2) continue; x = rw.x; z = rw.z; }
           else {
             if (rho > rw.Rw) { if (rw.gap && rho < GAP_R) continue; marching = true; }
             const rr = Math.max(rw.Rw, rho);

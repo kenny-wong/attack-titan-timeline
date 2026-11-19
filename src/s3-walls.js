@@ -114,11 +114,13 @@
     for (const wall of ['maria', 'rose', 'sina']) {
       const Rw = R[wall], ds = DISTRICTS.filter((d) => d.wall === wall).sort((a, b) => a.deg - b.deg), into = newPiece(), side = sideMat(), top = topMatBase.clone();
       ds.forEach((d, i) => {
-        const nx = ds[(i + 1) % ds.length], a = d.deg * RAD, an = nx.deg * RAD + (i === ds.length - 1 ? TAU : 0), half = Math.asin(d.r / Rw), nh = Math.asin(nx.r / Rw), br = BREAKS[d.id] || [];
-        const cutO = (BW / 2 + 0.9) / d.r, cutI = (BW / 2 + 0.9) / Rw;
-        // the half-round district wall (its outer gate is in the middle)
-        if (br[0]) { strip(arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a - cutO, 5), TH, Hw, into, null, -1); strip(arc(d.base[0], d.base[1], d.r, a + cutO, a + Math.PI / 2, 5), TH, Hw, into, null, -1); section(br[0], arcN(d.base[0], d.base[1], d.r, a - cutO, a + cutO, 22), TH, side, top); }
-        else strip(arc(d.base[0], d.base[1], d.r, a - Math.PI / 2, a + Math.PI / 2, 5), TH, Hw, into, null, -1);
+        const nx = ds[(i + 1) % ds.length], a = d.deg * RAD, an = nx.deg * RAD + (i === ds.length - 1 ? TAU : 0), half = Math.asin(d.hw / Rw), nh = Math.asin(nx.hw / Rw), br = BREAKS[d.id] || [];
+        const cutS = BW / 2 + 0.9, cutI = (BW / 2 + 0.9) / Rw, mid = d.len / 2;
+        // a stretch of the district wall (two straight sides and a round end), from s0 to s1 along it
+        const run = (s0, s1, n) => Array.from({ length: n + 1 }, (_, j) => { const q = d.wallAt(s0 + ((s1 - s0) * j) / n); return { x: q.p[0], z: q.p[1], nx: q.n[0], nz: q.n[1] }; }), steps = (l) => Math.max(2, Math.ceil(l / 2.2));
+        // the district wall (its outer gate is in the middle of the round end)
+        if (br[0]) { strip(run(0, mid - cutS, steps(mid - cutS)), TH, Hw, into, null, -1); strip(run(mid + cutS, d.len, steps(mid - cutS)), TH, Hw, into, null, -1); section(br[0], run(mid - cutS, mid + cutS, 22), TH, side, top); }
+        else strip(run(0, d.len, steps(d.len)), TH, Hw, into, null, -1);
         strip(arc(C[0], C[1], Rw, a + half - 0.004, an - nh + 0.004, 1.5), TH, Hw, into); // the Wall to the next district
         // the Wall line across the district (its inner gate is on it)
         if (br[1]) { strip(arc(C[0], C[1], Rw, a - half, a - cutI, 1.5), TH * 0.9, Hw, into, null, 1); strip(arc(C[0], C[1], Rw, a + cutI, a + half, 1.5), TH * 0.9, Hw, into, null, 1); section(br[1], arcN(C[0], C[1], Rw, a - cutI, a + cutI, 22), TH * 0.9, side, top); }

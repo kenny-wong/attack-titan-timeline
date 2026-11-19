@@ -226,7 +226,7 @@ test('after 857: railways stay on land, ports sit on the coast, and nothing new 
     assert.ok(World.onLand(g.p), g.id + ' is in the sea');
     if (g.kind === 'port') { assert.ok(World.coastDist(g.p) < 8, g.id + ' is not on the coast'); assert.ok(!World.onLand([g.p[0] + g.sea[0] * 16, g.p[1] + g.sea[1] * 16]), g.id + ': its pier does not reach the sea'); }
     else assert.ok(World.coastDist(g.p) > 12, g.id + ' is too close to the shore');
-    for (const d of World.DISTRICTS) assert.ok(Math.hypot(g.p[0] - d.base[0], g.p[1] - d.base[1]) > d.r + 8, g.id + ' sits on ' + d.id);
+    for (const d of World.DISTRICTS) assert.ok(d.cap(g.p) > 8, g.id + ' sits on ' + d.id);
     // a new place stands on a railway line, or will: within reach of one
     if (g.kind !== 'village') assert.ok(G.rails.some((rl) => rl.path.some((p) => Math.hypot(p[0] - g.p[0], p[1] - g.p[1]) < 1)), g.id + ' has no railway');
   }
