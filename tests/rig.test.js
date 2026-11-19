@@ -12,11 +12,12 @@ const TITANS = ['titan1', 'titan2', 'titan3', 'titan4', 'titan5'];
 test('design: every figure, prop and setting the stage uses is there', () => {
   for (const k of [...TITANS, 'titan6', 'titanLying', 'titanCrawl', 'wallTitan', 'civA', 'civB', 'civC', 'soldier', 'horse', 'rider']) assert.ok(rigs[k], 'rig ' + k);
   for (const k of ['cannon', 'boat', 'locomotive', 'wagon', 'house', 'houseTall', 'castle', 'chapel', 'ruin', 'villageHut', 'warehouse', 'crane', 'pier', 'steamer', 'seawallBlock', 'chimney', 'treeBroadleaf', 'treeConifer', 'treeGiant']) assert.ok(props[k], 'prop ' + k);
-  for (const k of TITANS) assert.deepStrictEqual(Object.keys(rigs[k].clips).sort(), ['idle', 'reach', 'walk'], k + ' clips');
-  for (const k of ['civA', 'civB', 'civC']) assert.ok(rigs[k].clips.idle && rigs[k].clips.walk && rigs[k].clips.run, k + ' clips');
+  for (const k of TITANS) assert.deepStrictEqual(Object.keys(rigs[k].clips).sort(), ['eat', 'grab', 'idle', 'reach', 'walk'], k + ' clips');
+  assert.ok(rigs.titan6.clips.grab && rigs.titan6.clips.eat, 'titan6 eats too');
+  for (const k of ['civA', 'civB', 'civC']) assert.ok(rigs[k].clips.idle && rigs[k].clips.walk && rigs[k].clips.run && rigs[k].clips.held, k + ' clips');
   for (const k of ['titan6', 'titanCrawl', 'wallTitan', 'horse', 'rider']) assert.ok(rigs[k].clips.idle && rigs[k].clips.walk, k + ' clips');
   assert.ok(props.cannon.clips.fire && rigs.horse.attach.saddle);
-  for (const path of ['walls.stone', 'walls.gate.door', 'walls.gateBroken.hole', 'walls.gateSealedCrystal.color', 'walls.warning.lost', 'walls.district.paving', 'terrain.sea.deep', 'terrain.trample', 'terrain.scarEarth', 'terrain.rail.bed', 'light.day.sun', 'light.night.windows', 'light.shadow.color', 'fx.steam.color', 'fx.wallSteam.color', 'fx.dust.color', 'fx.cannonSmoke.flash']) {
+  for (const path of ['walls.stone', 'walls.gate.door', 'walls.gateBroken.hole', 'walls.gateSealedCrystal.color', 'walls.warning.lost', 'walls.district.paving', 'terrain.sea.deep', 'terrain.trample', 'terrain.scarEarth', 'terrain.rail.bed', 'light.day.sun', 'light.night.windows', 'light.shadow.color', 'fx.steam.color', 'fx.wallSteam.color', 'fx.dust.color', 'fx.cannonSmoke.flash', 'fx.blood.color', 'fx.blood.dark', 'fx.blood.mist', 'fx.bloodStain.color', 'walls.breach.edge', 'walls.breach.scorch', 'walls.breach.smoke', 'walls.ruin.dust']) {
     const v = path.split('.').reduce((o, k) => o && o[k], D);
     assert.match(String(v), /^#[0-9a-f]{6}$/i, path);
   }
@@ -49,6 +50,27 @@ test('rig: walking, the legs are half a stride apart and the feet stay near the 
     for (let t = 0; t < 1; t += 0.05) { const e = Rig.extent(r, posed(r, 'walk', t)); assert.ok(e.lo > -r.height * 0.07 && e.lo < r.height * 0.09, `${k} feet at ${e.lo.toFixed(2)} at t=${t.toFixed(2)}`); }
     assert.ok(r.stride > 0);
   }
+});
+
+test('rig: eating, a Titan brings its right hand down to the ground and then up to its mouth', () => {
+  // a point of a joint, in figure space
+  const point = (m, i, p) => [0, 1, 2].map((r) => m[i * 12 + r * 4] * p[0] + m[i * 12 + r * 4 + 1] * p[1] + m[i * 12 + r * 4 + 2] * p[2] + m[i * 12 + r * 4 + 3]);
+  for (const k of TITANS) {
+    const r = rigs[k], fi = r.parts.findIndex((p) => p.id === 'forearmR'), hi = r.parts.findIndex((p) => p.id === 'head'), pi = r.parts.findIndex((p) => p.id === 'pelvis'), fp = r.parts[fi], hp = r.parts[hi];
+    const tip = [fp.centre[0], fp.centre[1] - fp.size[1] / 2, fp.centre[2]], lips = [hp.centre[0], hp.centre[1] - 0.2 * hp.size[1], hp.centre[2] + 0.45 * hp.size[2]];
+    for (const t of [0, 0.25, 0.5, 0.75]) {
+      const g = posed(r, 'grab', t), hand = point(g, fi, tip), pelvis = point(g, pi, [0, 0, 0]), e = Rig.extent(r, g);
+      assert.ok(hand[1] < r.height * 0.14, `${k} grab: hand at ${hand[1].toFixed(2)} m`);
+      assert.ok(hand[2] - pelvis[2] > r.height * 0.2, `${k} grab: hand ${(hand[2] - pelvis[2]).toFixed(2)} m in front`);
+      assert.ok(e.lo > -r.height * 0.07 && e.lo < r.height * 0.09, `${k} grab: lowest point ${e.lo.toFixed(2)}`);
+      const m = posed(r, 'eat', t), h2 = point(m, fi, tip), mouth = point(m, hi, lips);
+      assert.ok(Math.hypot(h2[0] - mouth[0], h2[1] - mouth[1], h2[2] - mouth[2]) < r.height * 0.16, `${k} eat: hand to mouth`);
+    }
+    const nod = r.clips.eat.parts[hi][0];
+    assert.ok(Math.abs(nod[1]) >= 8 && nod[3] >= 2, k + ' bites with its head');
+  }
+  for (const k of ['civA', 'civB', 'civC']) assert.ok(rigs[k].clips.held.period >= 0.4 && rigs[k].clips.held.period <= 0.6 && (rigs[k].clips.held.root || []).every((c) => !c), k + ' struggles in place');
+  assert.ok(D.fx.blood.drops >= 8 && D.fx.blood.drops <= 16 && D.fx.bloodStain.size > 0 && D.walls.breach.width > D.walls.gate.width && D.walls.breach.height > D.walls.gate.height && D.walls.ruin.heap[1] < D.walls.height / 2);
 });
 
 test('rig: every clip of every figure gives a finite pose, and an unknown clip gives the rest pose', () => {

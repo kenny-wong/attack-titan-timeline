@@ -10,10 +10,12 @@ const at = (Tl, list) => list.map((a) => ({ a, s: pop.stateAt(a, Tl, 0, { reduce
 const reg = (s) => World.regionOf([s.x, s.y]);
 const wrap = (d) => { while (d > 180) d -= 360; while (d < -180) d += 360; return d; };
 
-test('about 300 Titans roam outside Wall Maria at the beginning', () => {
+test('about 200 Titans roam outside Wall Maria at the beginning, and about 500 people live inside the Walls', () => {
   const k = pop.counts(T('grisha', 0.5));
-  assert.strictEqual(k.titan.total, 300);
-  assert.strictEqual(k.titan.outside, 300);
+  assert.strictEqual(k.titan.total, 200);
+  assert.strictEqual(k.titan.outside, 200);
+  assert.ok(k.civ.total >= 495 && k.civ.total <= 510, 'people: ' + k.civ.total);
+  assert.strictEqual(k.civ.outside || 0, 0);
   for (const { s } of at(T('grisha', 0.5), titans)) assert.strictEqual(reg(s), 'outside');
 });
 
@@ -21,14 +23,14 @@ test('Titans gather where people are: far more near Shiganshina in the south tha
   const live = at(T('grisha', 0.5), titans);
   const south = live.filter(({ s }) => Math.abs(wrap(World.degOf([s.x, s.y]) - 90)) < 50).length, north = live.filter(({ s }) => Math.abs(wrap(World.degOf([s.x, s.y]) + 90)) < 50).length;
   assert.ok(south > north * 2, `south ${south}, north ${north}`);
-  assert.ok(south >= 120);
+  assert.ok(south >= 80);
 });
 
 test('when the gates break only part of them get in, and the total stays the same', () => {
   const k = pop.counts(T('founder-transfer', 0.5));
-  assert.strictEqual(k.titan.total, 300);
-  assert.ok(k.titan.maria >= 50 && k.titan.maria <= 130, 'in Maria: ' + k.titan.maria);
-  assert.ok(k.titan.outside >= 170, 'still outside: ' + k.titan.outside);
+  assert.strictEqual(k.titan.total, 200);
+  assert.ok(k.titan.maria >= 35 && k.titan.maria <= 90, 'in Maria: ' + k.titan.maria);
+  assert.ok(k.titan.outside >= 110, 'still outside: ' + k.titan.outside);
 });
 
 test('no Titan is inside Wall Maria before the inner gate breaks', () => {
@@ -37,8 +39,8 @@ test('no Titan is inside Wall Maria before the inner gate breaks', () => {
 
 test('the number of Titans falls as they are killed', () => {
   const n = (id, p) => pop.counts(T(id, p)).titan.total;
-  assert.ok(n('cadets', 0.99) < 300);
-  assert.ok(n('trost-seal', 0.99) < n('trost-attack', 0.99) - 20, 'Trost is cleared after the seal');
+  assert.ok(n('cadets', 0.99) < 200);
+  assert.ok(n('trost-seal', 0.99) < n('trost-attack', 0.99) - 12, 'Trost is cleared after the seal');
   assert.ok(n('maria-retaken', 0.99) < n('rod', 0) - 40);
   assert.ok(n('sea', 0.5) < n('sea', 0.05) && n('sea', 0.5) > 20, 'the island is cleared gradually');
   assert.strictEqual(n('ships', 0.5), 2); // only the two that cannot walk: the Ragako Titan and the crawling Titan
@@ -180,9 +182,10 @@ test('wandering keeps figures inside their area', () => {
   }
 });
 
-test('a phone gets fewer civilians and riders but the same 300 Titans', () => {
-  const low = load({ population: true, counts: { civilians: 96, riders: 6, wallTitans: 190 } }).pop;
-  assert.strictEqual(low.counts(low.T('grisha', 0.5)).titan.total, 300);
+test('a phone gets fewer civilians and riders but the same 200 Titans', () => {
+  const low = load({ population: true, counts: { civilians: 320, riders: 6, wallTitans: 190 } }).pop;
+  assert.strictEqual(low.counts(low.T('grisha', 0.5)).titan.total, 200);
+  assert.ok(low.meals.length >= 30, 'people are caught on a phone too: ' + low.meals.length);
   assert.ok(low.agents.filter((a) => a.kind === 'civ').length < civs.length);
 });
 
@@ -242,9 +245,9 @@ test('the crawling Titan drags itself from the south coast towards the Walls, is
   assert.strictEqual(pop.stateAt(crawler, hit - 0.01, 0, {}).vis, 1);
   assert.strictEqual(pop.stateAt(crawler, hit + 0.04, 0, {}).vis, 0);
   assert.strictEqual(pos('ambassadors', 0.5).vis, 0);
-  // it is one of the 300 outside, not an extra and not counted with the Ragako Titan
+  // it is one of the 200 outside, not an extra and not counted with the Ragako Titan
   const k = pop.counts(T('grisha', 0.5));
-  assert.strictEqual(k.titan.total, 300);
+  assert.strictEqual(k.titan.total, 200);
   assert.strictEqual(k.titan.ragakoFixed || 0, 0);
 });
 
@@ -273,4 +276,48 @@ test('outside the Walls the Rumbling spares nothing but the harbour; inside, the
   // so a Wall Titan does walk over the ruin
   const over = p2.agents.filter((a) => a.kind === 'wallTitan').some((a) => { for (let t = p2.T('rumbling', 0.7); t < p2.T('alliance', 0.3); t += 0.004) { const s = p2.stateAt(a, t, 0, {}); if (Math.hypot(s.x - ruin[0], s.y - ruin[1]) < 6) return true; } return false; });
   assert.ok(over, 'nobody walks over the ruin');
+});
+
+// ---- Caught and eaten ----
+test('whoever does not get away in time is caught by a Titan that walks up to them', () => {
+  const quiet = { reduced: true }, here = (a, Tl) => { const st = pop.stateAt(a, Tl, 0, quiet); return [st.x, st.y, st]; };
+  assert.ok(pop.meals.length >= 80, 'meals: ' + pop.meals.length);
+  const eaten = new Set();
+  for (const m of pop.meals) {
+    assert.ok(m.Ts < m.T0 && m.T0 < m.T1 && m.T1 < m.Te);
+    assert.strictEqual(m.victim.kind, 'civ'); assert.strictEqual(m.titan.kind, 'titan');
+    assert.ok(!m.titan.lying && !m.titan.crawl, 'a Titan that cannot walk catches nobody');
+    assert.ok(!eaten.has(m.victim), 'nobody is eaten twice'); eaten.add(m.victim);
+    // the person is where the Titan expects them, alive until then and gone once swallowed
+    const [vx, vy, vs] = here(m.victim, m.T0);
+    assert.ok(Math.hypot(vx - m.spot[0], vy - m.spot[1]) < 0.01 && vs.doom === m);
+    assert.strictEqual(pop.stateAt(m.victim, m.T0 - 0.001, 0, quiet).vis, 1);
+    assert.strictEqual(pop.stateAt(m.victim, m.T1, 0, quiet).vis, 0);
+    assert.strictEqual(pop.stateAt(m.victim, m.T0, 7.7, {}).x, vx, 'real time no longer moves someone who is caught');
+    // the Titan stands beside them for the whole meal, and says so
+    for (const f of [0, 0.3, 0.7, 1]) {
+      const [tx, ty, ts] = here(m.titan, m.T0 + (m.T1 - m.T0) * f);
+      assert.ok(Math.hypot(tx - m.spot[0], ty - m.spot[1]) < 3, 'the Titan is ' + Math.hypot(tx - m.spot[0], ty - m.spot[1]).toFixed(1) + ' away');
+      assert.ok(ts.vis > 0.9 && ts.eat === m && Math.abs(ts.eatF - f) < 1e-6);
+    }
+    assert.strictEqual(here(m.titan, (m.Ts + m.T0) / 2)[2].hunt, m);
+    // it never goes through a Wall for it: the whole way there and back lies in one territory
+    const region = World.regionOf(m.spot);
+    for (let t = m.Ts; t <= m.Te; t += 0.005) { const [x, y] = here(m.titan, t); assert.strictEqual(World.regionOf([x, y]), region, 'Titan ' + m.titan.id + ' leaves ' + region); }
+  }
+  // one meal at a time
+  for (const a of titans) if (a.meals) for (let i = 1; i < a.meals.length; i++) assert.ok(a.meals[i].Ts >= a.meals[i - 1].T1, 'a Titan starts its next hunt after its meal');
+});
+
+test('people are eaten where the story lost them: Shiganshina and Maria territory in 845, the column of 846; never behind Wall Rose', () => {
+  const where = {}, when = {};
+  for (const m of pop.meals) { const r = World.regionOf(m.spot), id = E[Math.floor(m.T0)].id; where[r] = (where[r] || 0) + 1; when[id] = (when[id] || 0) + 1; }
+  assert.deepStrictEqual(Object.keys(where).sort(), ['maria', 'shig']);
+  assert.ok(where.shig >= 2, 'in Shiganshina: ' + where.shig);
+  assert.deepStrictEqual(Object.keys(when).sort(), ['maria-fall', 'reclamation', 'refugees']);
+  assert.ok(when['maria-fall'] + when.refugees >= 15 && when.reclamation >= 60, JSON.stringify(when));
+  // almost nobody of the 846 column dies out of a Titan's sight
+  const unseen = civs.filter((a) => a.ops.some((o) => o.how === 'lost')).length;
+  assert.ok(unseen <= when.reclamation * 0.15, 'unseen: ' + unseen);
+  for (const a of civs) for (const o of a.ops) if (o.how === 'caught') assert.ok(a.doom, 'a caught person has a Titan');
 });

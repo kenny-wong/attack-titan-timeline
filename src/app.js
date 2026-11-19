@@ -472,7 +472,7 @@ const POP = Population.create(events, World, {
   points: P,
   protect: TERRAIN.places.map((pl) => pl.p),
   settle: GROWTH.places.map((g) => g.p),
-  counts: QUALITY === 'low' ? { civilians: 96, riders: 6, wallTitans: 190 } : {},
+  counts: QUALITY === 'low' ? { civilians: 320, riders: 6, wallTitans: 190 } : {}, // 200 Titans everywhere; 500 people on a computer, 320 on a phone
 });
 // What is built later: railway lines grow between two moments of the story; new places appear at theirs.
 const storyT = ([id, p]) => events.findIndex((e) => e.id === id) + p;
@@ -505,6 +505,7 @@ const groundH = IS3D ? RELIEF.land : () => 0;
 $('.map-viewport').classList.toggle('is-3d', IS3D);
 const MAX_SCALE = IS3D ? (QUALITY === 'low' ? 5 : 9) : QUALITY === 'low' ? 3.4 : 5; // closest zoom, screen px per world unit
 const AUTO_MAX = PHONE ? 1.7 : 2.7; // the automatic camera never goes closer than this
+const FEED_MAX = PHONE ? 3.2 : 4.8; // ... except to show people being caught by Titans
 // view = what is shown now; target = where the camera is easing to; auto = the camera follows the story.
 const CAM = {
   view: { x: World.W / 2, y: World.H / 2, s: 0.4 },
@@ -799,13 +800,13 @@ function renderPopStatus(force) {
     .filter((z) => cz[z])
     .map((z) => t.popZones[z])
     .join(t.popSep);
-  const sig = [S.lang, k.titan.total, titans, civs, k.wallTitan > 0, STAGE.hasSprites].join('|');
+  const sig = [S.lang, k.titan.total, k.civ.total, titans, civs, k.wallTitan > 0, STAGE.hasSprites].join('|');
   if (sig === popSig && !force) return;
   popSig = sig;
   el.replaceChildren();
   const rows = [
     ['titan1', t.popTitans, k.titan.total ? t.popAbout + ' ' + k.titan.total : '', titans || t.popNone],
-    ['civ1', t.popCivilians, '', civs],
+    ['civ1', t.popCivilians, k.civ.total ? t.popAbout + ' ' + k.civ.total : '', civs],
   ];
   if (k.wallTitan > 0) rows.push(['wallTitan', t.popWall, '', t.popWallNow]);
   for (const [sprite, label, n, where] of rows) {
@@ -1199,10 +1200,38 @@ function sceneBox(tracking) {
   } // the three Walls
   return Camera.boxOf(pts, tracking ? 250 : 300);
 }
+// Where Titans are catching people at this moment of the story (the crowd must be shown). When it happens in several
+// places at once the camera stays with one of them, the busiest, until nothing is left to see there.
+let feedAt = null;
+function feedingSpots() {
+  if (!S.pop || events[S.idx].frame === 'island') return (feedAt = null);
+  const T = S.idx + S.p,
+    all = [],
+    near = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 52;
+  for (const m of POP.meals) if (m.Ts - 0.1 < T && T < m.T1 + 0.05) all.push(m.spot);
+  if (!all.length) return (feedAt = null);
+  if (!feedAt || !all.some((p) => near(p, feedAt)))
+    feedAt = all.map((p) => [p, all.filter((q) => near(p, q)).length]).sort((a, b) => b[1] - a[1])[0][0];
+  return all.filter((p) => near(p, feedAt));
+}
 function sceneView(tracking) {
-  const box = sceneBox(tracking),
-    s = PROJ.fit(box, CAM.vw, CAM.vh, PHONE ? 34 : 62);
-  return Camera.constrain({ x: (box.x0 + box.x1) / 2, y: (box.y0 + box.y1) / 2, s: Math.min(s, AUTO_MAX) }, World, CAM.vw, CAM.vh, MAX_SCALE);
+  let box = sceneBox(tracking),
+    cap = AUTO_MAX;
+  const feed = tracking ? feedingSpots() : null;
+  if (feed) {
+    // while people are being caught the camera closes in on them, keeping what the story shows nearby in the picture
+    const fb = Camera.boxOf(feed, PHONE ? 90 : 130),
+      keep = 30;
+    box = {
+      x0: Math.max(Math.min(box.x0, fb.x0), fb.x0 - keep),
+      y0: Math.max(Math.min(box.y0, fb.y0), fb.y0 - keep),
+      x1: Math.min(Math.max(box.x1, fb.x1), fb.x1 + keep),
+      y1: Math.min(Math.max(box.y1, fb.y1), fb.y1 + keep),
+    };
+    cap = FEED_MAX;
+  }
+  const s = PROJ.fit(box, CAM.vw, CAM.vh, PHONE ? 34 : 62);
+  return Camera.constrain({ x: (box.x0 + box.x1) / 2, y: (box.y0 + box.y1) / 2, s: Math.min(s, cap) }, World, CAM.vw, CAM.vh, MAX_SCALE);
 }
 function setAuto(on) {
   CAM.auto = on;

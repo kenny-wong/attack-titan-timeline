@@ -1,10 +1,11 @@
 /* Crowd simulation: Pure Titans, civilians, Survey Corps riders, wall cannons and the Wall Titans.
    Where everyone is follows the timeline (T = event index + scene progress), so scrubbing is exact;
    wandering, fleeing and chasing are added in real time on top.
-   - About 300 Titans start outside Wall Maria. They gather where people are: around the districts
+   - About 200 Titans start outside Wall Maria. They gather where people are: around the districts
      that jut out of the Wall, most of all Shiganshina in the south, where new Titans arrive from.
    - Only some of them get in when a gate breaks; the total stays the same until Titans are killed.
-   - Civilians live inside the Walls, retreat through the gates and resettle when land is won back.
+   - About 500 people live inside the Walls, retreat through the gates and resettle when land is won back.
+   - Those who do not get away in time are caught: each is paired with a Titan that walks up to them and eats them (`meals`).
    World units and geometry come from world.js. DOM-free (tested in Node). */
 (function (global) {
   'use strict';
@@ -16,7 +17,8 @@
 
   function create(events, World, opts = {}) {
     const { C, R, DISTRICTS, at, dist, rOf, degOf, district, onLand, coastDist, coastAt } = World;
-    const N = { titans: 300, civilians: 150, riders: 10, wallTitans: 360, ...(opts.counts || {}) };
+    const N = { titans: 200, civilians: 500, riders: 10, wallTitans: 360, ...(opts.counts || {}) };
+    const tn = (n) => Math.max(1, Math.round((n * N.titans) / 300)); // the story's shares of the Titans, whatever their number
     const idx = (id) => { const i = events.findIndex((e) => e.id === id); if (i < 0) throw new Error('Unknown event ' + id); return i; };
     const T = (id, p) => idx(id) + p;
 
@@ -131,14 +133,14 @@
     const take = (pool, picked) => { for (const a of picked) pool.splice(pool.indexOf(a), 1); return picked; };
     const setCur = (list, fn) => list.forEach((a) => (a.cur = fn ? fn(a) : a.home0));
 
-    // Pure Titans: about 300 outside, drawn towards the districts.
+    // Pure Titans: about 200 outside, drawn towards the districts.
     const titans = add('titan', N.titans, 'outside', { hidden: true, weight: outsidePull });
     setCur(titans);
     fade(titans, ['founding', 0.4], ['founding', 1], 1, { spread: 0.7 });
     const SHIG = district('shig'), TROST = district('trost');
     const outside = [...titans], inMaria = [];
     // The crawling Titan: its limbs are too small to walk, so it drags itself from the south coast towards the Walls for years.
-    // The Scouts find it in 851 on their way to the sea and leave it be; it goes on crawling until the Rumbling's great circle reaches it. It is one of the 300.
+    // The Scouts find it in 851 on their way to the sea and leave it be; it goes on crawling until the Rumbling's great circle reaches it. It is one of the 200.
     const PT = opts.points || {};
     if (PT.crawlFrom && PT.crawlTo) {
       const crawler = take(outside, nearest(outside, PT.crawlFrom, 1))[0];
@@ -147,35 +149,37 @@
       cr.at = (Tl) => (Tl <= cr.T1 ? lerp(cr.from, cr.to, clamp01((Tl - cr.T0) / (cr.T1 - cr.T0))) : lerp(cr.to, cr.on, clamp01((Tl - cr.T1) / (cr.T2 - cr.T1))));
       Object.assign(crawler, { still: true, lying: true, home0: PT.crawlFrom, cur: PT.crawlFrom, crawl: cr });
     }
-    // 845: the gates break. Those nearest get in first; the stream goes on for years. About 110 in all.
-    const first = take(outside, nearest(outside, SHIG.outer, 30));
-    move(first, ['maria-fall', 0.36], ['maria-fall', 0.64], 'shig', { via: ['shig'], spread: 0.45 });
-    move(first, ['maria-fall', 0.68], ['maria-fall', 1], 'maria', { via: ['shig'], weight: mariaPull });
-    const second = take(outside, nearest(outside, SHIG.outer, 42));
+    // 845: the gates break. Those nearest get in first; the stream goes on for years. More than a third of them in all.
+    const first = take(outside, nearest(outside, SHIG.outer, tn(30)));
+    move(first, ['maria-fall', 0.36], ['maria-fall', 0.58], 'shig', { via: ['shig'], spread: 0.45 });
+    move(first, ['maria-fall', 0.73], ['maria-fall', 1], 'maria', { via: ['shig'], weight: mariaPull }); // they stay in the town a while: there are people to catch
+    const second = take(outside, nearest(outside, SHIG.outer, tn(42)));
     move(second, ['maria-fall', 0.7], ['refugees', 0.6], 'maria', { via: ['shig'], weight: mariaPull, spread: 0.7 });
-    const third = take(outside, nearest(outside, SHIG.outer, 38));
+    const third = take(outside, nearest(outside, SHIG.outer, tn(38)));
     move(third, ['refugees', 0.3], ['cadets', 0.6], 'maria', { via: ['shig'], weight: mariaPull, spread: 0.8 });
     inMaria.push(...first, ...second, ...third);
     // their homes after entering are resolved below; use Trost as the reference for "nearest" until then
     setCur(inMaria, (a) => lerp(a.home0, TROST.outer, 0.8));
     // 846: the refugee column sent out through Trost draws the Titans nearest to it.
-    const drawn = nearest([...first, ...second], TROST.outer, 22);
-    move(drawn, ['reclamation', 0.22], ['reclamation', 0.7], 'maria', { near: TROST.beyond, radius: 30, spread: 0.5 });
+    // The column spreads out to both sides of Trost's gate, close under Wall Rose (where Wall Maria does not hide it from the south).
+    const FLANKS = [at(R.rose + 17, 90 + 15), at(R.rose + 17, 90 - 15)], flank = (list, k) => list.filter((_, i) => i % 2 === k);
+    const drawn = [...first, ...second];
+    for (const k of [0, 1]) move(flank(drawn, k), ['reclamation', 0.1], ['reclamation', 0.5], 'maria', { near: FLANKS[k], radius: 30, spread: 0.5 });
     kill(take(inMaria, inMaria.filter((_, i) => i % 13 === 5)), ['cadets', 0.2], ['cadets', 0.9]); // early Survey Corps expeditions
     // 850: Trost. The Titans nearest the broken outer gate pour in and are all killed once it is sealed.
-    const trostTitans = take(inMaria, nearest(inMaria, TROST.outer, 26));
+    const trostTitans = take(inMaria, nearest(inMaria, TROST.outer, tn(26)));
     move(trostTitans, ['trost-attack', 0.42], ['trost-attack', 0.88], 'trost', { via: ['trost'], spread: 0.5 });
     kill(trostTitans, ['trost-seal', 0.45], ['trost-seal', 0.96]);
-    kill(take(inMaria, nearest(inMaria, at(214, 42), 6)), ['female-forest', 0.2], ['female-forest', 0.72]); // 57th expedition
+    kill(take(inMaria, nearest(inMaria, at(214, 42), tn(6))), ['female-forest', 0.2], ['female-forest', 0.72]); // 57th expedition
     // Autumn 850: the Trost "executioner" lures and kills Titans night after night.
-    const lured = take(inMaria, nearest(inMaria, TROST.outer, 30));
+    const lured = take(inMaria, nearest(inMaria, TROST.outer, tn(30)));
     move(lured, ['rod', 0], ['rod', 0.7], 'maria', { near: TROST.beyond, radius: 16, spread: 0.6 });
     kill(lured, ['rod', 0.25], ['rod', 0.98]);
     // The battle of Shiganshina: Zeke's Titans ring the district and Levi cuts them down.
-    const ringed = take(inMaria, nearest(inMaria, SHIG.inner, 30));
+    const ringed = take(inMaria, nearest(inMaria, SHIG.inner, tn(30)));
     move(ringed, ['maria-retaken', 0.22], ['maria-retaken', 0.5], 'shigRing', { spread: 0.4 });
     kill(ringed, ['maria-retaken', 0.58], ['maria-retaken', 0.86]);
-    kill(take(outside, nearest(outside, SHIG.outer, 20)), ['maria-retaken', 0.4], ['maria-retaken', 0.95]);
+    kill(take(outside, nearest(outside, SHIG.outer, tn(20))), ['maria-retaken', 0.4], ['maria-retaken', 0.95]);
     // 851: the island is cleared, the nearest first, as the Scouts ride for the sea.
     kill(inMaria, ['sea', 0], ['sea', 0.4]);
     const bySouth = [...outside].sort((a, b) => dist(a.home0, SHIG.outer) - dist(b.home0, SHIG.outer));
@@ -190,31 +194,31 @@
     kill(ragGo.slice(17), ['reveal-escape', 0], ['reveal-escape', 0.5]);
     fade(rag.slice(0, 1), ['alliance', 0.86], ['alliance', 0.98], 0);
     // 854: Zeke's scream in Shiganshina.
-    const scream = add('titan', 30, 'shig', { hidden: true });
+    const scream = add('titan', tn(30), 'shig', { hidden: true });
     fade(scream, ['zeke-scream', 0.32], ['zeke-scream', 0.56], 1, { spread: 0.5 });
-    kill(scream.slice(0, 18), ['zeke-scream', 0.72], ['rumbling', 0.4]);
-    fade(scream.slice(18), ['alliance', 0.86], ['alliance', 1], 0); // the Titans' power ends and they turn back into people
+    kill(scream.slice(0, tn(18)), ['zeke-scream', 0.72], ['rumbling', 0.4]);
+    fade(scream.slice(tn(18)), ['alliance', 0.86], ['alliance', 1], 0); // the Titans' power ends and they turn back into people
 
     // Civilians. Shares: Sina, Rose and Maria territory plus the twelve districts.
     const nc = N.civilians, per = Math.max(2, Math.round(nc * 0.016));
     const civD = {};
     for (const d of DISTRICTS) civD[d.id] = add('civ', d.id === 'shig' || d.id === 'trost' ? per + 2 : per, d.id);
-    const left = nc - agents.filter((a) => a.kind === 'civ').length;
+    const left = nc - agents.filter((a) => a.kind === 'civ').length - 5; // the five Ragako households below are among them
     const civSina = add('civ', Math.round(left * 0.3), 'sina'), civRose = add('civ', Math.round(left * 0.37), 'rose'), civMaria = add('civ', left - civSina.length - civRose.length, 'maria');
     const ragCiv = add('civ', 5, 'ragako');
-    // 845: Maria falls. Shiganshina first, then the whole territory flees behind Wall Rose; some do not make it.
+    // Who is caught is settled further down (`hunts`), once everybody's way is known: a person dies where a Titan can reach them.
+    const hunts = [];
+    // 845: Maria falls. Shiganshina first, then the whole territory flees behind Wall Rose; about one in eight does not make it.
     move(civD.shig, ['maria-fall', 0.4], ['maria-fall', 0.92], 'rose', { flee: true, spread: 0.4 });
     const mariaFolk = [...civMaria, ...civD.holst, ...civD.quinta, ...civD.mariaN];
-    const lost = mariaFolk.filter((_, i) => i % 9 === 4);
     move(mariaFolk, ['maria-fall', 0.5], ['refugees', 0.5], 'rose', { flee: true, spread: 0.6 });
-    for (const a of lost) { const m = a.ops[a.ops.length - 1], mid = m.T0 + (m.T1 - m.T0) * 0.45; a.ops.push({ type: 'fade', T0: mid, T1: mid + 0.08, v: 0, how: 'caught' }); }
-    const survivors = mariaFolk.filter((a) => !lost.includes(a));
     // 846: the "reclamation". About a fifth of the people are marched out through Trost into Titan country; a handful return.
-    const sent = survivors.slice(0, Math.round(nc * 0.2)), returned = sent.slice(0, 2);
-    move(sent, ['reclamation', 0.06], ['reclamation', 0.6], 'maria', { via: ['trost'], near: TROST.beyond, radius: 34, spread: 0.5 });
-    sent.filter((a) => !returned.includes(a)).forEach((a, i, list) => { const t0 = T('reclamation', 0.5 + 0.38 * (i / list.length)); a.ops.push({ type: 'fade', T0: t0, T1: t0 + 0.07, v: 0, how: 'caught' }); });
+    const sent = mariaFolk.slice(0, Math.round(nc * 0.2)), returned = sent.slice(0, 2);
+    hunts.push({ prey: [...civD.shig, ...mariaFolk].filter((a) => !returned.includes(a)), from: ['maria-fall', 0.44], to: ['refugees', 0.55], share: 1 / 8 });
+    for (const k of [0, 1]) move(flank(sent, k), ['reclamation', 0.04], ['reclamation', 0.5], 'maria', { via: ['trost'], near: FLANKS[k], radius: 24, spread: 0.5 });
+    hunts.push({ prey: sent.filter((a) => !returned.includes(a)), from: ['reclamation', 0.24], to: ['reclamation', 0.97], share: 1, all: true });
     move(returned, ['reclamation', 0.82], ['reclamation', 1], 'rose', { via: ['trost'], flee: true, spread: 0.2 });
-    const alive = survivors.filter((a) => !sent.includes(a) || returned.includes(a));
+    const alive = mariaFolk.filter((a) => !sent.includes(a) || returned.includes(a));
     // 850: Trost is evacuated during the attack and lived in again afterwards.
     move(civD.trost, ['trost-attack', 0.2], ['trost-attack', 0.6], 'rose', { flee: true, spread: 0.3 });
     move(civD.trost, ['annie-mp', 0.1], ['annie-mp', 0.7], 'trost', { spread: 0.3 });
@@ -382,16 +386,6 @@
         area = op.area; home = op.home;
       }
       delete a.cur;
-      // when this figure can be on screen at all (lets the renderer skip it cheaply)
-      if (a.rumble) { a.t0 = wallsFall; a.t1 = T('alliance', 0.92); }
-      else if (a.ferry) { a.t0 = a.ferry.T0; a.t1 = a.ferry.T1; }
-      else if (a.ride) { a.t0 = a.ride.ei; a.t1 = a.ride.ei + 1; }
-      else {
-        const fades = a.ops.filter((o) => o.type === 'fade');
-        a.t0 = a.vis0 ? -Infinity : (fades.find((o) => o.v) || { T0: Infinity }).T0;
-        const last = fades[fades.length - 1];
-        a.t1 = last && !last.v ? last.T1 : Infinity;
-      }
     }
 
     // ---- Wandering (real time) ----
@@ -412,8 +406,9 @@
       L = { legs, period: Math.max(0.1, t) }; loops.set(key, L);
       return L;
     };
-    const wander = (a, area, home, t, still) => {
-      if (still) return home;
+    const wander = (a, area, home, t, still, calm = 1) => {
+      if (still || calm <= 0) return home;
+      if (calm < 1) return lerp(home, wander(a, area, home, t, false), calm);
       const L = wanderLoop(a, area, home), tt = (((t + a.phase * 5) % L.period) + L.period) % L.period;
       for (const g of L.legs) if (tt < g.t1) return tt < g.tw ? g.p : lerp(g.p, g.q, smooth((tt - g.tw) / (g.t1 - g.tw)));
       return home;
@@ -453,14 +448,91 @@
         return { x: p[0], y: p[1], vis, dying, how, area: 'outside', crawling: true };
       }
       const still = a.still || o.reduced;
+      const calm = a.doom ? smooth((a.doom.T0 - Tl) / 0.07) : 1; // someone about to be caught stops wandering: the Titan knows where to find them
+      let st;
       if (mv) {
         const { op, f } = mv, base = along(op.path, smooth(f));
-        const w0 = wander(a, op.fromArea, op.from, t, still), w1 = wander(a, op.area, op.home, t, still);
+        const w0 = wander(a, op.fromArea, op.from, t, still, calm), w1 = wander(a, op.area, op.home, t, still, calm);
         const p = lerp(lerp(w0, base, smooth(f / 0.1)), w1, smooth((f - 0.9) / 0.1));
-        return { x: p[0], y: p[1], vis, dying, how, flee: op.flee, moving: true, area: f < 0.5 ? op.fromArea : op.area };
+        st = { x: p[0], y: p[1], vis, dying, how, flee: op.flee, moving: true, area: f < 0.5 ? op.fromArea : op.area };
+      } else {
+        const w = wander(a, area, home, t, still, calm);
+        st = { x: w[0], y: w[1], vis, dying, how, area };
       }
-      const w = wander(a, area, home, t, still);
-      return { x: w[0], y: w[1], vis, dying, how, area };
+      if (a.doom) { st.doom = a.doom; if (Tl >= a.doom.T0) st.caught = clamp01((Tl - a.doom.T0) / (a.doom.T1 - a.doom.T0)); }
+      // A Titan with a meal ahead leaves what it was doing, walks up to its prey, eats where it stands and goes back.
+      if (a.meals && !o.plain) for (const m of a.meals) {
+        if (Tl <= m.Ts) break;
+        if (Tl >= m.Te) continue;
+        const w = Tl < m.T0 ? smooth((Tl - m.Ts) / (m.T0 - m.Ts)) : Tl <= m.T1 ? 1 : 1 - smooth((Tl - m.T1) / (m.Te - m.T1));
+        st.x += (m.stand[0] - st.x) * w; st.y += (m.stand[1] - st.y) * w;
+        if (Tl < m.T0) st.hunt = m; else if (Tl <= m.T1) { st.eat = m; st.eatF = (Tl - m.T0) / (m.T1 - m.T0); }
+      }
+      return st;
+    }
+
+    // ---- Who is caught, and by which Titan ----
+    // Time is walked through each hunt; a free Titan takes the nearest person of the hunt's prey in its own territory.
+    // The person's end is set to the moment the Titan gets there, so nobody dies without a Titan beside them.
+    const meals = [];
+    {
+      const MEAL = 0.2, REACH = 2.4, FAR = 42, RUN = 95, quiet = { reduced: true }, plain = { reduced: true, plain: true }; // a meal's length in events; how near the Titan stands; how far it will go, and how fast (units per event)
+      const clear = (p, q, reg) => [0.25, 0.5, 0.75, 1].every((k) => World.regionOf(lerp(p, q, k)) === reg); // a straight walk that stays in one territory (never through a Wall)
+      const hunters = agents.filter((t) => t.kind === 'titan' && !t.still && !t.lying).sort((x, y) => ((x.id * 2654435761) >>> 0) - ((y.id * 2654435761) >>> 0));
+      const resort = (c) => c.ops.sort((x, y) => x.T0 - y.T0);
+      for (const h of hunts) {
+        const [Ta, Tb] = win(h.from, h.to), pool = h.prey.filter((c) => !c.doom), n = Math.round(pool.length * h.share), steps = Math.max(40, n * 3);
+        let done = 0;
+        for (const t of hunters) t.rest = 0;
+        for (let i = 0; i < steps && done < n; i++) {
+          const Tm = Ta + ((Tb - Ta) * i) / steps, due = Math.ceil(n * Math.min(1, (i + 1) / (steps * 0.7))); // everyone due is caught with time left for the last meal
+          if (done >= due) continue;
+          const prey = [];
+          for (const c of pool) { if (c.doom) continue; const v = stateAt(c, Tm, 0, quiet); if (v.vis > 0.9) prey.push({ c, p: [v.x, v.y], reg: World.regionOf([v.x, v.y]) }); }
+          for (const tt of hunters) {
+            if (done >= due) break;
+            if ((tt.busy || 0) > Tm || tt.rest > Tm) continue;
+            const st = stateAt(tt, Tm, 0, quiet);
+            if (st.vis < 0.9 || st.dying) { tt.rest = Tm + 0.05; continue; }
+            const tp = [st.x, st.y], reg = World.regionOf(tp);
+            let best = null, bd = FAR;
+            for (const q of prey) { if (q.c.doom || q.reg !== reg) continue; const d = dist(tp, q.p); if (d < bd) { bd = d; best = q; } }
+            if (!best) { tt.rest = Tm + 0.04; continue; } // nobody near: look again a little later
+            const T0 = Tm + Math.max(0.045, bd / RUN), T1 = T0 + MEAL, vs = stateAt(best.c, T0, 0, quiet), spot = [vs.x, vs.y];
+            if (T1 > Tb + 0.03 || vs.vis < 0.9 || !clear(tp, spot, reg)) continue; // too late, gone by then, or behind a Wall
+            // it eats before its own next journey begins, never strays far from where it would be, and walks back
+            const next = tt.ops.find((o) => o.T0 > Tm && (o.type === 'move' || !o.v)), home = stateAt(tt, T1, 0, plain), away = dist([home.x, home.y], spot);
+            const Te = Math.min(T1 + Math.max(0.08, away / RUN), next ? next.T0 : Infinity);
+            if (away > FAR || Te < T1 + 0.03 || !clear(spot, [home.x, home.y], reg)) continue;
+            const d2 = dist(tp, spot), stand = d2 > REACH ? lerp(spot, tp, REACH / d2) : [spot[0], spot[1] + REACH];
+            const m = { titan: tt, victim: best.c, Ts: Tm, T0, T1, Te, spot, stand, bite: 0.62 };
+            (tt.meals || (tt.meals = [])).push(m);
+            let ok = true;
+            for (let t = Tm; t <= Te && ok; t += 0.004) { const q = stateAt(tt, t, 0, quiet); ok = World.regionOf([q.x, q.y]) === reg; } // the whole way there and back stays in this territory
+            if (!ok) { tt.meals.pop(); continue; }
+            tt.busy = T1; meals.push(m);
+            best.c.doom = m;
+            best.c.ops.push({ type: 'fade', T0, T1: T0 + MEAL * m.bite, v: 0, how: 'caught' }); resort(best.c);
+            done++;
+          }
+        }
+        // the rest of a doomed column dies out of sight of any Titan
+        if (h.all) pool.filter((c) => !c.doom).forEach((c, i, rest) => { const t0 = Tb - 0.3 * (i / Math.max(1, rest.length)); c.ops.push({ type: 'fade', T0: t0, T1: t0 + 0.05, v: 0, how: 'lost' }); resort(c); });
+      }
+      for (const t of hunters) { delete t.rest; delete t.busy; }
+      meals.sort((x, y) => x.T0 - y.T0);
+    }
+    // When each figure can be on screen at all (lets the renderer skip it cheaply).
+    for (const a of agents) {
+      if (a.rumble) { a.t0 = wallsFall; a.t1 = T('alliance', 0.92); }
+      else if (a.ferry) { a.t0 = a.ferry.T0; a.t1 = a.ferry.T1; }
+      else if (a.ride) { a.t0 = a.ride.ei; a.t1 = a.ride.ei + 1; }
+      else {
+        const fades = a.ops.filter((o) => o.type === 'fade');
+        a.t0 = a.vis0 ? -Infinity : (fades.find((o) => o.v) || { T0: Infinity }).T0;
+        const last = fades[fades.length - 1];
+        a.t1 = last && !last.v ? last.T1 : Infinity;
+      }
     }
 
     // How many Titans and civilian groups are where (for the status panel).
@@ -476,7 +548,7 @@
       }
       return out;
     }
-    return { agents, cannons, stateAt, counts, inArea, regionOfArea, route, wallsFall, rumble, N, T };
+    return { agents, cannons, meals, stateAt, counts, inArea, regionOfArea, route, wallsFall, rumble, N, T };
   }
   global.Population = { create };
 })(typeof window !== 'undefined' ? window : globalThis);

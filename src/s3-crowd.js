@@ -2,7 +2,9 @@
    small rigs drawn with instancing. Where everyone is comes from population.js; added here in real time:
    figures turn to where they walk and step in time with the distance covered, civilians run from a Titan
    in the same territory, Titans lean and reach towards nearby people, cannons fire when Titans come near,
-   and a killed Titan goes up in steam. Also the rows of Wall Titans in the Rumbling, and signal flares. */
+   and a killed Titan goes up in steam. A person the simulation has given to a Titan (`pop.meals`) is
+   snatched from the ground, lifted to the mouth and eaten, with a spray of blood and a stain left on
+   the ground. Also the rows of Wall Titans in the Rumbling, and signal flares. */
 (function (global) {
   'use strict';
   const S3 = global.S3;
@@ -16,18 +18,18 @@
     const { scene, World, pop, D, Q, geos, rigs, props, relief } = ctx;
     const { C, R, DISTRICTS } = World, hAt = relief.land, Rig = global.Rig, V = global.View3D;
     const wade = (x, z) => Math.max(-4.4, relief.h(x, z)); // the Wall Titans walk on the sea bed, up to their thighs in water
-    const CIV = { 1: [['civA', -0.95, 0], ['civB', 0.95, 0.3]], 2: [['civB', -0.8, 0], ['civC', 0.85, 0.5]], 3: [['civA', 0, 0]], 4: [['civB', -0.7, 0.2], ['civC', 0.8, -0.3]] };
+    const civRig = (a) => rigs[a.variant === 3 ? 'civC' : a.id & 1 ? 'civB' : 'civA']; // every civilian is one person: a man, a woman or a child
     const rigOf = (a) => (a.kind === 'titan' ? rigs[a.crawl ? 'titanCrawl' : a.lying ? 'titanLying' : 'titan' + a.variant] : a.kind === 'wallTitan' ? rigs.wallTitan : a.kind === 'rider' ? rigs.horse : null);
     // capacity: every part of every figure that can be on stage at once
     const need = { box: 40, sphere: 40, capsule: 40, cone: 20 };
     const count = (rig, n = 1) => { for (const p of rig.parts) need[p.shape] += n; };
     for (const a of pop.agents) {
-      if (a.kind === 'civ') for (const [name] of CIV[a.variant] || CIV[3]) count(rigs[name]);
+      if (a.kind === 'civ') count(civRig(a));
       else if (a.kind === 'boat') count(props.boat);
       else { count(rigOf(a)); if (a.kind === 'rider') count(rigs.rider); }
     }
     count(props.cannon, pop.cannons.length);
-    const nTitans = pop.agents.filter((a) => a.kind === 'titan').length; need.sphere += nTitans * 2; need.box += nTitans * 2; // faces, drawn when the camera is close
+    const nTitans = pop.agents.filter((a) => a.kind === 'titan').length; need.sphere += nTitans * 4; need.box += nTitans * 2; // faces, drawn when the camera is close, and blood round the mouth and on the hand
     // the standing rows: Wall Titans shoulder to shoulder in every Wall and district wall
     const WT = rigs.wallTitan, gapW = Q.rowGap, rows = [];
     const GAP_R = R.maria + 36, GAP_HALF = 11.5;
@@ -49,6 +51,96 @@
     const steam = S3.Puffs(Q.puffs, { order: 8 }); scene.add(steam.points);
     const smoke = S3.Puffs(200, { order: 8 }); scene.add(smoke.points);
     const flash = S3.Puffs(pop.cannons.length + 4, { additive: true, order: 9 }); scene.add(flash.points);
+    // ---- eating ----
+    // The parts of a meal, as shares of its length: bend down and snatch, grip, lift to the mouth, bite and chew, straighten up.
+    const EAT = { snatch: 0.2, grip: 0.27, lift: 0.55, chew: 0.9, take0: 0.11, take1: 0.21, burst: 0.11, stain: 0.9 };
+    const FB = D.fx.blood || { color: '#a83f32', dark: '#542d29', mist: '#b86552', drops: 12, opacity: 0.82 }, FS = D.fx.bloodStain || { color: '#542d29', size: 2.4, opacity: 0.58 };
+    for (const k in rigs) { // where a Titan holds its prey, where its mouth is, and when its head comes down to bite
+      const r = rigs[k];
+      if (!r.clips.eat || r.head < 0) continue;
+      const hp = r.parts[r.head], fi = r.parts.findIndex((p) => p.id === 'forearmR'), fp = r.parts[fi], onAllFours = k === 'titan6';
+      r.mouth = [hp.centre[0], hp.centre[1] - 0.2 * hp.size[1], hp.centre[2] + 0.45 * hp.size[2]];
+      r.hold = fp && !onAllFours ? { i: fi, p: [fp.centre[0], fp.centre[1] - fp.size[1] / 2, fp.centre[2]] } : { i: r.head, p: r.mouth }; // the abnormal on all fours takes its prey with the mouth
+      const c = r.clips.eat.parts[r.head] && r.clips.eat.parts[r.head][0], h = c && c[1] ? Math.max(1, Math.round(c[3])) : 2, peaks = [];
+      for (let n = 0; n < h; n++) peaks.push(c && c[1] ? ((((c[1] > 0 ? 0.25 : 0.75) - c[2] + n) / h) % 1 + 1) % 1 : 0.2 + (0.6 * n) / h);
+      peaks.sort((x, y) => x - y);
+      const first = peaks.find((p) => p >= 0.18) ?? peaks[0];
+      r.bites = peaks.filter((p) => p >= first).map((p) => EAT.lift + (EAT.chew - EAT.lift) * p); // as shares of the meal
+    }
+    const blood = S3.Puffs(Q.shadow > 0 ? 420 : 200, { order: 9, maxPx: 90 }); scene.add(blood.points);
+    // blood on the ground: flat blots with a ragged edge, each with its own strength
+    const STAINS = 160, stainFx = new T.InstancedBufferAttribute(new Float32Array(STAINS * 3), 3).setUsage(T.DynamicDrawUsage); // strength, its own shape, how dry
+    const stainGeo = new T.PlaneGeometry(1, 1).rotateX(-Math.PI / 2); stainGeo.setAttribute('aFx', stainFx);
+    const stainMat = new T.ShaderMaterial({
+      uniforms: { uColor: { value: S3.col(FB.color) }, uDry: { value: S3.col(FS.color) }, uLight: { value: new T.Color(1, 1, 1) }, uK: { value: 1 } },
+      vertexShader: 'attribute vec3 aFx; varying vec2 vUv; varying vec3 vFx;\nvoid main(){ vUv = uv; vFx = aFx; gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'uniform vec3 uColor; uniform vec3 uDry; uniform vec3 uLight; varying vec2 vUv; varying vec3 vFx;\nvoid main(){ vec2 p = vUv * 2.0 - 1.0; float a = atan(p.y, p.x), r = length(p), s = vFx.y * 40.0;\n float edge = 0.6 + 0.15 * sin(a * 3.0 + s) + 0.1 * sin(a * 7.0 + s * 2.3) + 0.05 * sin(a * 13.0 + s * 5.1);\n float m = smoothstep(edge, edge - 0.2, r) * (0.75 + 0.25 * smoothstep(0.0, edge, r));\n if (m * vFx.x < 0.01) discard;\n gl_FragColor = vec4(mix(uColor, uDry, vFx.z) * uLight, m * vFx.x);\n#include <colorspace_fragment>\n}',
+      transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -5, polygonOffsetUnits: -5,
+    });
+    const stains = new T.InstancedMesh(stainGeo, stainMat, STAINS); stains.frustumCulled = false; stains.count = 0; stains.renderOrder = 3; scene.add(stains);
+    const LINB = { fresh: S3.lin(FB.color), dark: S3.lin(FB.dark), mist: S3.lin(FB.mist) }, hand = [0, 0, 0], mouth = [0, 0, 0], jm = new Float32Array(12);
+    const jointPoint = (b, mm, i, p, out) => { S3.mul(jm, 0, b, 0, mm, i * 12); out[0] = jm[0] * p[0] + jm[1] * p[1] + jm[2] * p[2] + jm[3]; out[1] = jm[4] * p[0] + jm[5] * p[1] + jm[6] * p[2] + jm[7]; out[2] = jm[8] * p[0] + jm[9] * p[1] + jm[10] * p[2] + jm[11]; return out; };
+    const hash = (n) => { const v = Math.sin(n * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+    let nBlood = 0;
+    // Pose a Titan through its meal (f = 0..1): idle -> grab -> eat -> idle. The chewing is timed by the meal, so a bite is a moment of the story.
+    function eatPose(rig, f, t, a) {
+      const ti = idleT(rig, t, a), tg = t / rig.clips.grab.period, te = clamp01((f - EAT.lift) / (EAT.chew - EAT.lift));
+      if (f < EAT.snatch) Rig.pose(rig, 'idle', ti, mats, 'grab', tg, smooth(f / EAT.snatch));
+      else if (f < EAT.grip) Rig.pose(rig, 'grab', tg, mats);
+      else if (f < EAT.lift) Rig.pose(rig, 'grab', tg, mats, 'eat', 0, smooth((f - EAT.grip) / (EAT.lift - EAT.grip)));
+      else if (f < EAT.chew) Rig.pose(rig, 'eat', te, mats);
+      else Rig.pose(rig, 'eat', 1, mats, 'idle', ti, smooth((f - EAT.chew) / (1 - EAT.chew)));
+    }
+    // The person in the Titan's grip, the spray at each bite and the blood left on mouth and hand. `base` and `mats` hold the Titan as just drawn.
+    function eatScene(rig, m, f, t, k, E, yaw) {
+      const vr = civRig(m.victim), dv = dyn[m.victim.id], swallow = rig.bites[0], H = rig.height * k;
+      jointPoint(base, mats, rig.hold.i, rig.hold.p, hand); jointPoint(base, mats, rig.head, rig.mouth, mouth);
+      const gone = smooth((f - swallow + 0.035) / 0.05);
+      if (gone < 1) { // still there: on the ground, then in the grip, then into the mouth
+        const near = dv.has && Math.hypot(dv.x - m.spot[0], dv.y - m.spot[1]) < 9, gx = near ? dv.x : m.spot[0], gz = near ? dv.y : m.spot[1], gy = hAt(gx, gz);
+        const take = smooth((f - EAT.take0) / (EAT.take1 - EAT.take0)), kv = vr.unit * E * (1 - gone * 0.85), root = vr.parts[0].at[1] * kv;
+        let px = gx + (hand[0] - gx) * take, py = gy + (hand[1] - root - gy) * take, pz = gz + (hand[2] - gz) * take;
+        px += (mouth[0] - px) * gone; py += (mouth[1] - root * 0.5 - py) * gone; pz += (mouth[2] - pz) * gone;
+        Rig.pose(vr, 'run', t * 2.2 + m.victim.phase, mats2, 'held', t / ((vr.clips.held && vr.clips.held.period) || 0.5) + m.victim.phase, vr.clips.held ? take : 0);
+        S3.place(base2, px, py, pz, yaw + Math.PI + Math.sin(t * 7 + m.victim.phase) * 0.5 * take, kv); S3.pushRig(batch, vr, mats2, base2, 1);
+        if (take < 0.5) blob(px, pz, gy, vr.height * kv, 0.9 * kv);
+      }
+      // a short spray at every bite: drops thrown forward and down, a thin red mist at the mouth
+      const fx = Math.sin(yaw), fz = Math.cos(yaw);
+      for (let b = 0; b < rig.bites.length; b++) {
+        const g = (f - rig.bites[b]) / EAT.burst;
+        if (g <= 0 || g >= 1 || nBlood > blood.cap - FB.drops - 3) continue;
+        for (let j = 0; j < FB.drops; j++) {
+          const r1 = hash(m.victim.id * 13 + b * 7 + j), r2 = hash(m.victim.id * 29 + b * 3 + j * 5), r3 = hash(m.victim.id * 5 + b + j * 11), out = (0.25 + r1 * 0.75) * H * 0.42 * g, side = (r2 - 0.5) * H * 0.5 * g, c = g * 0.8;
+          blood.set(nBlood++, mouth[0] + fx * out + fz * side, mouth[1] + (0.12 + r3 * 0.3) * H * g - H * 0.75 * g * g, mouth[2] + fz * out - fx * side, H * (0.08 + 0.08 * r3) * (1 - g * 0.4), LINB.fresh[0] + (LINB.dark[0] - LINB.fresh[0]) * c, LINB.fresh[1] + (LINB.dark[1] - LINB.fresh[1]) * c, LINB.fresh[2] + (LINB.dark[2] - LINB.fresh[2]) * c, FB.opacity * Math.min(1, (1 - g) * 2.5));
+        }
+        for (let j = 0; j < 2; j++) blood.set(nBlood++, mouth[0] + fx * H * 0.08 * (j + g * 2), mouth[1] - H * 0.04 * j, mouth[2] + fz * H * 0.08 * (j + g * 2), H * (0.24 + 0.34 * g), LINB.fresh[0], LINB.fresh[1], LINB.fresh[2], 0.6 * (1 - g) * Math.min(1, g * 6));
+      }
+      return f > swallow;
+    }
+    // Blood round the mouth and on the hand of a Titan that has eaten.
+    function gore(rig, k, amount) {
+      const hp = rig.parts[rig.head], [sx, sy, sz] = hp.size, [cx, cy, cz] = hp.centre, c = LINB.fresh;
+      S3.mul(fm, 0, base, 0, mats, rig.head * 12);
+      batch.push('sphere', fm, 0, cx, cy - 0.27 * sy, cz + 0.36 * sz, 0.7 * sx * amount, 0.3 * sy * amount, 0.34 * sz, c[0], c[1], c[2]);
+      if (rig.hold.i !== rig.head) { const fp = rig.parts[rig.hold.i]; S3.mul(fm, 0, base, 0, mats, rig.hold.i * 12); batch.push('sphere', fm, 0, rig.hold.p[0], rig.hold.p[1] + fp.size[0] * 0.2, rig.hold.p[2], fp.size[0] * 1.25 * amount, fp.size[0] * 1.1 * amount, fp.size[2] * 1.25 * amount, c[0] * 0.85, c[1] * 0.85, c[2] * 0.85); }
+    }
+    const stainM = new T.Matrix4();
+    function drawStains(Tl, E) {
+      let n = 0;
+      for (const m of pop.meals) {
+        const tb = m.T0 + (m.T1 - m.T0) * (m.titanRig ? m.titanRig.bites[0] : 0.6), age = Tl - tb;
+        if (age < 0 || age > EAT.stain || n >= STAINS) continue;
+        const x = (m.spot[0] + m.stand[0]) / 2, z = (m.spot[1] + m.stand[1]) / 2, size = FS.size * 2.5 * E * (0.75 + 0.5 * hash(m.victim.id)) * (0.55 + 0.45 * smooth(age / 0.05)), yaw = hash(m.victim.id * 3) * TAU, c = Math.cos(yaw) * size, sn = Math.sin(yaw) * size;
+        stainM.set(c, 0, sn, x, 0, 1, 0, hAt(x, z) + 0.22, -sn, 0, c, z, 0, 0, 0, 1);
+        stains.setMatrixAt(n, stainM);
+        stainFx.setXYZ(n, Math.min(1, FS.opacity * 1.6) * smooth(age / 0.012) * (1 - smooth((age - EAT.stain * 0.45) / (EAT.stain * 0.55))), hash(m.victim.id * 7), 0.15 + 0.85 * smooth(age / (EAT.stain * 0.6)));
+        n++;
+      }
+      stains.count = n; stains.instanceMatrix.needsUpdate = true; stainFx.needsUpdate = true;
+    }
+    for (const m of pop.meals) m.titanRig = rigOf(m.titan).bites ? rigOf(m.titan) : null;
+
     const LIN = { steam: S3.lin(D.fx.steam.color), wsteam: S3.lin(D.fx.wallSteam.color), dust: S3.lin(D.fx.dust.color), smoke: S3.lin(D.fx.cannonSmoke.color), flash: S3.lin(D.fx.cannonSmoke.flash) };
 
     // ---- state that lives between frames ----
@@ -103,16 +195,18 @@
         if (a.kind === 'titan' && !a.lying) { const k = key(s.x, s.y); (grid.get(k) || grid.set(k, []).get(k)).push(e); }
         else if (a.kind === 'civ') { const k = key(s.x, s.y); (civGrid.get(k) || civGrid.set(k, []).get(k)).push(e); }
       }
-      batch.begin(); nBlob = 0; nSteam = 0;
+      batch.begin(); nBlob = 0; nSteam = 0; nBlood = 0;
       const ease = Math.min(1, dt * 3.2), RB = pop.rumble, rho = RB.front(Tl), pad = 90;
       for (const e of live) {
         const { a, d, s } = e;
+        if (a.kind === 'civ' && s.caught !== undefined && s.doom.titanRig) continue; // in a Titan's grip: drawn with the Titan
         let tx = 0, ty = 0, scared = false, reaching = false, look = null;
         if (!o.reduced && !s.dying) {
           if (a.kind === 'civ') { // run from a Titan in the same territory
             const n = nearestIn(grid, s.x, s.y, 30, e.region);
-            if (n) { const k = (((30 - n.d) / 30) * 6) / (n.d || 1); tx = (s.x - n.o.x) * k; ty = (s.y - n.o.y) * k; scared = true; }
-          } else if (a.kind === 'titan' && !a.lying && !s.moving && o.awake > 0.5) { // lean towards people, even through a Wall
+            if (n) { const k = ((((30 - n.d) / 30) * 6) / (n.d || 1)) * (s.doom ? clamp01((s.doom.T0 - Tl) / 0.05) : 1); tx = (s.x - n.o.x) * k; ty = (s.y - n.o.y) * k; scared = true; } // the one who will be caught does not get away
+          } else if (a.kind === 'titan' && (s.hunt || s.eat)) look = { x: (s.hunt || s.eat).spot[0], y: (s.hunt || s.eat).spot[1] };
+          else if (a.kind === 'titan' && !a.lying && !s.moving && o.awake > 0.5) { // lean towards people, even through a Wall
             const n = nearestIn(civGrid, s.x, s.y, 38);
             if (n) { const k = Math.min(5, n.d * 0.5) / (n.d || 1); tx = (n.o.x - s.x) * k; ty = (n.o.y - s.y) * k; reaching = n.o.region !== e.region; look = n.o; }
           }
@@ -130,6 +224,7 @@
         let want = d.yaw;
         if (a.rumble && !(s.marching && moved > 0.004)) want = Math.atan2(Math.cos(a.rumble.th0 * RAD), Math.sin(a.rumble.th0 * RAD));
         else if (a.crawl) { const q = a.crawl.at(Tl + 0.01), q0 = a.crawl.at(Tl); if (Math.hypot(q[0] - q0[0], q[1] - q0[1]) > 1e-5) want = Math.atan2(q[0] - q0[0], q[1] - q0[1]); }
+        else if (s.eat && look) want = Math.atan2(look.x - x, look.y - y);
         else if (moved > 0.012) want = Math.atan2(dx, dy);
         else if (look && !walking) want = Math.atan2(look.x - x, look.y - y);
         d.yaw = d.has && !jump ? turn(d.yaw, want, Math.min(1, dt * (a.kind === 'civ' ? 9 : 4.5))) : want;
@@ -145,13 +240,11 @@
         const kill = s.dying && a.kind === 'titan' && s.how === 'kill';
         const vis = kill ? 1 - smooth(s.dying) * 0.55 : smooth(s.vis), tint = kill ? 1 + s.dying * 0.5 : 1;
         if (a.kind === 'civ') {
-          for (const [name, ox, oz] of CIV[a.variant] || CIV[3]) {
-            const rig = rigs[name], k = rig.unit * E * vis, c = Math.cos(d.yaw), sn = Math.sin(d.yaw), px = x + (ox * c + oz * sn) * E, pz = y + (-ox * sn + oz * c) * E;
-            if (walking) d.ph += moved / (rig.stride * rig.unit * E) / (CIV[a.variant] || CIV[3]).length;
-            Rig.pose(rig, 'idle', idleT(rig, t, a) + ox, mats, s.flee || scared ? 'run' : 'walk', d.ph + ox * 0.3, d.w);
-            S3.place(base, px, hAt(px, pz), pz, d.yaw, k); S3.pushRig(batch, rig, mats, base, tint);
-            blob(px, pz, gy, rig.height * k, 0.9 * k);
-          }
+          const rig = civRig(a), k = rig.unit * E * vis;
+          if (walking) d.ph += moved / (rig.stride * rig.unit * E);
+          Rig.pose(rig, 'idle', idleT(rig, t, a), mats, s.flee || scared ? 'run' : 'walk', d.ph, d.w);
+          S3.place(base, x, gy, y, d.yaw, k); S3.pushRig(batch, rig, mats, base, tint);
+          blob(x, y, gy, rig.height * k, 0.9 * k);
         } else if (a.kind === 'boat') {
           const pb = props.boat, k = pb.unit * vis;
           S3.place(base, x, gy - 0.1 + Math.sin(t * 1.3 + a.phase) * 0.06, y, d.yaw, k); S3.pushRig(batch, pb, pb.mats, base, 1);
@@ -174,10 +267,14 @@
             const out = Math.hypot(x - a.home0[0], y - a.home0[1]);
             sink = ctx.wallTitanSink * (1 - smooth(out / 7)) + (1 - smooth(s.vis)) * 6;
           } else if (kill) sink = s.dying * rig.height * k * 0.25;
-          if (rig.clips.walk && d.w > 0.02) Rig.pose(rig, 'idle', idleT(rig, a.kind === 'titan' ? titanClock : t, a), mats, 'walk', d.ph, a.crawl ? 1 : d.w);
+          const meal = s.eat && rig.bites ? s.eat : null;
+          if (meal) eatPose(rig, s.eatF, t, a);
+          else if (rig.clips.walk && d.w > 0.02) Rig.pose(rig, 'idle', idleT(rig, a.kind === 'titan' ? titanClock : t, a), mats, 'walk', d.ph, a.crawl ? 1 : d.w);
           else Rig.pose(rig, 'idle', idleT(rig, a.kind === 'titan' ? titanClock : t, a), mats, 'reach', (t + a.phase) / ((rig.clips.reach && rig.clips.reach.period) || 3), d.reach);
           S3.place(base, x, gy - sink, y, d.yaw, k); S3.pushRig(batch, rig, mats, base, tint);
           if (!wt && rig.head >= 0 && pr[2] > 2.6) face(rig, base);
+          if (meal) { if (eatScene(rig, meal, s.eatF, t, k, E, d.yaw)) d.gore = Tl; }
+          if (d.gore !== undefined && rig.bites) { const age = Tl - d.gore; if (age >= -1e-6 && age < 1.2) gore(rig, k, 1 - smooth((age - 0.7) / 0.5)); else if (age < 0 || age > 1.2) d.gore = undefined; } // it stays bloody for a while
           if (!wt || sink < 1) blob(x, y, gy, (a.lying || a.crawl ? 0.25 : 1) * rig.height * k, (a.lying || a.crawl ? 3 : 1.5) * k * (rig.height / 6));
           if (kill && nSteam < steam.cap - 8) { // it goes up in steam
             const H = rig.height * k, F = D.fx.steam;
@@ -242,12 +339,13 @@
         for (let j = 0; j < 12 && nSmoke < smoke.cap; j++) { const q = j / 11; smoke.set(nSmoke++, fl.x + q * q * 9 * fl.f + Math.sin(j * 1.7) * 0.6, gy + 3 + Hf * q, fl.y - q * 2 * fl.f, 2.6 + q * (3 + 7 * fl.f), c[0], c[1], c[2], 0.82 * a * (j === 11 ? 1 : 0.75)); }
       }
       batch.end();
-      steam.commit(nSteam); smoke.commit(nSmoke); flash.commit(nFlash);
+      drawStains(Tl, E);
+      steam.commit(nSteam); smoke.commit(nSmoke); flash.commit(nFlash); blood.commit(nBlood);
       blobs.count = nBlob; blobs.instanceMatrix.needsUpdate = true;
     }
 
     function update(sc, P, wallInfo, sun) {
-      batch.group.visible = !!sc.crowd; steam.points.visible = smoke.points.visible = flash.points.visible = !!sc.crowd; blobs.visible = !!sc.crowd && !ctx.shadowsOn;
+      batch.group.visible = !!sc.crowd; steam.points.visible = smoke.points.visible = flash.points.visible = blood.points.visible = stains.visible = !!sc.crowd; blobs.visible = !!sc.crowd && !ctx.shadowsOn;
       if (!sc.crowd) return;
       const hl = Math.hypot(sun.x, sun.z) || 1; sunX = sun.x / hl; sunZ = sun.z / hl; sunCot = hl / Math.max(0.2, sun.y);
       accDt += sc.dt; frameNo++;
@@ -264,7 +362,7 @@
       }
       return null;
     }
-    return { update, lyingAt, slower() { if (logicEvery < 3) logicEvery++; return logicEvery; }, get logicEvery() { return logicEvery; }, puffs: [steam, smoke, flash], mats: [mat], batch };
+    return { update, lyingAt, slower() { if (logicEvery < 3) logicEvery++; return logicEvery; }, get logicEvery() { return logicEvery; }, puffs: [steam, smoke, flash, blood, { mat: stainMat }], mats: [mat], batch };
   }
   S3.Crowd = Crowd;
 })(window);
