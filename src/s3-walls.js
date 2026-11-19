@@ -21,7 +21,7 @@
     const RU = { heap: [1.5, 6], colors: WD.rubble, chunkSize: [2, 6], dust: D.fx.dust.color, dustOpacity: 0.34, ...(WD.ruin || {}) };
     const Hw = ctx.wallH, TH = ctx.wallT, G0 = ctx.wallBase; // height, thickness, ground level under the Walls
     const GW = ctx.gateW, GH = ctx.gateH, M = GW / WD.gate.width; // world units per metre at a gate
-    const BW = BR.width * M * 1.5, BH = Math.min(Hw * 0.86, BR.height * (GH / WD.gate.height) * 1.1); // the hole torn round a gate, drawn larger than life like the gates themselves
+    const BW = BR.width * M * 0.95, BH = Math.min(Hw * 0.62, BR.height * (GH / WD.gate.height) * 0.76); // the hole torn round a gate: about twice the gate's width and well under the top of the Wall
     const rnd = S3.rng(4411);
     const hi = Q.shadow > 0;
 
