@@ -522,6 +522,29 @@
       for (const t of hunters) { delete t.rest; delete t.busy; }
       meals.sort((x, y) => x.T0 - y.T0);
     }
+    // 850: Titans appear inside Wall Rose, at Ragako, and walk to Utgard. The people of the south-west do not stay to watch:
+    // the nearest first, they leave for Ehrmich district and the land behind Wall Sina, and come home once the Wall is found whole.
+    const evacuees = [];
+    {
+      const plain = { reduced: true, plain: true }, scare = at(175, 125), FAR = 150, EHR = district('ehrmich');
+      const [f0, f1] = win(['ragako', 0.5], ['utgard', 0.3]), [b0, b1] = win(['reveal-escape', 0.55], ['rod', 0.35]);
+      for (const a of agents) {
+        if (a.kind !== 'civ' || a.area0 === 'ragako') continue;
+        const s = stateAt(a, f0, 0, plain);
+        if (s.vis < 0.9 || s.area !== 'rose' || s.moving || dist([s.x, s.y], scare) > FAR) continue;
+        if (a.ops.some((o) => o.type === 'move' && o.T0 < b1 && o.T1 > f0)) continue; // already on a journey of their own
+        evacuees.push({ a, home: [s.x, s.y], d: dist([s.x, s.y], scare) });
+      }
+      evacuees.sort((x, y) => x.d - y.d);
+      evacuees.forEach((e, i) => {
+        const { a, home } = e, u = evacuees.length > 1 ? i / (evacuees.length - 1) : 0, area = i % 3 === 0 ? 'ehrmich' : 'sina';
+        const dest = sample(area, a.r, area === 'sina' ? { near: EHR.within, radius: 55 } : {});
+        a.ops.push({ type: 'move', T0: f0 + (f1 - f0) * 0.5 * u, T1: f0 + (f1 - f0) * (0.5 + 0.5 * u), area, flee: true, fromArea: 'rose', from: home, home: dest, path: metrics(route('rose', home, area, dest)) });
+        a.ops.push({ type: 'move', T0: b0 + (b1 - b0) * 0.5 * u, T1: b0 + (b1 - b0) * (0.5 + 0.5 * u), area: 'rose', fromArea: area, from: dest, home, path: metrics(route(area, dest, 'rose', home)) }); // back to the same home
+        a.ops.sort((x, y) => x.T0 - y.T0);
+        e.dest = dest;
+      });
+    }
     // When each figure can be on screen at all (lets the renderer skip it cheaply).
     for (const a of agents) {
       if (a.rumble) { a.t0 = wallsFall; a.t1 = T('alliance', 0.92); }
@@ -548,7 +571,7 @@
       }
       return out;
     }
-    return { agents, cannons, meals, stateAt, counts, inArea, regionOfArea, route, wallsFall, rumble, N, T };
+    return { agents, cannons, meals, evacuees, stateAt, counts, inArea, regionOfArea, route, wallsFall, rumble, N, T };
   }
   global.Population = { create };
 })(typeof window !== 'undefined' ? window : globalThis);

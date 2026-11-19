@@ -278,6 +278,26 @@ test('outside the Walls the Rumbling spares nothing but the harbour; inside, the
   assert.ok(over, 'nobody walks over the ruin');
 });
 
+test('850: when Titans appear inside Wall Rose the people of the south-west leave for Ehrmich and Wall Sina, and come home afterwards', () => {
+  const scare = World.at(175, 125), nearScare = (Tl) => at(Tl, civs).filter(({ s }) => reg(s) === 'rose' && Math.hypot(s.x - scare[0], s.y - scare[1]) < 140).length;
+  const before = nearScare(T('ragako', 0.3)), during = nearScare(T('utgard', 0.6)), after = nearScare(T('rod', 0.6));
+  assert.ok(before >= 30, 'people live there: ' + before);
+  assert.ok(during <= 2, 'they have left: ' + during);
+  assert.ok(after >= before - 7, 'and are home again (all but Ragako.s own five): ' + before + ' -> ' + after);
+  assert.ok(pop.evacuees.length >= 30);
+  assert.strictEqual(pop.counts(T('utgard', 0.6)).civ.total, pop.counts(T('ragako', 0.3)).civ.total - 5); // only Ragako's own people are gone (they are the Titans)
+  for (const { a, home, dest } of pop.evacuees) {
+    const away = pop.stateAt(a, T('utgard', 0.6), 0, { reduced: true }), back = pop.stateAt(a, T('rod', 0.6), 0, { reduced: true });
+    assert.ok(['ehrmich', 'sina'].includes(reg(away)), 'behind Wall Sina or in Ehrmich: ' + reg(away));
+    assert.ok(Math.hypot(away.x - dest[0], away.y - dest[1]) < 0.01);
+    assert.ok(Math.hypot(back.x - home[0], back.y - home[1]) < 0.01, 'back at the same home');
+    assert.ok(pop.stateAt(a, T('ragako', 0.9), 0, { reduced: true }).flee || pop.stateAt(a, T('utgard', 0.1), 0, { reduced: true }).flee || pop.stateAt(a, T('ragako', 0.7), 0, { reduced: true }).flee, 'they run');
+  }
+  // nobody is left within reach of the Titans at Utgard
+  const ut = c.P.utgard;
+  for (const { s } of at(T('utgard', 0.6), civs)) assert.ok(Math.hypot(s.x - ut[0], s.y - ut[1]) > 60, 'someone stayed near Utgard');
+});
+
 // ---- Caught and eaten ----
 test('whoever does not get away in time is caught by a Titan that walks up to them', () => {
   const quiet = { reduced: true }, here = (a, Tl) => { const st = pop.stateAt(a, Tl, 0, quiet); return [st.x, st.y, st]; };
